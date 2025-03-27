@@ -10,5 +10,11 @@ import { SharedPrimeModule } from '../../../../shared/modules/shared-prime.modul
   styleUrl: './courses-list-page.component.css'
 })
 export class CoursesListPageComponent {
+  text = '';
 
+  msg = '';
+
+  onClick() {
+    this.msg = 'Welcome ' + this.text;
+  }
 }
