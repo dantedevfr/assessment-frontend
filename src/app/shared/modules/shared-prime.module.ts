@@ -23,7 +23,7 @@ import { MessageModule } from 'primeng/message';
     CardModule,
     FormsModule,
     MessageModule,
-    
+
     // ... otros módulos de PrimeNG
   ],
   exports: [
@@ -38,4 +38,4 @@ import { MessageModule } from 'primeng/message';
     // ... exporta los mismos módulos para usarlos en otros lugares
   ]
 })
-export class SharedPrimeModule { }
+export class SharedPrimeModule {}

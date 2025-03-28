@@ -1,17 +1,14 @@
-<header>
-  <h1>Admin Header</h1>
-</header>
-<nav>
-  <!-- Menú lateral -->
-  <ul>
-    <li><a routerLink="/admin/courses">Courses</a></li>
-    <!-- Puedes agregar más enlaces aquí -->
-  </ul>
-</nav>
-<main>
-  <!-- Aquí se renderizarán las páginas hijas -->
-  <router-outlet></router-outlet>
-</main>
-<footer>
-  <p>Admin Footer</p>
-</footer>
+
+<div class="layout-container" [ngClass]="currentMenuType">
+  <aside class="menu">
+    <app-sidebar (sidebarClosed)="toggleSidebar()" [sidebarVisible]="sidebarVisible" ></app-sidebar>
+  </aside>
+  <main class="content">
+    <p-button icon="pi pi-align-justify" [rounded]="true" [text]="true" severity="secondary" (click)="toggleSidebar()"></p-button>
+    <br><br>
+
+    <app-settings></app-settings>
+    <router-outlet></router-outlet>
+  </main>
+</div>
+

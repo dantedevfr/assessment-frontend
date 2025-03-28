@@ -1,1 +1,74 @@
 /* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+:root {
+  --background-color: #ffffff;
+  --text-color: #000000;
+}
+
+/* Estilos para el modo oscuro usando la clase .my-app-dark */
+.my-app-dark {
+  --background-color: #c70d0d;
+  --text-color: #1f8b23;
+}
+
+
+body {
+  font-family: var(--font-family);
+  font-weight: normal;
+  background: var(--surface-ground);
+  color: var(--text-color);
+  padding: 1rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.card {
+  background: var(--surface-card);
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+
+.p-tieredmenu {
+  z-index: 1000; /* O cualquier valor que sea lo suficientemente alto */
+}
+
+.p-fluid .p-inputtext{
+  width: 150px !important; /* Aplica un ancho del 100% para asegurar que el input ocupe todo el espacio disponible */
+}
+
+.p-sidebar-mask{
+  display: none !important;
+}
+
+.p-sidebar {
+  margin: 0;
+  padding: 0;
+  width: 300px;
+  background-color: #ffffff;
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+  transition: width 0.3s ease; /* Agregamos una transición suave para animar el cambio de ancho */
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+
+div.view-content {
+  margin-left: 300px; /* Cambiamos 400px a 300px para que coincida con el ancho inicial del sidebar */
+  padding: 1px 16px;
+  height: 900px;
+  transition: margin-left 0.3s ease; /* Agregamos una transición suave para animar el cambio de margen izquierdo */
+}
+
+@media screen and (max-width: 700px) {
+  .p-sidebar {
+      width: 0; /* Cambiamos el ancho a 0 cuando la pantalla sea más pequeña */
+  }
+
+  div.view-content {
+      margin-left: 0; /* Cuando el sidebar se oculta, ajustamos el margen izquierdo a 0 */
+  }
+
+}

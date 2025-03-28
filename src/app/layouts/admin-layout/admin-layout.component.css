@@ -1,14 +1,32 @@
-header, nav, main, footer {
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
+.layout-container {
+  display: flex;
 }
 
-nav ul {
-  list-style: none;
-  padding: 0;
+/* Menú horizontal */
+.horizontal .menu {
+  width: 100%;
+  border-bottom: 2px solid #ccc;
+}
+.horizontal .content {
+  flex: 1;
 }
 
-nav li {
-  display: inline-block;
-  margin-right: 10px;
+/* Menú lateral (static) */
+.static .menu {
+  width: 200px;
+  border-right: 2px solid #ccc;
+}
+.static .content {
+  flex: 1;
+}
+
+/* overlay, slim, reveal, etc. tendrías que ir personalizándolos */
+.overlay .menu {
+  position: absolute;
+  width: 200px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: #eee;
+  /* etc... */
 }
