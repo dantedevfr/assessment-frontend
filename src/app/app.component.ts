@@ -1,23 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { PrimeNG } from 'primeng/config';
-import { ThemeService } from './core/services/theme.service';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
-    selector: 'app-root',
-    imports: [CommonModule, RouterModule],
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.css'
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit  {
+export class AppComponent {
   title = 'assessment-frontend';
-  //constructor(private primeng: PrimeNG) {}
-  constructor(private themeService: ThemeService) {}
-
-  ngOnInit() {
-   // this.primeng.ripple.set(true);
-   this.themeService.loadSettingsFromLocalStorage();
-
-}
 }

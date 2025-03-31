@@ -1,0 +1,36 @@
+/*.app-dark {
+   
+    body {
+        background-color: #c50000;
+        color: #e0e0e0;
+      }
+    
+      .layout-main-container {
+        background-color: #5f5fff;
+      } 
+    
+      .layout-sidebar {
+        background-color: #0d0dd8;
+      }
+      .layout-topbar {
+          background-color: #112991;
+      }
+  
+      .layout-footer {
+          background-color: #07144b;
+      }
+      button {
+        background-color: #01020a;
+        color: white;
+      }
+    // otras reglas...
+  }*/
+
+  :root[class*='app-dark'] {
+    --surface-ground: var(--p-surface-950);
+    --code-background: var(--p-surface-800);
+    --code-color: var(--p-surface-100);
+    --surface-card: #e6aa07;
+    --surface-overlay:var(--surface-card);
+    --p-card-background:var(--surface-card);
+}

@@ -6,20 +6,13 @@ import Aura from '@primeng/themes/aura'; // Solo Aura por defecto
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
-  providers: [ provideAnimationsAsync(),
+  providers: [ 
+    provideAnimationsAsync(),
     providePrimeNG({
-      ripple: true,
-      inputVariant: 'filled',
       theme: {
-        preset: Aura,
-        options: {
-          // Cambia el prefijo de las variables CSS a "my"
-          prefix: 'my',
-          darkModeSelector: '.my-app-dark'
-
-        }
-
-    }
+          preset: Aura,
+          options: { darkModeSelector: '.app-dark' } 
+      }
     }),
     provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes),
 

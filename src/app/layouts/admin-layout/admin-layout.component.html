@@ -1,14 +1,11 @@
-
-<div class="layout-container" [ngClass]="currentMenuType">
-  <aside class="menu">
-    <app-sidebar (sidebarClosed)="toggleSidebar()" [sidebarVisible]="sidebarVisible" ></app-sidebar>
-  </aside>
-  <main class="content">
-    <p-button icon="pi pi-align-justify" [rounded]="true" [text]="true" severity="secondary" (click)="toggleSidebar()"></p-button>
-    <br><br>
-
-    <app-settings></app-settings>
-    <router-outlet></router-outlet>
-  </main>
+<div class="layout-wrapper">
+  <app-admin-topbar></app-admin-topbar>
+  <app-admin-sidebar></app-admin-sidebar>
+  <div class="layout-main-container">
+      <div class="layout-main">
+          <router-outlet></router-outlet>
+      </div>
+      <app-admin-footer></app-admin-footer>
+  </div>
+  <div class="layout-mask animate-fadein"></div>
 </div>
-

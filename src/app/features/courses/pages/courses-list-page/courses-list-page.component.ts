@@ -8,7 +8,7 @@ import { DarkModeToggleComponent } from '../../../../shared/components/dark-mode
   standalone: true,
   imports: [CommonModule,SharedPrimeModule,DarkModeToggleComponent],
   templateUrl: './courses-list-page.component.html',
-  styleUrl: './courses-list-page.component.css'
+  styleUrl: './courses-list-page.component.scss'
 })
 export class CoursesListPageComponent {
   text = '';
