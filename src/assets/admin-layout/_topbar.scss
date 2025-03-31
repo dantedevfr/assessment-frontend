@@ -38,6 +38,8 @@
     }
 
     .layout-topbar-action {
+      all: unset;
+
         display: inline-flex;
         justify-content: center;
         align-items: center;
