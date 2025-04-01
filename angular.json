@@ -25,7 +25,7 @@
 				"build": {
 					"builder": "@angular-devkit/build-angular:application",
 					"options": {
-						"localize":["en-US"],
+                        "localize": ["en-US", "fr"],
 						"outputPath": "dist/assessment-frontend",
 						"index": "src/index.html",
 						"browser": "src/main.ts",

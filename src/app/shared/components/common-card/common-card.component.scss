@@ -1,0 +1,16 @@
+:host {
+    display: block;
+  }
+  
+  .card {
+    padding: 1rem;
+    border-radius: var(--content-border-radius);
+    background: var(--surface-card);
+    box-shadow: var(--card-shadow, 0 2px 8px rgba(0, 0, 0, 0.05));
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  .icon-wrapper {
+    width: 2.5rem;
+    height: 2.5rem;
+  }

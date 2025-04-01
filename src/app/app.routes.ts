@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { DashboardPageComponent } from './features/dashboard/pages/dashboard-page/dashboard-page.component';
 
 export const routes: Routes = [
   {
@@ -8,7 +8,7 @@ export const routes: Routes = [
     component: AdminLayoutComponent,  // Layout contenedor (standalone)
     children: [
       { path: 'dashboard',
-        component: DashboardComponent
+        component: DashboardPageComponent
       },
       {
         path: 'courses',

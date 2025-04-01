@@ -1,0 +1,17 @@
+<div class="card mb-0">
+    <div class="flex justify-between mb-4">
+      <div>
+        <span class="block text-muted-color font-medium mb-4">{{ title }}</span>
+        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ value }}</div>
+      </div>
+      <div
+        class="flex items-center justify-center rounded-border icon-wrapper"
+        [ngClass]="[iconBgColor]"
+      >
+        <i class="pi" [ngClass]="[icon, iconColor, '!text-xl']"></i>
+      </div>
+    </div>
+    <span class="text-primary font-medium">{{ trendText }}</span>
+    <span class="text-muted-color">{{ trendDescription }}</span>
+  </div>
+  
