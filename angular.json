@@ -4,6 +4,14 @@
 	"newProjectRoot": "projects",
 	"projects": {
 		"assessment-frontend": {
+			"i18n": {
+				"sourceLocale": "en-US",
+				"locales": {
+				"fr": {
+					"translation": "src/locale/messages.fr.xlf"
+				}
+				}
+			},
 			"projectType": "application",
 			"schematics": {
 				"@schematics/angular:component": {
@@ -17,12 +25,14 @@
 				"build": {
 					"builder": "@angular-devkit/build-angular:application",
 					"options": {
+						"localize":["en-US"],
 						"outputPath": "dist/assessment-frontend",
 						"index": "src/index.html",
 						"browser": "src/main.ts",
 						"polyfills": [
-							"zone.js"
-						],
+              "zone.js",
+              "@angular/localize/init"
+            ],
 						"tsConfig": "tsconfig.app.json",
 						"assets": [
 							{
@@ -40,8 +50,8 @@
 							"budgets": [
 								{
 									"type": "initial",
-									"maximumWarning": "500kB",
-									"maximumError": "1MB"
+                  "maximumWarning": "800kB",
+                  "maximumError": "2MB"
 								},
 								{
 									"type": "anyComponentStyle",
@@ -78,9 +88,10 @@
 					"builder": "@angular-devkit/build-angular:karma",
 					"options": {
 						"polyfills": [
-							"zone.js",
-							"zone.js/testing"
-						],
+              "zone.js",
+              "zone.js/testing",
+              "@angular/localize/init"
+            ],
 						"tsConfig": "tsconfig.spec.json",
 						"assets": [
 							{

@@ -56,6 +56,8 @@ export class AdminMenuItemComponent {
       this.menuSourceSubscription = this.layoutService.menuSource$.subscribe((value) => {
           Promise.resolve(null).then(() => {
               if (value.routeEvent) {
+                console.log(value.routeEvent);
+
                   this.active = value.key === this.key || value.key.startsWith(this.key + '-') ? true : false;
               } else {
                   if (value.key !== this.key && !value.key.startsWith(this.key + '-')) {
