@@ -10,11 +10,11 @@ import { Component, Input } from '@angular/core';
   styleUrl: './common-card.component.scss'
 })
 export class CommonCardComponent {
-  @Input() title!: string;
-  @Input() value!: string;
-  @Input() icon!: string;
-  @Input() iconBgColor: string = 'bg-gray-200'; // default bg
-  @Input() iconColor: string = 'text-gray-800'; // default icon color
-  @Input() trendText!: string;
-  @Input() trendDescription!: string;
+  @Input() title = '';
+  @Input() value = '';
+  @Input() icon = 'pi-info-circle';
+  @Input() iconColor = 'text-blue-500';
+  @Input() iconBgColor = 'bg-blue-100 dark:bg-blue-400/10';
+  @Input() trendText = '';
+  @Input() trendDescription = '';
 }
