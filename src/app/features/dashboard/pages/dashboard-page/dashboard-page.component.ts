@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { CommonCardComponent } from '../../../../shared/components/common-card/common-card.component';
+import { DashboardMetricsComponent } from '../../components/dashboard-metrics/dashboard-metrics.component';
 @Component({
   selector: 'app-dashboard-page',
-  imports: [CommonCardComponent],
+  imports: [DashboardMetricsComponent],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.scss'
 })

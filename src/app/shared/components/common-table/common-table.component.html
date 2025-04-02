@@ -1,0 +1,128 @@
+<div class="card">
+   
+
+  <p-tieredMenu #menu [model]="actions" [popup]="true"></p-tieredMenu>
+      <p-table
+      #dt1
+      [value]="datas"
+      [lazy]="true"
+      (onLazyLoad)="loadData($event)"
+      dataKey="{{ dataKeyValue }}"
+      [tableStyle]="{ 'min-width': '75rem' }"
+      [selection]="selectedRows"
+      (selectionChange)="onSelectionChange($event)"
+      [selectAll]="selectAll"
+      (selectAllChange)="onSelectAllChange($event)"
+      [paginator]="true"
+      [rows]="storeFilters.pageSize?storeFilters.pageSize:0"
+      [totalRecords]="storeFilters.totalRecords?storeFilters.totalRecords:0"
+      [loading]="loadingValue"
+      [columns]="columns"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [showCurrentPageReport]="true"
+      [scrollable]="true"
+      
+      
+  >
+
+  <ng-template pTemplate="caption">
+      <div class="flex">
+          <button pButton label="Clear" class="p-button-outlined" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
+          <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (keyup)="onKey($event)" [(ngModel)]="searchValue" placeholder="Search keyword" />
+          </span>
+          <button pButton label="Search" class="p-button-outlined ml-2" icon="pi pi-search" (click)="generalSearch(dt1)"></button>
+      </div>
+  </ng-template>
+
+
+
+      <ng-template pTemplate="header">
+      
+              <tr>
+                  <th style="width: 4rem"></th>
+                  <th *ngIf="actions.length > 0"></th>
+
+                  <th *ngFor="let column of columns" [pSortableColumn]="column.field">{{ column.header }} <p-sortIcon [field]="column.field"></p-sortIcon></th>
+              </tr>
+              
+
+          <tr>
+              <th style="width: 4rem">
+                  <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+            
+                  <th style="width: 4rem" *ngIf="actions.length > 0">Actions</th>
+
+           
+              <ng-container *ngFor="let column of columns">
+                  <th *ngIf="!column.isHidden">
+                      <span  style="width: 4rem" *ngIf="column.filterType === 'text'">
+                          <p-columnFilter  style="width: 4rem" type="text" [field]="column.field"></p-columnFilter>
+                      </span>
+                      <span *ngIf="column.filterType === 'multiSelect'">
+                          <p-columnFilter [field]="column.field" [matchMode]="column.matchMode" [showMenu]="column.showMenu">
+                              <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                  <p-multiSelect [ngModel]="value" appendTo="body" [options]="column.options" placeholder="Any" (onChange)="filter($event.value)" optionLabel="name" [maxSelectedLabels]="1" [selectedItemsLabel]="'{0} items'">
+                                      <ng-template let-option pTemplate="item">
+                                          <div class="inline-block vertical-align-middle">
+                                              <img [alt]="option.label" src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}" width="24" class="vertical-align-middle" />
+                                              <span class="ml-1 mt-1">{{ option.name }}</span>
+                                          </div>
+                                      </ng-template>
+                                  </p-multiSelect>
+                              </ng-template>
+                          </p-columnFilter>
+                      </span>
+                  </th>
+              </ng-container>
+          </tr>
+      </ng-template>
+      
+    
+      <ng-template pTemplate="body" let-data>
+          <ng-container *ngIf="!loadingValue; else skeletonTemplate">
+          <tr class="p-selectable-row">
+              <td>
+                  <p-tableCheckbox [value]="data"></p-tableCheckbox>
+              </td>
+              <td *ngIf="actions.length > 0">
+                  <p-button icon="pi pi-ellipsis-v" [rounded]="true" [text]="true" severity="info"(click)="toggleMenu($event,data)"></p-button>
+                  <p-tieredMenu #menu [model]="actions" [popup]="true"></p-tieredMenu>
+
+                  
+              </td>
+              <ng-container *ngFor="let column of columns">
+                  <td *ngIf="!column.isHidden">
+                      {{ getCellValue(data, column.field) }}
+                  </td>
+              </ng-container>
+          </tr>
+          </ng-container>
+          
+
+            <!-- Plantilla de skeleton -->
+          <ng-template #skeletonTemplate>
+              <tr>
+                  <td><p-skeleton></p-skeleton></td>
+
+                  <ng-container *ngFor="let column of columns">
+                      <td><p-skeleton></p-skeleton></td>
+                  </ng-container>
+              </tr>
+          </ng-template>
+
+         
+
+
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+          <tr>
+              <td colspan="8">No Data found.</td>
+          </tr>
+      </ng-template>
+  </p-table>
+</div>
