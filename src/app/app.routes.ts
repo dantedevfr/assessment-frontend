@@ -12,7 +12,7 @@ export const routes: Routes = [
       },
       {
         path: 'courses',
-        loadChildren: () => import('./features/courses/courses.module').then(m => m.CoursesModule)
+        loadChildren: () => import('./features/courses/courses.routes').then(m => m.COURSES_ROUTES)
       }
       // Aquí puedes agregar otras rutas hijas para distintos features
     ]

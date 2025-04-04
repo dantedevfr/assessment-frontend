@@ -4,15 +4,58 @@
 
 <div class="grid grid-cols-12 gap-8">
   <app-dashboard-metrics class="contents"> </app-dashboard-metrics>
- 
-  <div class="col-span-12 xl:col-span-6">
-    
-  </div>
-  <div class="col-span-12 xl:col-span-6">
 
+  <ng-template #customBody let-product>
+    <tr>
+      <td>{{ product.name }}</td>
+      <td>
+        <img
+          [src]="'https://primefaces.org/cdn/primeng/images/demo/product/' + product.image"
+          class="w-20 rounded"
+          [alt]="product.name"
+        />
+      </td>
+      <td>{{ product.price }}</td>
+      <td>
+        <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" />
+      </td>
+      <td>
+        <p-rating [ngModel]="product.rating" [readonly]="true"></p-rating>
+      </td>
+    </tr>
+  </ng-template>
+
+  <div class="col-span-12 xl:col-span-12">
+    <app-common-table
+      [columns]="columns_products"
+      [data]="products"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [size]="'small'"
+      [showGridlines]="true"
+      [stripedRows]="true"
+
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      (onPageChange)="handlePageChange($event)"
+
+      [showCaption]="true"
+      captionTitle="Usuarios Activos"
+      [showRefreshButton]="true"
+      [refreshButtonIcon]="'pi pi-sync'"
+
+      [showSearch]="true"
+      [searchPlaceholder]="'Buscar por nombre o categoría'"
+      [globalFilterFields]="globalFilterFields"
+
+      [bodyTemplate]="customBody"
+
+      [sortMode]="'single'"
+      [sortField]="'price'"
+      [sortOrder]="-1"
+
+      (onRefresh)="reloadUsers()"
+    />
   </div>
+  <div class="col-span-12 xl:col-span-6"></div>
 </div>
-
-
-
-

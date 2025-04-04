@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SharedPrimeModule } from '../../../../shared/modules/shared-prime.module';
+import { CounterComponent } from '../../../counter/components/counter/counter.component';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+
 
 @Component({
   selector: 'app-courses-list-page',
   standalone: true,
-  imports: [CommonModule,SharedPrimeModule],
+  imports: [CommonModule,CounterComponent,ButtonModule,CardModule],
   templateUrl: './courses-list-page.component.html',
   styleUrl: './courses-list-page.component.scss'
 })

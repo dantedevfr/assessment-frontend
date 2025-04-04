@@ -2,7 +2,6 @@ import { Component, Renderer2, ViewChild } from '@angular/core';
 import { filter, Subscription } from 'rxjs';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { SharedPrimeModule } from '../../shared/modules/shared-prime.module';
 import { AdminSidebarComponent } from "./components/admin-sidebar/admin-sidebar.component";
 import { AdminTopbarComponent } from './components/admin-topbar/admin-topbar.component';
 import { AdminFooterComponent } from './components/admin-footer/admin-footer.component';
@@ -13,7 +12,6 @@ import { LayoutService } from '../../core/services/layout.service';
   standalone: true,
   imports: [CommonModule,
   RouterModule,
-  SharedPrimeModule,
   AdminSidebarComponent,
   AdminTopbarComponent,
   AdminFooterComponent
