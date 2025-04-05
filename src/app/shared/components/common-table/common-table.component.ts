@@ -11,14 +11,17 @@ import { CommonModule } from '@angular/common';
 
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { TieredMenu } from 'primeng/tieredmenu';
-import { MenuItem } from 'primeng/api';
+import { MenuItem } from 'primeng/api'; 
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { TagModule } from 'primeng/tag';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
 import { Table } from 'primeng/table';
+import { FormsModule } from '@angular/forms';
+
 
 @Component({
   selector: 'app-common-table',
@@ -32,7 +35,9 @@ import { Table } from 'primeng/table';
     IconFieldModule,
     InputIconModule,
     InputTextModule,
-
+    TagModule,
+    SelectModule,
+    FormsModule
 
   ],
 })
@@ -73,13 +78,29 @@ export class CommonTableComponent implements OnInit {
   @Input() showSearch: boolean = false;
   @Input() searchPlaceholder: string = 'Search keyword';
   @Input() globalFilterFields: string[] = [];
-  @ViewChild('tableRef') tableRef!: Table;
+  @Input() enableColumnFilter: boolean = false;
+  @ViewChild('dt2') dt2!: Table;
+  @Input() customFilterTemplate?: TemplateRef<any>;
 
+  /* Checkbox selection */
+  @Input() enableSelection: boolean = false;
+  @Input() selection: any[] = [];
+  @Output() selectionChange = new EventEmitter<any[]>();
+  @Input() dataKey: string = 'id'; // clave única del objeto, puedes cambiarla si quieres
+
+
+  
 
 
   ngOnInit(): void {
     throw new Error('Method not implemented.');
   }
+
+  onGlobalFilter(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.dt2.filterGlobal(input.value, 'contains');
+  }
+  
 }
 
 /* with props

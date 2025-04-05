@@ -1,5 +1,6 @@
 <div class="card">
   <p-tieredMenu #menu [model]="actions" [popup]="true"></p-tieredMenu>
+  {{bodyTemplate}}
 
   <p-table
   #dt2
@@ -15,6 +16,10 @@
   [sortMode]="sortMode"
   [sortField]="sortField"
   [sortOrder]="sortOrder"
+
+  [dataKey]="enableSelection ? dataKey : undefined"
+  [selection]="enableSelection ? selection : null"
+  (selectionChange)="enableSelection ? selectionChange.emit($event) : null"
 
   [rowsPerPageOptions]="rowsPerPageOptions"
   (onPage)="onPageChange.emit($event)"
@@ -35,8 +40,8 @@
           <input
             pInputText
             type="text"
-            (input)="dt2.filterGlobal($event, 'contains')"
-                        [placeholder]="searchPlaceholder"
+            (input)="onGlobalFilter($event)"
+            [placeholder]="searchPlaceholder"
           />
         </p-iconfield>
 
@@ -51,27 +56,79 @@
       </div>
     </div>
   </ng-template>
+  <!-- Header -->
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th *ngIf="enableSelection" style="width: 3rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.sortable ? col.field : null">
+        {{ col.header }}
+        <p-sortIcon *ngIf="col.sortable" [field]="col.field" />
+      </th>
+    </tr>
 
-    <ng-template pTemplate="header" let-columns>
-      <tr>
-        <th *ngFor="let col of columns"
-            [pSortableColumn]="col.sortable ? col.field : null">
-          {{ col.header }}
-          <p-sortIcon *ngIf="col.sortable" [field]="col.field" />
+       <!-- Fila de filtros por columna -->
+       <tr *ngIf="enableColumnFilter">
+        <th *ngIf="enableSelection"></th>
+        <th *ngFor="let col of columns">
+          <ng-container *ngIf="col.filter">
+            <!-- Caso: Filtro normal -->
+            <p-columnFilter
+              *ngIf="col.filter.type !== 'custom-select'"
+              [type]="col.filter.type"
+              [field]="col.field"
+              [placeholder]="col.filter.placeholder"
+            ></p-columnFilter>
+    
+            <!-- Caso: Filtro custom-select con opciones -->
+            <p-columnFilter
+            *ngIf="col.filter.type === 'custom-select'"
+            [field]="col.field"
+            matchMode="equals"
+            [showMenu]="false"
+          >
+            <ng-template #filter let-value let-filter="filterCallback">
+              <p-select
+                [(ngModel)]="col.filter.selectedValue"
+                [options]="col.filter.options"
+                (onChange)="filter($event.value)"
+                [placeholder]="col.filter.placeholder || 'Select'"
+                [showClear]="true"
+                class="w-full"
+              >
+                <ng-template let-option #item>
+                  <ng-container
+                    *ngIf="customFilterTemplate; else defaultOption"
+                    [ngTemplateOutlet]="customFilterTemplate"
+                    [ngTemplateOutletContext]="{ $implicit: option }"
+                  ></ng-container>
+                  <ng-template #defaultOption>
+                    <span>{{ option.label }}</span>
+                  </ng-template>
+                </ng-template>
+              </p-select>
+            </ng-template>
+          </p-columnFilter>
+          
+          </ng-container>
         </th>
       </tr>
     </ng-template>
-
-    <ng-template pTemplate="body" let-rowData let-columns="columns" *ngIf="bodyTemplate">
-      <ng-container *ngTemplateOutlet="bodyTemplate; context: { $implicit: rowData, columns: columns }"></ng-container>
-    </ng-template>
-
-    <ng-template #body let-rowData let-columns="columns" *ngIf="!bodyTemplate">
-      <tr>
-        <td *ngFor="let col of columns">
-          {{ rowData[col.field] }}
-        </td>
-      </tr>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <ng-container *ngIf="bodyTemplate; else defaultBody">
+        <ng-container *ngTemplateOutlet="bodyTemplate; context: { $implicit: rowData, columns: columns, enableSelection: enableSelection }"></ng-container>
+      </ng-container>
+      <ng-template #defaultBody>
+        <tr>
+          <td *ngIf="enableSelection">
+            <p-tableCheckbox [value]="rowData" />
+          </td>
+          <td *ngFor="let col of columns">
+            {{ rowData[col.field] }}
+          </td> 
+        </tr>
+      </ng-template>
     </ng-template>
   </p-table>
 </div>
