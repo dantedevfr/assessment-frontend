@@ -6,6 +6,7 @@ import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { RowAction } from '../../../../shared/models/table.model';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -163,7 +164,29 @@ export class DashboardPageComponent {
 
   selectedProducts: any[] = [];
 
-
+  rowActions: RowAction[]=[
+    {
+      icon: 'pi pi-pencil',
+      severity: 'info',
+      tooltip: 'Editar',
+      callback: (row: any) => this.editProduct(row),
+    },
+    {
+      icon: 'pi pi-trash',
+      severity: 'danger',
+      tooltip: 'Eliminar',
+      callback: (row: any) => this.deleteProduct(row),
+    }
+  ];
+  
+  editProduct(row: any) {
+    console.log('Editando producto:', row);
+  }
+  
+  deleteProduct(row: any) {
+    console.log('Eliminando producto:', row);
+  }
+  
 
   reloadUsers() {
     console.log('Refrescando datos...');

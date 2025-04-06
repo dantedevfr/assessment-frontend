@@ -39,3 +39,11 @@ export interface TableResponse {
   data: any[];
   totalRecords: number;
 }
+
+
+export interface RowAction {
+  icon: string;
+  severity?: "success" | "info" | "warn" | "danger" | "help" | "primary" | "secondary" | "contrast";
+  tooltip?: string;
+  callback: (row: any) => void;
+}

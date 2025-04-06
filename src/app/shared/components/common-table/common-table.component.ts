@@ -21,6 +21,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
 import { Table } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
+import { TooltipModule } from 'primeng/tooltip';
+import { RowAction } from '../../models/table.model';
 
 
 @Component({
@@ -37,7 +39,8 @@ import { FormsModule } from '@angular/forms';
     InputTextModule,
     TagModule,
     SelectModule,
-    FormsModule
+    FormsModule,
+    TooltipModule
 
   ],
 })
@@ -87,6 +90,14 @@ export class CommonTableComponent implements OnInit {
   @Input() selection: any[] = [];
   @Output() selectionChange = new EventEmitter<any[]>();
   @Input() dataKey: string = 'id'; // clave única del objeto, puedes cambiarla si quieres
+
+  /* Row actions */
+  @Input() rowActions: RowAction[] = [];
+
+  /*Scrolling*/
+  @Input() scrollable: boolean = false;
+  @Input() scrollHeight: string = '400px';
+
 
 
   

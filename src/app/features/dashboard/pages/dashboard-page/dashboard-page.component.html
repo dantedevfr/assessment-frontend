@@ -1,30 +1,25 @@
 <h1 i18n="@@dashboardTitle">Dashboard mija</h1>
 <p i18n="@@welcomeMessage">Welcome to your dashboard</p>
 <p i18n="@@test1">Hello mija this is a test :</p>
-{{selectedProducts}}
+
 <div class="grid grid-cols-12 gap-8">
   <app-dashboard-metrics class="contents"> </app-dashboard-metrics>
-  <ng-template #customBody let-product let-enableSelection="enableSelection">
-    <tr>
-      <td *ngIf="enableSelection">
-        <p-tableCheckbox [value]="product"></p-tableCheckbox>
-      </td>
-      <td>{{ product.name }}</td>
-      <td>
-        <img
-          [src]="'https://primefaces.org/cdn/primeng/images/demo/product/' + product.image"
-          class="w-20 rounded"
-          [alt]="product.name"
-        />
-      </td>
-      <td>{{ product.price }}</td>
-      <td>
-        <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" />
-      </td>
-      <td>
-        <p-rating [ngModel]="product.rating" [readonly]="true"></p-rating>
-      </td>
-    </tr>
+  <ng-template #customBody let-product let-columns="columns">
+    <td>{{ product.name }}</td>
+    <td>
+      <img
+        [src]="'https://primefaces.org/cdn/primeng/images/demo/product/' + product.image"
+        class="w-20 rounded"
+        [alt]="product.name"
+      />
+    </td>
+    <td>{{ product.price }}</td>
+    <td>
+      <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" />
+    </td>
+    <td>
+      <p-rating [ngModel]="product.rating" [readonly]="true"></p-rating>
+    </td>
   </ng-template>
   <ng-template #statusTemplate let-option>
     <p-tag [value]="option.label" [severity]="getSeverity(option.value)" />
@@ -63,6 +58,10 @@
       [selection]="selectedProducts"
       (selectionChange)="handleCheckBoxAction($event)"
       [dataKey]="'id'"
+      [rowActions]="rowActions"
+
+      [scrollable]="true"
+      scrollHeight="500px"
 
       (onRefresh)="reloadUsers()"
     />
