@@ -2,7 +2,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   TemplateRef,
   ViewChild,
@@ -17,13 +16,12 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
-import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
 import { Table } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { RowAction } from '../../models/table.model';
-
+import { TableColumn } from '../../models/table.model';
 
 @Component({
   selector: 'app-common-table',
@@ -44,9 +42,9 @@ import { RowAction } from '../../models/table.model';
 
   ],
 })
-export class CommonTableComponent implements OnInit {
-  @Input() data: any[] = [];
-  @Input() columns: any[] = [];
+export class CommonTableComponent <T = any> {
+  @Input() data: T[] = [];
+  @Input() columns: TableColumn[] = [];
 
   @Input() actions: MenuItem[] = [];
 
@@ -57,7 +55,7 @@ export class CommonTableComponent implements OnInit {
   @Input() refreshButtonIcon: string = 'pi pi-refresh';
   @Output() onRefresh = new EventEmitter<void>();
 
-  /* Custom body template */
+  /* Custom body template */ 
   @Input() bodyTemplate?: TemplateRef<any>;
 
   /* Table styles */
@@ -105,15 +103,6 @@ export class CommonTableComponent implements OnInit {
   @Output() onLazyLoad = new EventEmitter<any>();
 
 
-
-  
-
-
-  ngOnInit(): void {
-    console.log("onInit");
-    
-  }
-
   onGlobalFilter(event: Event) {
     const input = event.target as HTMLInputElement;
     this.dt2.filterGlobal(input.value, 'contains');
@@ -121,38 +110,3 @@ export class CommonTableComponent implements OnInit {
   
 }
 
-/* with props
-   const pageSize = this.filter.pageSize !== undefined ? this.filter.pageSize : 5;
-   const first = event?.first || 0;
-   const pageNumber = Math.ceil((first + 1) / pageSize);
-   this.filter.currentPage = pageNumber;
-   this.filter.sortField = event?.sortField;
-   this.filter.sortOrder = event?.sortOrder == 1 ? true : false;
-   this.filter.pageSize = event?.rows ? event?.rows : 5;
-   this.buildFilterParams(event.filters);
-   this.loadDataEvent.emit(this.filter);*/
-
-/*
-  @Input() rows: number = 10;
-  @Input() totalRecords: number = 0;
-  @Input() loading: boolean = false;
-  @Input() rowsPerPageOptions: any = [];
-
-  selectedRows: any[] = [];
-  selectAll: boolean = false;
-
-  @Output() selectionChange = new EventEmitter<any>();
-
-
-  constructor() {}
-
-  onLazyLoad(event: any) {
-    console.log(event);
-  }
-
-  ngOnInit() {
-
-  }
-
-
-  */

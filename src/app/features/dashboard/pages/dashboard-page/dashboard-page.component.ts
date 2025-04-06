@@ -6,7 +6,7 @@ import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
-import { RowAction } from '../../../../shared/models/table.model';
+import { RowAction, TableColumn } from '../../../../shared/models/table.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Component({
@@ -205,10 +205,10 @@ export class DashboardPageComponent {
     { label: 'Out of Stock', value: 'OUTOFSTOCK' },
   ];
   
-  columns_products = [
-    { field: 'name', header: 'name',sortable: true ,  filter: { type: 'text', placeholder: 'Search by name', ariaLabel: 'Filter Name' }  },
-    { field: 'image', header: 'image',sortable: false,     filter: { type: 'text', placeholder: 'Search by Image', ariaLabel: 'Filter Image' }  },
-    { field: 'price', header: 'price',sortable: true,     filter: { type: 'text', placeholder: 'Search by Price', ariaLabel: 'Filter Price' }  },
+  columns_products:TableColumn[] = [
+    { field: 'name', header: 'name',sortable: true ,  filter: { type: 'text', placeholder: 'Search by name' }  },
+    { field: 'image', header: 'image',sortable: false,     filter: { type: 'text', placeholder: 'Search by Image'}  },
+    { field: 'price', header: 'price',sortable: true,     filter: { type: 'text', placeholder: 'Search by Price'}  },
     { field: 'inventoryStatus', header: 'status',sortable: true,     
       filter: {
         type: 'custom-select',

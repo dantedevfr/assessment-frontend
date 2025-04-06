@@ -1,11 +1,14 @@
 export interface TableColumn {
   field: string;
   header: string;
-  isHidden?: boolean;
-  filterType?: 'text' | 'multiSelect';
-  matchMode?: string;
-  options?: Array<{ label: string; value: any; image?: string }>;
-  showMenu?: boolean;
+  sortable?: boolean;
+  filter?: {
+    type: 'text' | 'custom-select';
+    placeholder?: string;
+    options?: { label: string; value: string }[];
+    selectedValue?: string | null;
+    templateType?: string;
+  };
 }
 
 export interface TableFilter {
