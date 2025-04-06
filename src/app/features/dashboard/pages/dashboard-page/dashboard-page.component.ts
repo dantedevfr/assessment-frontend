@@ -82,123 +82,6 @@ export class DashboardPageComponent {
     });
   }
 
-  
-  data = [
-    { id: 1, name: 'Juan', email: 'juan@mail.com' },
-    { id: 2, name: 'Ana', email: 'ana@mail.com' },
-  ];
-
- /* products = [
-    {
-      id:1,
-      name: 'Laptop',
-      image: 'laptop.png',
-      price: 1200,
-      inventoryStatus: 'INSTOCK',
-      rating: 4
-    },
-    {
-      id:2,
-      name: 'Xbox',
-      image: 'laptop.png',
-      price: 12200,
-      inventoryStatus: 'LOWSTOCK',
-      rating: 2
-    },
-    {
-      id:3,
-      name: 'Laptop',
-      image: 'laptop.png',
-      price: 1200,
-      inventoryStatus: 'LOWSTOCK',
-      rating: 4
-    },
-    {
-      id:4,
-      name: 'Xbox',
-      image: 'laptop.png',
-      price: 12200,
-      inventoryStatus: 'INSTOCK',
-      rating: 2
-    },
-    {
-      id:5,
-      name: 'Laptop',
-      image: 'laptop.png',
-      price: 1200,
-      inventoryStatus: 'INSTOCK',
-      rating: 4
-    },
-    {
-      id:6,
-      name: 'Xbox',
-      image: 'laptop.png',
-      price: 12200,
-      inventoryStatus: 'OUTOFSTOCK',
-      rating: 2
-    },
-    {
-      id:7,
-      name: 'Laptop',
-      image: 'laptop.png',
-      price: 1200,
-      inventoryStatus: 'OUTOFSTOCK',
-      rating: 4
-    },
-    {
-      id:8,
-      name: 'Laptop',
-      image: 'laptop.png',
-      price: 1200,
-      inventoryStatus: 'OUTOFSTOCK',
-      rating: 4
-    },
-    {
-      id:9,
-      name: 'Laptop',
-      image: 'laptop.png',
-      price: 1200,
-      inventoryStatus: 'OUTOFSTOCK',
-      rating: 4
-    },
-    {
-      id:10,
-      name: 'Laptop',
-      image: 'laptop.png',
-      price: 1200,
-      inventoryStatus: 'LOWSTOCK',
-      rating: 4
-    },
-    {
-      id:11,
-      name: 'Xbox',
-      image: 'laptop.png',
-      price: 12200,
-      inventoryStatus: 'INSTOCK',
-      rating: 2
-    },
-    {
-      id:12,
-      name: 'Laptop',
-      image: 'laptop.png',
-      price: 1200,
-      inventoryStatus: 'LOWSTOCK',
-      rating: 4
-    },
-    {
-      id:13,
-      name: 'Xbox',
-      image: 'laptop.png',
-      price: 12200,
-      inventoryStatus: 'INSTOCK',
-      rating: 2
-    },
-  ];
-*/
-  columns = [
-    { field: 'name', header: 'Nombre' },
-    { field: 'email', header: 'Correo' }
-  ];
   statuses = [
     { label: 'In Stock', value: 'INSTOCK' },
     { label: 'Low Stock', value: 'LOWSTOCK' },
@@ -222,7 +105,6 @@ export class DashboardPageComponent {
   ];
 
   globalFilterFields = ['name', 'price'];
-
   selectedProducts: any[] = [];
 
   rowActions: RowAction[]=[
@@ -253,7 +135,7 @@ export class DashboardPageComponent {
     console.log('Refrescando datos...');
   }
   handlePageChange(event: any){
-    console.log('handlePageChange...',event);
+    console.log('handlePageChange (use without lazy)...',event);
 
   }
 
