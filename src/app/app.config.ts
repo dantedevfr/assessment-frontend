@@ -6,9 +6,11 @@ import Aura from '@primeng/themes/aura'; // Solo Aura por defecto
 import { routes } from './app.routes';
 import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideHttpClient(),
     provideAnimationsAsync(),
     providePrimeNG({
         theme: {

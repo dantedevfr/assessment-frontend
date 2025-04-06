@@ -98,6 +98,12 @@ export class CommonTableComponent implements OnInit {
   @Input() scrollable: boolean = false;
   @Input() scrollHeight: string = '400px';
 
+  /*Lazy loading*/
+  @Input() lazy: boolean = false;
+  @Input() totalRecords: number = 0;
+  @Input() loading: boolean = false;
+  @Output() onLazyLoad = new EventEmitter<any>();
+
 
 
   

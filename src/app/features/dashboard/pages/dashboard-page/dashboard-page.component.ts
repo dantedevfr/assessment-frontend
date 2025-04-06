@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { RowAction } from '../../../../shared/models/table.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -22,12 +23,45 @@ import { RowAction } from '../../../../shared/models/table.model';
   styleUrl: './dashboard-page.component.scss',
 })
 export class DashboardPageComponent {
+  products: any[] = [];
+  totalItems = 0;
+  isLoading = false;
+
+  constructor(private http: HttpClient) {}
+
+  loadProductsLazy(event: any) {
+    this.isLoading = true;
+
+    let params = new HttpParams()
+      .set('_page', (event.first / event.rows + 1).toString())
+      .set('_limit', event.rows.toString());
+
+    if (event.sortField) {
+      params = params
+        .set('_sort', event.sortField)
+        .set('_order', event.sortOrder === 1 ? 'asc' : 'desc');
+    }
+
+    this.http
+      .get<any[]>('http://localhost:3000/products', {
+        params,
+        observe: 'response'
+      })
+      .subscribe((res) => {
+        this.products = res.body || [];
+        const totalCount = res.headers.get('X-Total-Count');
+        this.totalItems = totalCount ? +totalCount : 0;
+        this.isLoading = false;
+      });
+  }
+
+  
   data = [
     { id: 1, name: 'Juan', email: 'juan@mail.com' },
     { id: 2, name: 'Ana', email: 'ana@mail.com' },
   ];
 
-  products = [
+ /* products = [
     {
       id:1,
       name: 'Laptop',
@@ -133,7 +167,7 @@ export class DashboardPageComponent {
       rating: 2
     },
   ];
-
+*/
   columns = [
     { field: 'name', header: 'Nombre' },
     { field: 'email', header: 'Correo' }
@@ -213,6 +247,5 @@ export class DashboardPageComponent {
         return 'info';
     }
   }
-
 
 }

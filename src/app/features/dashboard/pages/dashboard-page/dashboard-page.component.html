@@ -63,6 +63,11 @@
       [scrollable]="true"
       scrollHeight="500px"
 
+      [lazy]="true"
+      [totalRecords]="totalItems"
+      [loading]="isLoading"
+      (onLazyLoad)="loadProductsLazy($event)"
+
       (onRefresh)="reloadUsers()"
     />
   </div>

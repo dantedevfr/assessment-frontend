@@ -1,6 +1,5 @@
 <div class="card">
   <p-tieredMenu #menu [model]="actions" [popup]="true"></p-tieredMenu>
-  {{bodyTemplate}}
 
   <p-table
   #dt2
@@ -22,6 +21,11 @@
   [dataKey]="enableSelection ? dataKey : undefined"
   [selection]="enableSelection ? selection : null"
   (selectionChange)="enableSelection ? selectionChange.emit($event) : null"
+
+  [lazy]="lazy"
+  [totalRecords]="totalRecords"
+  [loading]="loading"
+  (onLazyLoad)="onLazyLoad.emit($event)"
 
   [rowsPerPageOptions]="rowsPerPageOptions"
   (onPage)="onPageChange.emit($event)"
