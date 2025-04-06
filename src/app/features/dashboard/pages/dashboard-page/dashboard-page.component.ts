@@ -29,30 +29,57 @@ export class DashboardPageComponent {
 
   constructor(private http: HttpClient) {}
 
-  loadProductsLazy(event: any) {
-    this.isLoading = true;
+  handleLazyLoad(event: any) {
+    console.log('LAZY LOAD FIRED 🔥', event);
 
-    let params = new HttpParams()
-      .set('_page', (event.first / event.rows + 1).toString())
-      .set('_limit', event.rows.toString());
+    
+    
+    const page = (event.first / event.rows) + 1;
+    const limit = event.rows;
+    const sortField = event.sortField;
+    const sortOrder = event.sortOrder === 1 ? 'asc' : 'desc';
+    
+    const params: any = {
+      _page: page,
+      _limit: limit
+    };
 
-    if (event.sortField) {
-      params = params
-        .set('_sort', event.sortField)
-        .set('_order', event.sortOrder === 1 ? 'asc' : 'desc');
+  
+    if (sortField) {
+      params._sort = sortField;
+      params._order = sortOrder;
     }
-
-    this.http
-      .get<any[]>('http://localhost:3000/products', {
-        params,
-        observe: 'response'
-      })
-      .subscribe((res) => {
-        this.products = res.body || [];
-        const totalCount = res.headers.get('X-Total-Count');
-        this.totalItems = totalCount ? +totalCount : 0;
-        this.isLoading = false;
-      });
+  
+    // 🔍 Filtros
+    if (event.filters) {
+      for (const field in event.filters) {
+        const value = event.filters[field].value;
+    
+        // Global filter => use json-server's ?q=
+        if (field === 'global' && value) {
+          params['q'] = value;
+        }
+    
+        // Column-specific filters
+        else if (value) {
+          if (typeof value === 'string') {
+            params[`${field}_like`] = value;
+          } else {
+            params[field] = value;
+          }
+        }
+      }
+    }
+  
+    this.isLoading = true;
+    this.http.get<any[]>('http://localhost:3000/products', {
+      params,
+      observe: 'response'
+    }).subscribe(res => {
+      this.products = res.body || [];
+      this.totalItems = +res.headers.get('X-Total-Count')!;
+      this.isLoading = false;
+    });
   }
 
   

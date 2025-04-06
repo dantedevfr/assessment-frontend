@@ -26,6 +26,7 @@
   [totalRecords]="totalRecords"
   [loading]="loading"
   (onLazyLoad)="onLazyLoad.emit($event)"
+  [filterDelay]="300"
 
   [rowsPerPageOptions]="rowsPerPageOptions"
   (onPage)="onPageChange.emit($event)"
@@ -154,6 +155,16 @@
                 (click)="action.callback(rowData)"
               />
             </ng-container>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <!-- Mensaje cuando no hay datos -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="columns.length + (enableSelection ? 1 : 0) + (rowActions.length ? 1 : 0)">
+          <div class="text-center text-gray-500 py-4">
+            😕 No hay datos disponibles
           </div>
         </td>
       </tr>
