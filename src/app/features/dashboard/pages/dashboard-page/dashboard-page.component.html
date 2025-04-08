@@ -1,7 +1,7 @@
 <h1 i18n="@@dashboardTitle">Dashboard mija</h1>
 <p i18n="@@welcomeMessage">Welcome to your dashboard</p>
 <p i18n="@@test1">Hello mija this is a test :</p>
-
+{{isLoading}}
 <div class="grid grid-cols-12 gap-8">
   <app-dashboard-metrics class="contents"> </app-dashboard-metrics>
   <ng-template #customBody let-product let-columns="columns">
@@ -42,7 +42,7 @@
       [showCaption]="true"
       captionTitle="Usuarios Activos"
       [showRefreshButton]="true"
-      [refreshButtonIcon]="'pi pi-sync'" 
+      [refreshButtonIcon]="'pi pi-sync'"
 
       [showSearch]="true"
       [searchPlaceholder]="'Buscar por nombre o price'"
