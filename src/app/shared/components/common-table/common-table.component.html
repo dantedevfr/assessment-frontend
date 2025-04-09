@@ -90,7 +90,7 @@
               [field]="col.field"
               [placeholder]="col.filter.placeholder"
             ></p-columnFilter>
-    
+
             <!-- Caso: Filtro custom-select con opciones -->
             <p-columnFilter
             *ngIf="col.filter.type === 'custom-select'"
@@ -120,7 +120,7 @@
               </p-select>
             </ng-template>
           </p-columnFilter>
-          
+
           </ng-container>
         </th>
         <th *ngIf="rowActions?.length"></th>   <!-- Avoid white space when actions -->
@@ -131,11 +131,11 @@
         <td *ngIf="enableSelection">
           <p-tableCheckbox [value]="rowData" />
         </td>
-    
+
         <ng-container *ngIf="bodyTemplate; else defaultBody">
           <ng-container *ngTemplateOutlet="bodyTemplate; context: { $implicit: rowData, columns: columns }"></ng-container>
         </ng-container>
-    
+
         <ng-template #defaultBody>
           <td *ngFor="let col of columns">
             {{ rowData[col.field] }}
@@ -145,10 +145,10 @@
         <td *ngIf="rowActions?.length">
           <div class="flex items-center gap-2">
             <ng-container *ngFor="let action of rowActions">
-              <p-button 
-                [icon]="action.icon" 
-                [severity]="action.severity || 'secondary'" 
-                [rounded]="true" 
+              <p-button
+                [icon]="action.icon"
+                [severity]="action.severity || 'secondary'"
+                [rounded]="true"
                 [outlined]="true"
                 [pTooltip]="action.tooltip"
                 tooltipPosition="top"

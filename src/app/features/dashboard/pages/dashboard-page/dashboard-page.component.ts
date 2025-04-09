@@ -7,8 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { RowAction, TableColumn } from '../../../../shared/models/table.model';
-import { ApiClientService } from '../../../../core/services/api-client.service';
-import { FilterQuery, QueryParams } from '../../../../core/models/query-params.model';
+import { LazyTableLoaderService } from '../../../../core/services/lazy-table-loader.service';
+import { LazyLoadEvent } from 'primeng/api';
 export interface Product {
   id:number,
   name:string,
@@ -37,43 +37,18 @@ export class DashboardPageComponent {
   totalItems = 0;
   isLoading = false;
 
-  constructor(private api: ApiClientService) {}
+  constructor(private lazyTableLoader: LazyTableLoaderService) {}
 
-  handleLazyLoad(event: any) {
+  ngOnInit() {
+    // Restaurar eventos si existen
+
+  }
+
+  handleProductsLazyLoad(event: LazyLoadEvent) {
     console.log('🔥 LAZY LOAD EVENT:', event);
-
-    const filters: FilterQuery[] = [];
-
-    // 🔍 Global filter
-    const globalValue = event.filters?.global?.value;
-    if (globalValue) {
-      filters.push({ field: 'q', value: globalValue, matchMode: 'contains' });
-    }
-
-    // 📊 Column filters
-    for (const key in event.filters) {
-      if (key === 'global') continue;
-
-      const filterMeta = event.filters[key];
-      if (filterMeta?.value !== null && filterMeta?.value !== '') {
-        filters.push({
-          field: key,
-          value: filterMeta.value,
-          matchMode: filterMeta.matchMode || 'contains'
-        });
-      }
-    }
-
-    const query: QueryParams = {
-      page: event.first / event.rows + 1,
-      limit: event.rows,
-      sortBy: event.sortField,
-      sortOrder: event.sortOrder === 1 ? 'asc' : 'desc',
-      filters
-    };
-
     this.isLoading = true;
-    this.api.getList<Product>('productss', query).subscribe({
+
+    this.lazyTableLoader.load<any>('products', event, 'productsTable').subscribe({
       next: ({ data, total }) => {
         this.products = data;
         this.totalItems = total;
@@ -87,60 +62,7 @@ export class DashboardPageComponent {
     });
   }
 
-/*
-  handleLazyLoad(event: any) {
-    console.log('LAZY LOAD FIRED 🔥', event);
 
-
-
-    const page = (event.first / event.rows) + 1;
-    const limit = event.rows;
-    const sortField = event.sortField;
-    const sortOrder = event.sortOrder === 1 ? 'asc' : 'desc';
-
-    const params: any = {
-      _page: page,
-      _limit: limit
-    };
-
-
-    if (sortField) {
-      params._sort = sortField;
-      params._order = sortOrder;
-    }
-
-    // 🔍 Filtros
-    if (event.filters) {
-      for (const field in event.filters) {
-        const value = event.filters[field].value;
-
-        // Global filter => use json-server's ?q=
-        if (field === 'global' && value) {
-          params['q'] = value;
-        }
-
-        // Column-specific filters
-        else if (value) {
-          if (typeof value === 'string') {
-            params[`${field}_like`] = value;
-          } else {
-            params[field] = value;
-          }
-        }
-      }
-    }
-
-    this.isLoading = true;
-    this.http.get<any[]>('http://localhost:3000/products', {
-      params,
-      observe: 'response'
-    }).subscribe(res => {
-      this.products = res.body || [];
-      this.totalItems = +res.headers.get('X-Total-Count')!;
-      this.isLoading = false;
-    });
-  }
-*/
   statuses = [
     { label: 'In Stock', value: 'INSTOCK' },
     { label: 'Low Stock', value: 'LOWSTOCK' },

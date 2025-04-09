@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { TieredMenu } from 'primeng/tieredmenu';
-import { MenuItem } from 'primeng/api'; 
+import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -55,7 +55,7 @@ export class CommonTableComponent <T = any> {
   @Input() refreshButtonIcon: string = 'pi pi-refresh';
   @Output() onRefresh = new EventEmitter<void>();
 
-  /* Custom body template */ 
+  /* Custom body template */
   @Input() bodyTemplate?: TemplateRef<any>;
 
   /* Table styles */
@@ -102,11 +102,10 @@ export class CommonTableComponent <T = any> {
   @Input() loading: boolean = false;
   @Output() onLazyLoad = new EventEmitter<any>();
 
-
   onGlobalFilter(event: Event) {
     const input = event.target as HTMLInputElement;
     this.dt2.filterGlobal(input.value, 'contains');
   }
-  
+
 }
 
