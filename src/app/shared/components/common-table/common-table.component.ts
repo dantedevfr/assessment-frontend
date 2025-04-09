@@ -102,6 +102,13 @@ export class CommonTableComponent <T = any> {
   @Input() loading: boolean = false;
   @Output() onLazyLoad = new EventEmitter<any>();
 
+
+  /*State values*/
+  @Input() first: number = 0;
+  @Input() filters: { [s: string]: any } = {};
+
+
+
   onGlobalFilter(event: Event) {
     const input = event.target as HTMLInputElement;
     this.dt2.filterGlobal(input.value, 'contains');

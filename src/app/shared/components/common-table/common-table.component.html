@@ -28,6 +28,9 @@
   (onLazyLoad)="onLazyLoad.emit($event)"
   [filterDelay]="300"
 
+  [first]="first"
+  [filters]="filters"
+
   [rowsPerPageOptions]="rowsPerPageOptions"
   (onPage)="onPageChange.emit($event)"
 

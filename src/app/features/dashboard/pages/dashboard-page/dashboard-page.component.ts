@@ -17,6 +17,14 @@ export interface Product {
   inventoryStatus:string,
   rating:number
 }
+
+export interface TableState {
+  first: number;                   // Índice del primer registro (para paginación)
+  rows?: number;                    // Número de registros por página
+  sortField?: string;              // Campo por el que se está ordenando
+  sortOrder?: number;              // Orden ascendente (1) o descendente (-1)
+  filters?: { [key: string]: any } // Filtros activos en la tabla
+}
 @Component({
   selector: 'app-dashboard-page',
   imports: [
@@ -36,18 +44,37 @@ export class DashboardPageComponent {
   products: any[] = [];
   totalItems = 0;
   isLoading = false;
+  tableState: TableState | null = null;
 
   constructor(private lazyTableLoader: LazyTableLoaderService) {}
 
   ngOnInit() {
-    // Restaurar eventos si existen
-
+    const stateJson = localStorage.getItem('dashboardTableState');
+    if(stateJson) {
+      this.tableState = JSON.parse(stateJson);
+      // Opcional: actualizar también sortField, sortOrder, etc.
+      this.handleProductsLazyLoad(this.tableState as any);
+    } else {
+      // Si no hay estado guardado, puede que inicies con los valores por defecto
+      this.tableState = { first: 0, filters: {},rows:10 };
+    }
   }
 
   handleProductsLazyLoad(event: LazyLoadEvent) {
     console.log('🔥 LAZY LOAD EVENT:', event);
     this.isLoading = true;
 
+    // Extraer y guardar el estado de la tabla
+    this.tableState = {
+      first: event.first || 0,
+      sortField: event.sortField,
+      sortOrder: event.sortOrder,
+      filters: event.filters,
+      rows: event.rows
+    };
+    localStorage.setItem('dashboardTableState', JSON.stringify(this.tableState));
+
+    // Cargar los datos desde el servicio
     this.lazyTableLoader.load<any>('products', event, 'productsTable').subscribe({
       next: ({ data, total }) => {
         this.products = data;
@@ -112,8 +139,33 @@ export class DashboardPageComponent {
   }
 
 
-  reloadUsers() {
-    console.log('Refrescando datos...');
+  reloadData() {
+    console.log('Restaurando valores por defecto del estado de la tabla.');
+    // Remueve el estado guardado en localStorage
+    localStorage.removeItem('dashboardTableState');
+
+    // Asigna los valores por defecto al tableState
+    this.tableState = { first: 0,
+      rows: 10,
+      filters: {
+        name: { value: null, matchMode: 'contains' },
+        image: { value: null, matchMode: 'contains' },
+        price: { value: null, matchMode: 'contains' },
+        inventoryStatus: { value: null, matchMode: 'equals' },
+        rating: { value: null, matchMode: 'equals' }
+      } };
+
+    // Llama al método handleProductsLazyLoad con un evento que contenga los valores por defecto
+    const defaultEvent: LazyLoadEvent = { first: 0,
+      rows: 10,
+      filters: {
+        name: { value: null, matchMode: 'contains' },
+        image: { value: null, matchMode: 'contains' },
+        price: { value: null, matchMode: 'contains' },
+        inventoryStatus: { value: null, matchMode: 'equals' },
+        rating: { value: null, matchMode: 'equals' }
+      } };
+    this.handleProductsLazyLoad(defaultEvent);
   }
   handlePageChange(event: any){
     console.log('handlePageChange (use without lazy)...',event);
