@@ -47,18 +47,39 @@ export class DashboardPageComponent {
   tableState: TableState | null = null;
 
   constructor(private lazyTableLoader: LazyTableLoaderService) {}
-
   ngOnInit() {
     const stateJson = localStorage.getItem('dashboardTableState');
-    if(stateJson) {
+    if (stateJson) {
       this.tableState = JSON.parse(stateJson);
-      // Opcional: actualizar también sortField, sortOrder, etc.
-      this.handleProductsLazyLoad(this.tableState as any);
     } else {
-      // Si no hay estado guardado, puede que inicies con los valores por defecto
-      this.tableState = { first: 0, filters: {},rows:10 };
+      this.tableState = {
+        first: 0,
+        rows: 10,
+        filters: {
+          global: { value: '', matchMode: 'contains' }, // <--- aquí
+        },
+      };
     }
+
+    // Sincronizar el valor de los filtros con las columnas
+    this.columns_products.forEach((col) => {
+      // Solo si la columna tiene configurado un objeto 'filter'
+      if (col.filter) {
+        const filterValue = this.tableState?.filters?.[col.field]?.value || null;
+        // Para los selects
+        if (col.filter.type === 'custom-select') {
+          col.filter.selectedValue = filterValue;
+        } else {
+          // para los demás (text, number, etc.)
+          col.filter.selectedValue = filterValue;
+        }
+      }
+    });
+
+    // Ahora lanzo la primera carga perezosa
+    this.handleProductsLazyLoad(this.tableState as any);
   }
+
 
   handleProductsLazyLoad(event: LazyLoadEvent) {
     console.log('🔥 LAZY LOAD EVENT:', event);
@@ -72,6 +93,22 @@ export class DashboardPageComponent {
       filters: event.filters,
       rows: event.rows
     };
+    if (!this.tableState) {
+      this.tableState = {
+        first: 0,
+        rows: 10,
+        filters: {}
+      };
+    }
+
+    if (!this.tableState.filters) {
+      this.tableState.filters = {};
+    }
+
+    if (!this.tableState?.filters?.['global']) {
+      this.tableState.filters['global'] = { value: '', matchMode: 'contains' };
+    }
+
     localStorage.setItem('dashboardTableState', JSON.stringify(this.tableState));
 
     // Cargar los datos desde el servicio
@@ -152,20 +189,26 @@ export class DashboardPageComponent {
         image: { value: null, matchMode: 'contains' },
         price: { value: null, matchMode: 'contains' },
         inventoryStatus: { value: null, matchMode: 'equals' },
-        rating: { value: null, matchMode: 'equals' }
+        rating: { value: null, matchMode: 'equals' },
+        // Filtro global
+      global: { value: '', matchMode: 'contains' }
       } };
 
     // Llama al método handleProductsLazyLoad con un evento que contenga los valores por defecto
-    const defaultEvent: LazyLoadEvent = { first: 0,
+    const defaultEvent: LazyLoadEvent = {
+      first: 0,
       rows: 10,
-      filters: {
-        name: { value: null, matchMode: 'contains' },
-        image: { value: null, matchMode: 'contains' },
-        price: { value: null, matchMode: 'contains' },
-        inventoryStatus: { value: null, matchMode: 'equals' },
-        rating: { value: null, matchMode: 'equals' }
-      } };
+      filters: { ...this.tableState.filters } // si quieres, igualito
+    };
     this.handleProductsLazyLoad(defaultEvent);
+
+      // **** Ahora vuelve a sincronizar con tus columnas (igual que en ngOnInit)
+  this.columns_products.forEach((col) => {
+    if (col.filter) {
+      const filterValue = this.tableState?.filters?.[col.field]?.value || null;
+      col.filter.selectedValue = filterValue;
+    }
+  });
   }
   handlePageChange(event: any){
     console.log('handlePageChange (use without lazy)...',event);
