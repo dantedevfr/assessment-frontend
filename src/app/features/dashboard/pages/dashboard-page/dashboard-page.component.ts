@@ -105,9 +105,27 @@ export class DashboardPageComponent {
   }
 
   reloadData() {
-    this.tableStateService.dispatch({ type: 'RESET', tableId: this.tableId });
-    const current = this.tableStateService.getSnapshot(this.tableId);
-    this.handleProductsLazyLoad(current);
+    const defaultState = {
+      first: 0,
+      rows: 10,
+      filters: {
+        global: { value: '', matchMode: 'contains' },
+        name: { value: null, matchMode: 'startsWith' },
+        image: { value: null, matchMode: 'startsWith' },
+        price: { value: null, matchMode: 'startsWith' },
+        inventoryStatus: { value: null, matchMode: 'equals' },
+      },
+      sortField: 'name',
+      sortOrder: -1,
+    };
+
+    this.tableStateService.dispatch({
+      type: 'UPDATE',
+      tableId: this.tableId,
+      changes: defaultState,
+    });
+
+    this.handleProductsLazyLoad(defaultState);
     this.syncFiltersWithColumns();
   }
 

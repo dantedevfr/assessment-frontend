@@ -15,7 +15,6 @@ import { provideEffects } from '@ngrx/effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(withInterceptors([errorInterceptor])),
     provideAnimationsAsync(),
     providePrimeNG({
         theme: {
@@ -27,8 +26,6 @@ export const appConfig: ApplicationConfig = {
     provideStore(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     MessageService,
-    provideStore(),
-    //provideEffects(tableEffects),
-    provideState('tables', tableReducer), // 👈 Esto registra globalmente
+    provideHttpClient(withInterceptors([errorInterceptor])),
 ]
 };

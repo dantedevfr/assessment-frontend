@@ -4,6 +4,9 @@ import { TableStateMap } from './table-state.model';
 export function tableReducer(state: TableStateMap, action: TableAction): TableStateMap {
   switch (action.type) {
     case 'INIT':
+      if (state[action.tableId]) {
+        return state; // 👈 Ya existe, no hacer nada
+      }
       return {
         ...state,
         [action.tableId]: action.initialState,

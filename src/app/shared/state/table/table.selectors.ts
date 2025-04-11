@@ -1,4 +1,4 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
+/*import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { TablesState } from './table-state.model';
 
 export const selectTablesState = createFeatureSelector<TablesState>('tables');
@@ -14,3 +14,4 @@ export const selectTableLoading = (tableId: string) =>
 
 export const selectTotalRecords = (tableId: string) =>
   createSelector(selectTableState(tableId), (state) => state?.totalRecords ?? 0);
+*/
