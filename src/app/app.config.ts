@@ -4,14 +4,12 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura'; // Solo Aura por defecto
 import { routes } from './app.routes';
-import { provideState, provideStore } from '@ngrx/store';
+import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { MessageService } from 'primeng/api';
-import { tableReducer } from './shared/state/table/table.reducer';
-//import { tableEffects } from './shared/state/table/table.effects';
-import { provideEffects } from '@ngrx/effects';
+import { provideTableFeature } from './shared/state/table/table.feature';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,5 +25,6 @@ export const appConfig: ApplicationConfig = {
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     MessageService,
     provideHttpClient(withInterceptors([errorInterceptor])),
+    provideTableFeature
 ]
 };

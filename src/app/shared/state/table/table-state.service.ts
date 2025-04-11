@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+/*import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { TableStateMap } from './table-state.model';
 import { TableAction } from './table.actions';
@@ -24,7 +24,7 @@ export class TableStateService {
 }
 
 
-/*import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { setTableState, resetTableState } from './table.actions';
 import { selectTableState } from './table.selectors';

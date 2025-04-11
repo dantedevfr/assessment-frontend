@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DashboardMetricsComponent } from '../../components/dashboard-metrics/dashboard-metrics.component';
 import { CommonTableComponent } from '../../../../shared/components/common-table/common-table.component';
 import { TagModule } from 'primeng/tag';
@@ -9,7 +9,14 @@ import { TableModule } from 'primeng/table';
 import { RowAction, TableColumn } from '../../../../shared/models/table.model';
 import { LazyTableLoaderService } from '../../../../core/services/lazy-table-loader.service';
 import { LazyLoadEvent } from 'primeng/api';
-import { TableStateService } from '../../../../shared/state/table/table-state.service';
+//import { TableStateService } from '../../../../shared/state/table/table-state.service';
+import { take } from 'rxjs';
+
+import { Store } from '@ngrx/store';
+import { TableActions } from '../../../../shared/state/table/table.actions';
+import { selectTableById } from '../../../../shared/state/table/table.selectors';
+import { defaultTableState } from '../../../../shared/state/table/table.constants';
+
 export interface Product {
   id:number,
   name:string,
@@ -42,8 +49,174 @@ export interface TableState {
 
 
 export class DashboardPageComponent {
-  tableId = 'productsTable';
 
+  private store = inject(Store);
+  private tableId = 'productsTable';
+
+  products: any[] = [];
+  totalItems = 0;
+  isLoading = false;
+
+  tableState$ = this.store.select(selectTableById(this.tableId));
+  selectedProducts: any[] = [];
+
+  constructor(private lazyTableLoader: LazyTableLoaderService) {}
+
+  ngOnInit() {
+    this.store.dispatch(
+      TableActions.initTable({ tableId: this.tableId, initialState: defaultTableState })
+    );
+
+    this.tableState$.pipe(take(1)).subscribe((state) => {
+      if (state) {
+        this.handleProductsLazyLoad(state);
+        this.syncFiltersWithColumns(state);
+      }
+    });
+  }
+
+
+  handleProductsLazyLoad(event: LazyLoadEvent) {
+    console.log(event);
+
+    this.isLoading = true;
+
+    this.store.dispatch(
+      TableActions.updateTable({
+        tableId: this.tableId,
+        changes: {
+          first: event.first ?? 0,
+          rows: event.rows ?? 10,
+          sortField: event.sortField,
+          sortOrder: event.sortOrder,
+          filters: event.filters,
+        },
+      })
+    );
+
+    this.lazyTableLoader.load<any>('products', event, this.tableId).subscribe({
+      next: ({ data, total }) => {
+        this.products = data;
+        this.totalItems = total;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.products = [];
+        this.totalItems = 0;
+        this.isLoading = false;
+      },
+    });
+  }
+
+  reloadData() {
+    this.store.dispatch(TableActions.resetTable({ tableId: this.tableId }));
+
+    this.tableState$.pipe(take(1)).subscribe((state) => {
+      if (state) {
+        this.handleProductsLazyLoad(state);
+        this.syncFiltersWithColumns(state);
+      }
+    });
+  }
+
+  syncFiltersWithColumns(state: any) {
+    this.columns_products.forEach((col) => {
+      if (col.filter) {
+        const filterValue = state?.filters?.[col.field]?.value || null;
+        col.filter.selectedValue = filterValue;
+      }
+    });
+  }
+
+  statuses = [
+    { label: 'In Stock', value: 'INSTOCK' },
+    { label: 'Low Stock', value: 'LOWSTOCK' },
+    { label: 'Out of Stock', value: 'OUTOFSTOCK' },
+  ];
+
+  columns_products: TableColumn[] = [
+    {
+      field: 'name',
+      header: 'name',
+      sortable: true,
+      filter: { type: 'text', placeholder: 'Search by name' },
+    },
+    {
+      field: 'image',
+      header: 'image',
+      sortable: false,
+      filter: { type: 'text', placeholder: 'Search by Image' },
+    },
+    {
+      field: 'price',
+      header: 'price',
+      sortable: true,
+      filter: { type: 'text', placeholder: 'Search by Price' },
+    },
+    {
+      field: 'inventoryStatus',
+      header: 'status',
+      sortable: true,
+      filter: {
+        type: 'custom-select',
+        placeholder: 'Filter by status',
+        options: this.statuses,
+        selectedValue: null,
+        templateType: 'tag',
+      },
+    },
+    { field: 'rating', header: 'rating', sortable: true },
+  ];
+
+  globalFilterFields = ['name', 'price'];
+
+  rowActions: RowAction[] = [
+    {
+      icon: 'pi pi-pencil',
+      severity: 'info',
+      tooltip: 'Editar',
+      callback: (row: any) => this.editProduct(row),
+    },
+    {
+      icon: 'pi pi-trash',
+      severity: 'danger',
+      tooltip: 'Eliminar',
+      callback: (row: any) => this.deleteProduct(row),
+    },
+  ];
+
+  editProduct(row: any) {
+    console.log('Editando producto:', row);
+  }
+
+  deleteProduct(row: any) {
+    console.log('Eliminando producto:', row);
+  }
+
+  handlePageChange(event: any) {
+    console.log('handlePageChange (use without lazy)...', event);
+  }
+
+  handleCheckBoxAction(event: any) {
+    this.selectedProducts = event;
+  }
+
+  getSeverity(
+    status: string
+  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+    switch (status) {
+      case 'INSTOCK':
+        return 'success';
+      case 'LOWSTOCK':
+        return 'warn';
+      case 'OUTOFSTOCK':
+        return 'danger';
+      default:
+        return 'info';
+    }
+  }
+
+  /*tableId = 'productsTable';
   products: any[] = [];
   totalItems = 0;
   isLoading = false;
@@ -232,197 +405,5 @@ export class DashboardPageComponent {
   get tableStateSnapshot() {
     return this.tableStateService.getSnapshot(this.tableId);
   }
-  /*
-  products: any[] = [];
-  totalItems = 0;
-  isLoading = false;
-  tableState: TableState | null = null;
-
-  constructor(private lazyTableLoader: LazyTableLoaderService) {}
-  ngOnInit() {
-    const stateJson = localStorage.getItem('dashboardTableState');
-    if (stateJson) {
-      this.tableState = JSON.parse(stateJson);
-    } else {
-      this.tableState = {
-        first: 0,
-        rows: 10,
-        filters: {
-          global: { value: '', matchMode: 'contains' }, // <--- aquí
-        },
-      };
-    }
-
-    // Sincronizar el valor de los filtros con las columnas
-    this.columns_products.forEach((col) => {
-      // Solo si la columna tiene configurado un objeto 'filter'
-      if (col.filter) {
-        const filterValue = this.tableState?.filters?.[col.field]?.value || null;
-        // Para los selects
-        if (col.filter.type === 'custom-select') {
-          col.filter.selectedValue = filterValue;
-        } else {
-          // para los demás (text, number, etc.)
-          col.filter.selectedValue = filterValue;
-        }
-      }
-    });
-
-    // Ahora lanzo la primera carga perezosa
-    this.handleProductsLazyLoad(this.tableState as any);
-  }
-
-
-  handleProductsLazyLoad(event: LazyLoadEvent) {
-    console.log('🔥 LAZY LOAD EVENT:', event);
-    this.isLoading = true;
-
-    // Extraer y guardar el estado de la tabla
-    this.tableState = {
-      first: event.first || 0,
-      sortField: event.sortField,
-      sortOrder: event.sortOrder,
-      filters: event.filters,
-      rows: event.rows
-    };
-    if (!this.tableState) {
-      this.tableState = {
-        first: 0,
-        rows: 10,
-        filters: {}
-      };
-    }
-
-    if (!this.tableState.filters) {
-      this.tableState.filters = {};
-    }
-
-    if (!this.tableState?.filters?.['global']) {
-      this.tableState.filters['global'] = { value: '', matchMode: 'contains' };
-    }
-
-    localStorage.setItem('dashboardTableState', JSON.stringify(this.tableState));
-
-    // Cargar los datos desde el servicio
-    this.lazyTableLoader.load<any>('products', event, 'productsTable').subscribe({
-      next: ({ data, total }) => {
-        this.products = data;
-        this.totalItems = total;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.products = [];
-        this.totalItems = 0;
-        this.isLoading = false;
-      }
-    });
-  }
-
-
-  statuses = [
-    { label: 'In Stock', value: 'INSTOCK' },
-    { label: 'Low Stock', value: 'LOWSTOCK' },
-    { label: 'Out of Stock', value: 'OUTOFSTOCK' },
-  ];
-
-  columns_products:TableColumn[] = [
-    { field: 'name', header: 'name',sortable: true ,  filter: { type: 'text', placeholder: 'Search by name' }  },
-    { field: 'image', header: 'image',sortable: false,     filter: { type: 'text', placeholder: 'Search by Image'}  },
-    { field: 'price', header: 'price',sortable: true,     filter: { type: 'text', placeholder: 'Search by Price'}  },
-    { field: 'inventoryStatus', header: 'status',sortable: true,
-      filter: {
-        type: 'custom-select',
-        placeholder: 'Filter by status',
-        options: this.statuses,
-        selectedValue: null, // <-- ¡importante!
-        templateType: 'tag'
-      }  },
-    { field: 'rating', header: 'rating',sortable: true },
-
-  ];
-
-  globalFilterFields = ['name', 'price'];
-  selectedProducts: any[] = [];
-
-  rowActions: RowAction[]=[
-    {
-      icon: 'pi pi-pencil',
-      severity: 'info',
-      tooltip: 'Editar',
-      callback: (row: any) => this.editProduct(row),
-    },
-    {
-      icon: 'pi pi-trash',
-      severity: 'danger',
-      tooltip: 'Eliminar',
-      callback: (row: any) => this.deleteProduct(row),
-    }
-  ];
-
-  editProduct(row: any) {
-    console.log('Editando producto:', row);
-  }
-
-  deleteProduct(row: any) {
-    console.log('Eliminando producto:', row);
-  }
-
-
-  reloadData() {
-    console.log('Restaurando valores por defecto del estado de la tabla.');
-    // Remueve el estado guardado en localStorage
-    localStorage.removeItem('dashboardTableState');
-
-    // Asigna los valores por defecto al tableState
-    this.tableState = { first: 0,
-      rows: 10,
-      filters: {
-        name: { value: null, matchMode: 'contains' },
-        image: { value: null, matchMode: 'contains' },
-        price: { value: null, matchMode: 'contains' },
-        inventoryStatus: { value: null, matchMode: 'equals' },
-        rating: { value: null, matchMode: 'equals' },
-        // Filtro global
-      global: { value: '', matchMode: 'contains' }
-      } };
-
-    // Llama al método handleProductsLazyLoad con un evento que contenga los valores por defecto
-    const defaultEvent: LazyLoadEvent = {
-      first: 0,
-      rows: 10,
-      filters: { ...this.tableState.filters } // si quieres, igualito
-    };
-    this.handleProductsLazyLoad(defaultEvent);
-
-      // **** Ahora vuelve a sincronizar con tus columnas (igual que en ngOnInit)
-  this.columns_products.forEach((col) => {
-    if (col.filter) {
-      const filterValue = this.tableState?.filters?.[col.field]?.value || null;
-      col.filter.selectedValue = filterValue;
-    }
-  });
-  }
-  handlePageChange(event: any){
-    console.log('handlePageChange (use without lazy)...',event);
-
-  }
-
-  handleCheckBoxAction(event: any){
-    console.log('handleCheckBoxAction...',event);
-    this.selectedProducts = event;
-  }
-
-  getSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
-    switch (status) {
-      case 'INSTOCK':
-        return 'success';
-      case 'LOWSTOCK':
-        return 'warn';
-      case 'OUTOFSTOCK':
-        return 'danger';
-      default:
-        return 'info';
-    }
-  }
-*/
+  */
 }

@@ -21,7 +21,7 @@
   <ng-template #statusTemplate let-option>
     <p-tag [value]="option.label" [severity]="getSeverity(option.value)" />
   </ng-template>
-  <pre>  {{tableStateSnapshot | json}}  </pre>
+<pre>{{ tableState$ | async | json }}</pre>
 
   <div class="col-span-12 xl:col-span-12">
     <app-common-table
@@ -34,7 +34,7 @@
       [bodyTemplate]="customBody"
 
       [paginator]="true"
-      [rows]="tableStateSnapshot?.rows || 10"
+      [rows]="(tableState$ | async)?.rows || 10"
       [rowsPerPageOptions]="[5, 10, 20]"
       (onPageChange)="handlePageChange($event)"
 
@@ -50,8 +50,8 @@
       [customFilterTemplate]="statusTemplate"
 
       [sortMode]="'single'"
-      [sortField]="tableStateSnapshot?.sortField || 'name'"
-      [sortOrder]="tableStateSnapshot?.sortOrder || -1"
+      [sortField]="(tableState$ | async)?.sortField || 'name'"
+      [sortOrder]="(tableState$ | async)?.sortOrder || -1"
 
       [enableSelection]="true"
       [selection]="selectedProducts"
@@ -66,8 +66,8 @@
       [totalRecords]="totalItems"
       [loading]="isLoading"
 
-      [first]="tableStateSnapshot?.first || 0"
-      [filters]="tableStateSnapshot?.filters || {}"
+      [first]="(tableState$ | async)?.first || 0"
+      [filters]="(tableState$ | async)?.filters || {}"
 
 
       (onLazyLoad)="handleProductsLazyLoad($event)"
