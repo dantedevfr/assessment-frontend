@@ -10,7 +10,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { MessageService } from 'primeng/api';
 import { tableReducer } from './shared/state/table/table.reducer';
-import { tableEffects } from './shared/state/table/table.effects';
+//import { tableEffects } from './shared/state/table/table.effects';
 import { provideEffects } from '@ngrx/effects';
 
 export const appConfig: ApplicationConfig = {
@@ -28,7 +28,7 @@ export const appConfig: ApplicationConfig = {
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     MessageService,
     provideStore(),
-    provideEffects(tableEffects),
+    //provideEffects(tableEffects),
     provideState('tables', tableReducer), // 👈 Esto registra globalmente
 ]
 };

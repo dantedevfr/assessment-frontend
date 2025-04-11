@@ -9,6 +9,7 @@ import { TableModule } from 'primeng/table';
 import { RowAction, TableColumn } from '../../../../shared/models/table.model';
 import { LazyTableLoaderService } from '../../../../core/services/lazy-table-loader.service';
 import { LazyLoadEvent } from 'primeng/api';
+import { TableStateService } from '../../../../shared/state/table/table-state.service';
 export interface Product {
   id:number,
   name:string,
@@ -41,6 +42,179 @@ export interface TableState {
 
 
 export class DashboardPageComponent {
+  tableId = 'productsTable';
+
+  products: any[] = [];
+  totalItems = 0;
+  isLoading = false;
+
+  constructor(
+    private lazyTableLoader: LazyTableLoaderService,
+    private tableStateService: TableStateService
+  ) {}
+
+  ngOnInit() {
+    this.tableStateService.dispatch({
+      type: 'INIT',
+      tableId: this.tableId,
+      initialState: {
+        first: 0,
+        rows: 10,
+        filters: {
+          global: { value: '', matchMode: 'contains' },
+        },
+      },
+    });
+
+    this.syncFiltersWithColumns();
+    const state = this.tableStateService.getSnapshot(this.tableId);
+    this.handleProductsLazyLoad(state);
+  }
+
+  handleProductsLazyLoad(event: LazyLoadEvent) {
+    this.isLoading = true;
+
+    this.tableStateService.dispatch({
+      type: 'UPDATE',
+      tableId: this.tableId,
+      changes: {
+        first: event.first ?? 0,
+        sortField: event.sortField,
+        sortOrder: event.sortOrder,
+        filters: event.filters,
+        rows: event.rows ?? 10,
+      },
+    });
+
+    const currentState = this.tableStateService.getSnapshot(this.tableId);
+
+    this.lazyTableLoader
+      .load<any>('products', currentState, this.tableId)
+      .subscribe({
+        next: ({ data, total }) => {
+          this.products = data;
+          this.totalItems = total;
+          this.isLoading = false;
+        },
+        error: () => {
+          this.products = [];
+          this.totalItems = 0;
+          this.isLoading = false;
+        },
+      });
+  }
+
+  reloadData() {
+    this.tableStateService.dispatch({ type: 'RESET', tableId: this.tableId });
+    const current = this.tableStateService.getSnapshot(this.tableId);
+    this.handleProductsLazyLoad(current);
+    this.syncFiltersWithColumns();
+  }
+
+  syncFiltersWithColumns() {
+    const currentState = this.tableStateService.getSnapshot(this.tableId);
+
+    this.columns_products.forEach((col) => {
+      if (col.filter) {
+        const filterValue = currentState?.filters?.[col.field]?.value || null;
+        col.filter.selectedValue = filterValue;
+      }
+    });
+  }
+
+  statuses = [
+    { label: 'In Stock', value: 'INSTOCK' },
+    { label: 'Low Stock', value: 'LOWSTOCK' },
+    { label: 'Out of Stock', value: 'OUTOFSTOCK' },
+  ];
+
+  columns_products: TableColumn[] = [
+    {
+      field: 'name',
+      header: 'name',
+      sortable: true,
+      filter: { type: 'text', placeholder: 'Search by name' },
+    },
+    {
+      field: 'image',
+      header: 'image',
+      sortable: false,
+      filter: { type: 'text', placeholder: 'Search by Image' },
+    },
+    {
+      field: 'price',
+      header: 'price',
+      sortable: true,
+      filter: { type: 'text', placeholder: 'Search by Price' },
+    },
+    {
+      field: 'inventoryStatus',
+      header: 'status',
+      sortable: true,
+      filter: {
+        type: 'custom-select',
+        placeholder: 'Filter by status',
+        options: this.statuses,
+        selectedValue: null,
+        templateType: 'tag',
+      },
+    },
+    { field: 'rating', header: 'rating', sortable: true },
+  ];
+
+  globalFilterFields = ['name', 'price'];
+  selectedProducts: any[] = [];
+
+  rowActions: RowAction[] = [
+    {
+      icon: 'pi pi-pencil',
+      severity: 'info',
+      tooltip: 'Editar',
+      callback: (row: any) => this.editProduct(row),
+    },
+    {
+      icon: 'pi pi-trash',
+      severity: 'danger',
+      tooltip: 'Eliminar',
+      callback: (row: any) => this.deleteProduct(row),
+    },
+  ];
+
+  editProduct(row: any) {
+    console.log('Editando producto:', row);
+  }
+
+  deleteProduct(row: any) {
+    console.log('Eliminando producto:', row);
+  }
+
+  handlePageChange(event: any) {
+    console.log('handlePageChange (use without lazy)...', event);
+  }
+
+  handleCheckBoxAction(event: any) {
+    this.selectedProducts = event;
+  }
+
+  getSeverity(
+    status: string
+  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+    switch (status) {
+      case 'INSTOCK':
+        return 'success';
+      case 'LOWSTOCK':
+        return 'warn';
+      case 'OUTOFSTOCK':
+        return 'danger';
+      default:
+        return 'info';
+    }
+  }
+
+  get tableStateSnapshot() {
+    return this.tableStateService.getSnapshot(this.tableId);
+  }
+  /*
   products: any[] = [];
   totalItems = 0;
   isLoading = false;
@@ -232,5 +406,5 @@ export class DashboardPageComponent {
         return 'info';
     }
   }
-
+*/
 }

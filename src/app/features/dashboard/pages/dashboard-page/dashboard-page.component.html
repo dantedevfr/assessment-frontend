@@ -1,7 +1,4 @@
-<h1 i18n="@@dashboardTitle">Dashboard mija</h1>
 <p i18n="@@welcomeMessage">Welcome to your dashboard</p>
-<p i18n="@@test1">Hello mija this is a test :</p>
-<pre>{{ tableState | json }}</pre>
 <div class="grid grid-cols-12 gap-8">
   <app-dashboard-metrics class="contents"> </app-dashboard-metrics>
   <ng-template #customBody let-product let-columns="columns">
@@ -24,6 +21,8 @@
   <ng-template #statusTemplate let-option>
     <p-tag [value]="option.label" [severity]="getSeverity(option.value)" />
   </ng-template>
+  <pre>  {{tableStateSnapshot | json}}  </pre>
+
   <div class="col-span-12 xl:col-span-12">
     <app-common-table
       [columns]="columns_products"
@@ -35,7 +34,7 @@
       [bodyTemplate]="customBody"
 
       [paginator]="true"
-      [rows]="tableState?.rows || 10"
+      [rows]="tableStateSnapshot?.rows || 10"
       [rowsPerPageOptions]="[5, 10, 20]"
       (onPageChange)="handlePageChange($event)"
 
@@ -51,8 +50,8 @@
       [customFilterTemplate]="statusTemplate"
 
       [sortMode]="'single'"
-      [sortField]="tableState?.sortField || 'name'"
-      [sortOrder]="tableState?.sortOrder || -1"
+      [sortField]="tableStateSnapshot?.sortField || 'name'"
+      [sortOrder]="tableStateSnapshot?.sortOrder || -1"
 
       [enableSelection]="true"
       [selection]="selectedProducts"
@@ -67,8 +66,8 @@
       [totalRecords]="totalItems"
       [loading]="isLoading"
 
-      [first]="tableState?.first || 0"
-      [filters]="tableState?.filters || {}"
+      [first]="tableStateSnapshot?.first || 0"
+      [filters]="tableStateSnapshot?.filters || {}"
 
 
       (onLazyLoad)="handleProductsLazyLoad($event)"

@@ -1,4 +1,17 @@
 export interface TableState {
+  first: number;
+  rows: number;
+  sortField?: string;
+  sortOrder?: number;
+  filters?: { [key: string]: any };
+}
+
+export interface TableStateMap {
+  [tableId: string]: TableState;
+}
+
+/*
+export interface TableState {
   currentPage: number;
   rowsPerPage: number;
   sortBy?: string;
@@ -11,4 +24,4 @@ export interface TableState {
 
 export interface TablesState {
   [tableId: string]: TableState;
-}
+}*/

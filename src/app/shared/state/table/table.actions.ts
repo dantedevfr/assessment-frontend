@@ -1,4 +1,11 @@
-import { createAction, props } from '@ngrx/store';
+import { TableState } from './table-state.model';
+
+export type TableAction =
+  | { type: 'INIT'; tableId: string; initialState: TableState }
+  | { type: 'UPDATE'; tableId: string; changes: Partial<TableState> }
+  | { type: 'RESET'; tableId: string };
+
+/*import { createAction, props } from '@ngrx/store';
 import { TableState } from './table-state.model';
 
 export const loadTableData = createAction(
@@ -14,4 +21,4 @@ export const loadTableDataSuccess = createAction(
 export const loadTableDataFailure = createAction(
   '[Table] Load Table Data Failure',
   props<{ tableId: string }>()
-);
+);*/

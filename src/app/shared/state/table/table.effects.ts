@@ -1,5 +1,5 @@
 // table.effects.ts
-import { inject } from '@angular/core';
+/*import { inject } from '@angular/core';
 import { createEffect, ofType } from '@ngrx/effects';
 import { Actions } from '@ngrx/effects';
 import { map, mergeMap, catchError, of } from 'rxjs';
@@ -30,4 +30,4 @@ export const tableEffects = {
       ),
     { functional: true }
   )
-};
+};*/
