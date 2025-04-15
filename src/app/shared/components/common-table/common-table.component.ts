@@ -3,6 +3,7 @@ import {
   EventEmitter,
   Input,
   Output,
+  SimpleChanges,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -107,12 +108,66 @@ export class CommonTableComponent <T = any> {
   @Input() first: number = 0;
   @Input() filters: { [s: string]: any } = {};
 
+  globalFilterValue: string = '';
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['filters'] && this.filters?.['global']?.value !== undefined) {
+      this.globalFilterValue = this.filters['global'].value;
+    }
+  }
 
   onGlobalFilter(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.dt2.filterGlobal(input.value, 'contains');
+    const newValue = input.value;
+
+    this.globalFilterValue = newValue;
+
+
+    const updatedFilters = {
+      ...this.filters,
+      global: { value: newValue, matchMode: 'contains' },
+    };
+
+    this.onLazyLoad.emit({
+      first: this.first,
+      rows: this.rows,
+      sortField: this.sortField,
+      sortOrder: this.sortOrder,
+      filters: updatedFilters,
+    });
   }
+
+  handleTextFilter(colField: string, event: Event, matchMode: string = 'contains', filterFn?: Function) {
+    const value = (event.target as HTMLInputElement).value;
+
+    // Aplica el filtro visual de PrimeNG
+    if (filterFn) filterFn(value);
+
+    // Lanza el lazy load personalizado
+    this.onColumnFilterChange(colField, value, matchMode);
+  }
+
+
+  onColumnFilterChange(field: string, value: any, matchMode: string) {
+    const updatedFilters = { ...this.filters };
+
+    updatedFilters[field] = {
+      value: value === null || value === '' ? null : value,
+      matchMode
+    };
+
+    this.filters = updatedFilters;
+
+    this.onLazyLoad.emit({
+      first: this.first,
+      rows: this.rows,
+      sortField: this.sortField,
+      sortOrder: this.sortOrder,
+      filters: updatedFilters
+    });
+  }
+
+
 
 }
 

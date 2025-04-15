@@ -49,7 +49,7 @@
           <p-inputicon><i class="pi pi-search"></i></p-inputicon>
           <input
             pInputText
-            [(ngModel)]="filters['global'].value"
+            [(ngModel)]="globalFilterValue"
             type="text"
             (input)="onGlobalFilter($event)"
             [placeholder]="searchPlaceholder"
@@ -89,11 +89,22 @@
           <ng-container *ngIf="col.filter">
             <!-- Caso: Filtro normal -->
             <p-columnFilter
-              *ngIf="col.filter.type !== 'custom-select'"
-              [type]="col.filter.type"
-              [field]="col.field"
-              [placeholder]="col.filter.placeholder"
-            ></p-columnFilter>
+            *ngIf="col.filter.type !== 'custom-select'"
+            [field]="col.field"
+            matchMode="contains"
+            [showMenu]="false"
+          >
+            <ng-template #filter let-value let-filter="filterCallback">
+              <input
+                pInputText
+                class="w-full"
+                [(ngModel)]="col.filter.selectedValue"
+                [placeholder]="col.filter.placeholder"
+                (input)="handleTextFilter(col.field, $event, 'contains', filter)"
+
+              />
+            </ng-template>
+          </p-columnFilter>
 
             <!-- Caso: Filtro custom-select con opciones -->
             <p-columnFilter

@@ -22,7 +22,7 @@
     <p-tag [value]="option.label" [severity]="getSeverity(option.value)" />
   </ng-template>
 <pre>{{ tableState$ | async | json }}</pre>
-
+<pre>{{columns_products | json}}</pre>
   <div class="col-span-12 xl:col-span-12">
     <app-common-table
       [columns]="columns_products"
@@ -67,7 +67,7 @@
       [loading]="isLoading"
 
       [first]="(tableState$ | async)?.first || 0"
-      [filters]="(tableState$ | async)?.filters || {}"
+      [filters]="safeFilters"
 
 
       (onLazyLoad)="handleProductsLazyLoad($event)"
