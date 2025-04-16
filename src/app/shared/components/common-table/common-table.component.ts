@@ -3,7 +3,6 @@ import {
   EventEmitter,
   Input,
   Output,
-  SimpleChanges,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -108,20 +107,10 @@ export class CommonTableComponent <T = any> {
   @Input() first: number = 0;
   @Input() filters: { [s: string]: any } = {};
 
-  globalFilterValue: string = '';
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['filters'] && this.filters?.['global']?.value !== undefined) {
-      this.globalFilterValue = this.filters['global'].value;
-    }
-  }
 
   onGlobalFilter(event: Event) {
     const input = event.target as HTMLInputElement;
     const newValue = input.value;
-
-    this.globalFilterValue = newValue;
-
 
     const updatedFilters = {
       ...this.filters,
@@ -139,11 +128,6 @@ export class CommonTableComponent <T = any> {
 
   handleTextFilter(colField: string, event: Event, matchMode: string = 'contains', filterFn?: Function) {
     const value = (event.target as HTMLInputElement).value;
-
-    // Aplica el filtro visual de PrimeNG
-    //if (filterFn) filterFn(value);
-
-    // Lanza el lazy load personalizado
     this.onColumnFilterChange(colField, value, matchMode);
   }
 
@@ -156,8 +140,6 @@ export class CommonTableComponent <T = any> {
       matchMode
     };
 
-    this.filters = updatedFilters;
-
     this.onLazyLoad.emit({
       first: this.first,
       rows: this.rows,
@@ -166,8 +148,5 @@ export class CommonTableComponent <T = any> {
       filters: updatedFilters
     });
   }
-
-
-
 }
 

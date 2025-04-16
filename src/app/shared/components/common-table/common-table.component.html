@@ -49,7 +49,7 @@
           <p-inputicon><i class="pi pi-search"></i></p-inputicon>
           <input
             pInputText
-            [(ngModel)]="globalFilterValue"
+            [value]="filters['global']?.value || ''"
             type="text"
             (input)="onGlobalFilter($event)"
             [placeholder]="searchPlaceholder"
@@ -98,7 +98,7 @@
               <input
                 pInputText
                 class="w-full"
-                [(ngModel)]="col.filter.selectedValue"
+                [ngModel]="filters[col.field]?.value || ''"
                 [placeholder]="col.filter.placeholder"
                 (input)="handleTextFilter(col.field, $event, 'contains', filter)"
 
@@ -115,7 +115,7 @@
           >
             <ng-template #filter let-value let-filter="filterCallback">
               <p-select
-                [(ngModel)]="col.filter.selectedValue"
+                [ngModel]="filters[col.field]?.value"
                 [options]="col.filter.options"
                 (onChange)="filter($event.value)"
                 [placeholder]="col.filter.placeholder || 'Select'"

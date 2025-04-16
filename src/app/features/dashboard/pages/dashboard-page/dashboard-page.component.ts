@@ -9,11 +9,8 @@ import { TableModule } from 'primeng/table';
 import { RowAction, TableColumn } from '../../../../shared/models/table.model';
 import { LazyLoadEvent } from 'primeng/api';
 import { map, Observable, take } from 'rxjs';
-
-
 import { defaultTableState } from '../../../../shared/state/table/table.constants';
 import { TableFacadeService } from '../../../../core/services/table-facade-service';
-import { TableState } from '../../../../shared/state/table/table-state.model';
 
 
 @Component({
@@ -48,8 +45,6 @@ export class DashboardPageComponent {
 
   ngOnInit() {
     this.tableService.init(this.tableId, defaultTableState);
-
-    // 👉 Asignar después de inicializar
     this.products$ = this.tableService.getData$(this.tableId);
     this.isLoading$ = this.tableService.getLoading$(this.tableId);
     this.totalItems$ = this.tableService.getTotalItems$(this.tableId);
@@ -57,7 +52,6 @@ export class DashboardPageComponent {
     this.tableState$.pipe(take(1)).subscribe((state) => {
       if (state) {
         this.handleLazyLoad(state);
-        this.syncFiltersWithColumns(state);
       }
     });
   }
@@ -97,7 +91,6 @@ export class DashboardPageComponent {
         type: 'custom-select',
         placeholder: 'Filter by status',
         options: this.statuses,
-        selectedValue: null,
         templateType: 'tag',
       },
     },
@@ -125,20 +118,6 @@ export class DashboardPageComponent {
 
   handleLazyLoad(event: LazyLoadEvent) {
     this.tableService.loadData(this.tableId, this.endpoint, event);
-    const hasActiveFilters = !!event.filters && Object.values(event.filters).some(f => f?.value != null && f?.value !== '');
-
-      if (!hasActiveFilters) {
-        this.clearColumnFilterSelections();
-      }
-
-  }
-
-  clearColumnFilterSelections() {
-    this.columns_products.forEach(col => {
-      if (col.filter && 'selectedValue' in col.filter) {
-        col.filter.selectedValue = null;
-      }
-    });
   }
 
   reloadData() {
@@ -146,16 +125,6 @@ export class DashboardPageComponent {
     this.tableState$.pipe(take(1)).subscribe((state) => {
       if (state) {
         this.handleLazyLoad(state);
-        this.syncFiltersWithColumns(state);
-      }
-    });
-  }
-
-  syncFiltersWithColumns(state: TableState) {
-    this.columns_products.forEach((col) => {
-      if (col.filter) {
-        const filterValue = state?.filters?.[col.field]?.value || null;
-        col.filter.selectedValue = filterValue;
       }
     });
   }
