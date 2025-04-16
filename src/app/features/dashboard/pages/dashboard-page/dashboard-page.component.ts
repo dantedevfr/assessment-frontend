@@ -7,14 +7,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { RowAction, TableColumn } from '../../../../shared/models/table.model';
-import { LazyTableLoaderService } from '../../../../core/services/lazy-table-loader.service';
 import { LazyLoadEvent } from 'primeng/api';
-import { take } from 'rxjs';
+import { map, Observable, take } from 'rxjs';
 
-import { Store } from '@ngrx/store';
-import { TableActions } from '../../../../shared/state/table/table.actions';
-import { selectTableById } from '../../../../shared/state/table/table.selectors';
+
 import { defaultTableState } from '../../../../shared/state/table/table.constants';
+import { TableFacadeService } from '../../../../core/services/table-facade-service';
+import { TableState } from '../../../../shared/state/table/table-state.model';
 
 
 @Component({
@@ -33,96 +32,37 @@ import { defaultTableState } from '../../../../shared/state/table/table.constant
 
 
 export class DashboardPageComponent {
-
-  private store = inject(Store);
   private tableId = 'productsTable';
+  private endpoint = 'products';
 
-  products: any[] = [];
-  totalItems = 0;
-  isLoading = false;
+  private tableService = inject(TableFacadeService);
 
-  tableState$ = this.store.select(selectTableById(this.tableId));
-  selectedProducts: any[] = [];
-
-  constructor(private lazyTableLoader: LazyTableLoaderService) {}
+  // Observable para usar directamente en el HTML
+  tableState$ = this.tableService.getState$(this.tableId);
+  products$!: Observable<any[]>;
+  isLoading$!: Observable<boolean>;
+  totalItems$!: Observable<number>;
+  filters$ = this.tableState$.pipe(
+    map(state => state?.filters ? JSON.parse(JSON.stringify(state.filters)) : {})
+  );
 
   ngOnInit() {
-    this.store.dispatch(
-      TableActions.initTable({ tableId: this.tableId, initialState: defaultTableState })
-    );
+    this.tableService.init(this.tableId, defaultTableState);
+
+    // 👉 Asignar después de inicializar
+    this.products$ = this.tableService.getData$(this.tableId);
+    this.isLoading$ = this.tableService.getLoading$(this.tableId);
+    this.totalItems$ = this.tableService.getTotalItems$(this.tableId);
 
     this.tableState$.pipe(take(1)).subscribe((state) => {
       if (state) {
-        this.handleProductsLazyLoad(state);
+        this.handleLazyLoad(state);
         this.syncFiltersWithColumns(state);
       }
     });
   }
 
-
-  handleProductsLazyLoad(event: LazyLoadEvent) {
-    this.isLoading = true;
-
-    const hasFilters = !!event.filters && Object.values(event.filters).some(f => f?.value != null && f?.value !== '');
-
-    if (!hasFilters) {
-      this.clearColumnFilterSelections();
-    }
-
-    this.store.dispatch(
-      TableActions.updateTable({
-        tableId: this.tableId,
-        changes: {
-          first: event.first ?? 0,
-          rows: event.rows ?? 10,
-          sortField: event.sortField,
-          sortOrder: event.sortOrder,
-          filters: event.filters,
-        },
-      })
-    );
-
-    this.lazyTableLoader.load<any>('products', event, this.tableId).subscribe({
-      next: ({ data, total }) => {
-        this.products = data;
-        this.totalItems = total;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.products = [];
-        this.totalItems = 0;
-        this.isLoading = false;
-      },
-    });
-  }
-
-  clearColumnFilterSelections() {
-    this.columns_products.forEach(col => {
-      if (col.filter) {
-        col.filter.selectedValue = null;
-      }
-    });
-  }
-
-  reloadData() {
-    this.store.dispatch(TableActions.resetTable({ tableId: this.tableId }));
-
-    this.tableState$.pipe(take(1)).subscribe((state) => {
-      if (state) {
-        this.handleProductsLazyLoad(state);
-        this.syncFiltersWithColumns(state);
-      }
-    });
-  }
-
-  syncFiltersWithColumns(state: any) {
-    this.columns_products.forEach((col) => {
-      if (col.filter) {
-        const filterValue = state?.filters?.[col.field]?.value || null;
-        col.filter.selectedValue = filterValue;
-      }
-    });
-  }
+  selectedProducts: any[] = [];
 
   statuses = [
     { label: 'In Stock', value: 'INSTOCK' },
@@ -133,25 +73,25 @@ export class DashboardPageComponent {
   columns_products: TableColumn[] = [
     {
       field: 'name',
-      header: 'name',
+      header: 'Name',
       sortable: true,
       filter: { type: 'text', placeholder: 'Search by name' },
     },
     {
       field: 'image',
-      header: 'image',
+      header: 'Image',
       sortable: false,
-      filter: { type: 'text', placeholder: 'Search by Image' },
+      filter: { type: 'text', placeholder: 'Search by image' },
     },
     {
       field: 'price',
-      header: 'price',
+      header: 'Price',
       sortable: true,
-      filter: { type: 'text', placeholder: 'Search by Price' },
+      filter: { type: 'text', placeholder: 'Search by price' },
     },
     {
       field: 'inventoryStatus',
-      header: 'status',
+      header: 'Status',
       sortable: true,
       filter: {
         type: 'custom-select',
@@ -161,7 +101,7 @@ export class DashboardPageComponent {
         templateType: 'tag',
       },
     },
-    { field: 'rating', header: 'rating', sortable: true },
+    { field: 'rating', header: 'Rating', sortable: true },
   ];
 
   globalFilterFields = ['name', 'price'];
@@ -181,45 +121,63 @@ export class DashboardPageComponent {
     },
   ];
 
-  editProduct(row: any) {
-    console.log('Editando producto:', row);
+
+
+  handleLazyLoad(event: LazyLoadEvent) {
+    this.tableService.loadData(this.tableId, this.endpoint, event);
+    const hasActiveFilters = !!event.filters && Object.values(event.filters).some(f => f?.value != null && f?.value !== '');
+
+      if (!hasActiveFilters) {
+        this.clearColumnFilterSelections();
+      }
+
   }
 
-  deleteProduct(row: any) {
-    console.log('Eliminando producto:', row);
+  clearColumnFilterSelections() {
+    this.columns_products.forEach(col => {
+      if (col.filter && 'selectedValue' in col.filter) {
+        col.filter.selectedValue = null;
+      }
+    });
   }
 
-  handlePageChange(event: any) {
-    console.log('handlePageChange (use without lazy)...', event);
+  reloadData() {
+    this.tableService.reset(this.tableId);
+    this.tableState$.pipe(take(1)).subscribe((state) => {
+      if (state) {
+        this.handleLazyLoad(state);
+        this.syncFiltersWithColumns(state);
+      }
+    });
+  }
+
+  syncFiltersWithColumns(state: TableState) {
+    this.columns_products.forEach((col) => {
+      if (col.filter) {
+        const filterValue = state?.filters?.[col.field]?.value || null;
+        col.filter.selectedValue = filterValue;
+      }
+    });
+  }
+
+  getSeverity(status: string) {
+    switch (status) {
+      case 'INSTOCK': return 'success';
+      case 'LOWSTOCK': return 'warn';
+      case 'OUTOFSTOCK': return 'danger';
+      default: return 'info';
+    }
+  }
+
+  editProduct(product: any) {
+    console.log('Edit product', product);
+  }
+
+  deleteProduct(product: any) {
+    console.log('Delete product', product);
   }
 
   handleCheckBoxAction(event: any) {
     this.selectedProducts = event;
   }
-
-  getSeverity(
-    status: string
-  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
-    switch (status) {
-      case 'INSTOCK':
-        return 'success';
-      case 'LOWSTOCK':
-        return 'warn';
-      case 'OUTOFSTOCK':
-        return 'danger';
-      default:
-        return 'info';
-    }
-  }
-
-  get safeFilters(): { [key: string]: any } {
-    let filters = {};
-
-    this.tableState$.pipe(take(1)).subscribe(state => {
-      filters = state?.filters ? JSON.parse(JSON.stringify(state.filters)) : {};
-    });
-
-    return filters;
-  }
-
 }

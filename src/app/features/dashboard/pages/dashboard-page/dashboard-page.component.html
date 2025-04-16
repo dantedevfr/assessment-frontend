@@ -21,12 +21,13 @@
   <ng-template #statusTemplate let-option>
     <p-tag [value]="option.label" [severity]="getSeverity(option.value)" />
   </ng-template>
-<pre>{{ tableState$ | async | json }}</pre>
-<pre>{{columns_products | json}}</pre>
+
+  <pre>{{(filters$ | async | json)||[]}}</pre>
+
   <div class="col-span-12 xl:col-span-12">
     <app-common-table
       [columns]="columns_products"
-      [data]="products"
+      [data]="(products$ | async)||[]"
       [tableStyle]="{ 'min-width': '50rem' }"
       [size]="'small'"
       [showGridlines]="true"
@@ -36,7 +37,6 @@
       [paginator]="true"
       [rows]="(tableState$ | async)?.rows || 10"
       [rowsPerPageOptions]="[5, 10, 20]"
-      (onPageChange)="handlePageChange($event)"
 
       [showCaption]="true"
       captionTitle="Usuarios Activos"
@@ -63,14 +63,14 @@
       scrollHeight="500px"
 
       [lazy]="true"
-      [totalRecords]="totalItems"
-      [loading]="isLoading"
+      [totalRecords]="(totalItems$ | async)||0"
+      [loading]="(isLoading$ | async)||false"
 
       [first]="(tableState$ | async)?.first || 0"
-      [filters]="safeFilters"
+      [filters]="(filters$ | async )||{}"
 
 
-      (onLazyLoad)="handleProductsLazyLoad($event)"
+      (onLazyLoad)="handleLazyLoad($event)"
 
       (onRefresh)="reloadData()"
     />

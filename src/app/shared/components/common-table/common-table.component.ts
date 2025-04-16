@@ -141,7 +141,7 @@ export class CommonTableComponent <T = any> {
     const value = (event.target as HTMLInputElement).value;
 
     // Aplica el filtro visual de PrimeNG
-    if (filterFn) filterFn(value);
+    //if (filterFn) filterFn(value);
 
     // Lanza el lazy load personalizado
     this.onColumnFilterChange(colField, value, matchMode);
