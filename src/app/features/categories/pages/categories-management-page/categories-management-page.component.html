@@ -19,3 +19,12 @@
   [message]="'¿Estás seguro que deseas eliminar esta categoría?'"
   (accept)="handleConfirmedDelete()"
 />
+
+<app-category-form
+  #categoryFormModal
+  [visible]="modalVisible()"
+  [category]="modalEditing()"
+  [parentId]="modalParentId()"
+  (submit)="handleSubmit($event)"
+  (cancel)="handleCancel()"
+/>

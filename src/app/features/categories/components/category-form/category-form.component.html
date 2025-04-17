@@ -1,0 +1,62 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '28rem' }"
+  [breakpoints]="{ '960px': '95vw' }"
+  [closable]="true"
+  [draggable]="false"
+>
+  <!-- HEADER personalizado -->
+  <ng-template #header>
+    <div class="flex items-center gap-2">
+      <i class="pi pi-pencil text-primary text-xl"></i>
+      <span class="font-bold">
+        {{ category ? 'Editar categoría' : 'Nueva categoría' }}
+      </span>
+    </div>
+  </ng-template>
+
+  <!-- CONTENIDO -->
+  <div class="flex flex-col gap-5 mt-2">
+    <div class="flex flex-col gap-1">
+      <label for="name" class="font-semibold">Nombre</label>
+      <input
+        pInputText
+        id="name"
+        class="w-full"
+        [(ngModel)]="name"
+        placeholder="Ej: Lenguajes"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="description" class="font-semibold">Descripción</label>
+      <textarea
+      pTextarea
+        id="description"
+        rows="3"
+        class="w-full"
+        [(ngModel)]="description"
+        placeholder="Descripción opcional"
+      ></textarea>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <ng-template #footer>
+    <p-button
+      label="Cancelar"
+      [text]="true"
+      severity="secondary"
+      (click)="cancel.emit()"
+    />
+    <p-button
+      label="Guardar"
+      [outlined]="true"
+      severity="primary"
+      [disabled]="!name.trim()"
+      (click)="onSubmit()"
+    />
+  </ng-template>
+</p-dialog>
