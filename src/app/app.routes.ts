@@ -5,7 +5,7 @@ import { DashboardPageComponent } from './features/dashboard/pages/dashboard-pag
 export const routes: Routes = [
   {
     path: 'admin',
-    component: AdminLayoutComponent,  // Layout contenedor (standalone)
+    component: AdminLayoutComponent,
     children: [
       { path: 'dashboard',
         component: DashboardPageComponent
@@ -14,7 +14,7 @@ export const routes: Routes = [
         path: 'courses',
         loadChildren: () => import('./features/courses/courses.routes').then(m => m.COURSES_ROUTES)
       }
-      // Aquí puedes agregar otras rutas hijas para distintos features
+      // Add more child routes
     ]
   },
   { path: '**', redirectTo: 'admin/courses' }

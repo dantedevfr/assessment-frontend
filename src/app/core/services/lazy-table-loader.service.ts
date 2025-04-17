@@ -1,11 +1,10 @@
-// core/services/lazy-table-loader.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
 import { ApiClientService } from './api-client.service';
 import { QueryParams } from '../models/query-params.model';
 import { LazyLoadEvent } from 'primeng/api';
 
-interface TableState {
+interface CachedTableState {
   query: QueryParams;
   event: LazyLoadEvent;
   lastResults: any[];
@@ -14,7 +13,7 @@ interface TableState {
 
 @Injectable({ providedIn: 'root' })
 export class LazyTableLoaderService {
-  private memoryState = new Map<string, TableState>();
+  private memoryState = new Map<string, CachedTableState>();
 
   constructor(private api: ApiClientService) {}
 

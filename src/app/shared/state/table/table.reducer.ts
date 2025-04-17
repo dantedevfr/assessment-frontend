@@ -1,6 +1,3 @@
-
-// src/app/shared/state/table/reducers/table.reducer.ts
-
 import { createReducer, on } from '@ngrx/store';
 import { TableStateMap } from './table-state.model';
 import { TableActions } from './table.actions';
@@ -11,7 +8,7 @@ export const initialState: TableStateMap = {};
 export const tableReducer = createReducer(
   initialState,
   on(TableActions.initTable, (state, { tableId, initialState }) => {
-    if (state[tableId]) return state; // Ya está inicializado
+    if (state[tableId]) return state;
     return {
       ...state,
       [tableId]: initialState ?? defaultTableState,

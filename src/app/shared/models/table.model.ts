@@ -6,7 +6,6 @@ export interface TableColumn {
     type: 'text' | 'custom-select';
     placeholder?: string;
     options?: { label: string; value: string }[];
-    selectedValue?: string | null;
     templateType?: string;
   };
 }
@@ -35,5 +34,5 @@ export interface RowAction {
   icon: string;
   severity?: "success" | "info" | "warn" | "danger" | "help" | "primary" | "secondary" | "contrast";
   tooltip?: string;
-  callback?: (row: any) => void; // ✅ hacer opcional
+  callback?: (row: any) => void;
 }
