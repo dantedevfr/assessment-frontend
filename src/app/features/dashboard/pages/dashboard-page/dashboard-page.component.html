@@ -21,9 +21,6 @@
   <ng-template #statusTemplate let-option>
     <p-tag [value]="option.label" [severity]="getSeverity(option.value)" />
   </ng-template>
-
-  <pre>{{(filters$ | async | json)||[]}}</pre>
-
   <div class="col-span-12 xl:col-span-12">
     <app-common-table
       [columns]="columns_products"

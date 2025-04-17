@@ -16,19 +16,6 @@ export interface TableFilter {
   value: any;
   matchMode?: string
 }
-
-export interface TableState {
-  data: any[];
-  loading: boolean;
-  filters: TableFilter[];
-  currentPage: number;
-  pageSize: number;
-  sortField?: string;
-  sortOrder?: number; // 1 = ASC, -1 = DESC
-  totalRecords: number;
-  tableId: string;
-}
-
 export interface LoadTableParams {
   tableId: string;
   filters: TableFilter[];
@@ -48,5 +35,5 @@ export interface RowAction {
   icon: string;
   severity?: "success" | "info" | "warn" | "danger" | "help" | "primary" | "secondary" | "contrast";
   tooltip?: string;
-  callback: (row: any) => void;
+  callback?: (row: any) => void; // ✅ hacer opcional
 }

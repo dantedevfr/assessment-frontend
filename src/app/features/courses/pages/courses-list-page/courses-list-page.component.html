@@ -1,19 +1,79 @@
 
 <app-counter></app-counter>
 
-<p-card header="Simple Card">
-    <p class="m-0">
-        Lorem ipsum dolor sit amet...
-    </p>
-    <p-button label="Primary" />
-    <p-button label="Secondary" severity="secondary" />
-    <p-button label="Success" severity="success" />
-    <p-button label="Info" severity="info" />
-    <p-button label="Warn" severity="warn" />
-    <p-button label="Help" severity="help" />
-    <p-button label="Danger" severity="danger" />
-    <p-button label="Contrast" severity="contrast" />
-</p-card>
+
+<ng-template #customBody let-product let-columns="columns">
+  <td>{{ product.name }}</td>
+  <td>
+    <img
+      [src]="'https://primefaces.org/cdn/primeng/images/demo/product/' + product.image"
+      class="w-20 rounded"
+      [alt]="product.name"
+    />
+  </td>
+  <td>{{ product.price }}</td>
+  <td>
+    <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" />
+  </td>
+  <td>
+    <p-rating [ngModel]="product.rating" [readonly]="true"></p-rating>
+  </td>
+</ng-template>
+<ng-template #statusTemplate let-option>
+  <p-tag [value]="option.label" [severity]="getSeverity(option.value)" />
+</ng-template>
+<div class="col-span-12 xl:col-span-12">
+  <app-common-table
+    [columns]="columns_products"
+    [data]="(products$ | async)||[]"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [size]="'small'"
+    [showGridlines]="true"
+    [stripedRows]="true"
+    [bodyTemplate]="customBody"
+
+    [paginator]="true"
+    [rows]="(tableState$ | async)?.rows || 10"
+    [rowsPerPageOptions]="[5, 10, 20]"
+
+    [showCaption]="true"
+    captionTitle="Usuarios Activos"
+    [showRefreshButton]="true"
+    [refreshButtonIcon]="'pi pi-sync'"
+
+    [showSearch]="true"
+    [searchPlaceholder]="'Buscar por nombre o price'"
+    [globalFilterFields]="globalFilterFields"
+    [enableColumnFilter]="true"
+    [customFilterTemplate]="statusTemplate"
+
+    [sortMode]="'single'"
+    [sortField]="(tableState$ | async)?.sortField || 'name'"
+    [sortOrder]="(tableState$ | async)?.sortOrder || -1"
+
+    [enableSelection]="true"
+    [selection]="selectedProducts"
+    (selectionChange)="handleCheckBoxAction($event)"
+    [dataKey]="'id'"
+    [rowActions]="rowActions"
+
+    [scrollable]="true"
+    scrollHeight="500px"
+
+    [lazy]="true"
+    [totalRecords]="(totalItems$ | async)||0"
+    [loading]="(isLoading$ | async)||false"
+
+    [first]="(tableState$ | async)?.first || 0"
+    [filters]="(filters$ | async )||{}"
+
+
+    (onLazyLoad)="handleLazyLoad($event)"
+
+    (onRefresh)="reloadData()"
+  />
+</div>
+
 
 
 
