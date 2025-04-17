@@ -18,8 +18,11 @@ export class AdminMenuComponent {
       this.model = [
           {
               label: 'Home',
-              items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/admin', 'dashboard'] }]
+              items: [
+              { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/admin', 'dashboard'] },
+              { label: 'Categories', icon: 'pi pi-fw pi-list', routerLink: ['/admin', 'categories'] }]
           },
+
           {
               label: 'UI Components',
               items: [

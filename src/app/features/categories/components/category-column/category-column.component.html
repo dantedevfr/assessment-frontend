@@ -1,0 +1,27 @@
+<div class="min-w-[260px] max-w-[300px] px-2">
+  <h3 class="font-semibold text-lg text-slate-700 dark:text-white mb-3">{{ columnTitle }}</h3>
+
+  <div class="flex flex-col gap-4">
+    <app-category-card
+      *ngFor="let category of categories"
+      [category]="category"
+      [active]="selectedCategory?.id === category.id"
+      [dimmed]="!!selectedCategory && selectedCategory.id !== category.id"
+      (select)="select.emit(category)"
+      (delete)="delete.emit($event)"
+      class="transition-all duration-300"
+    />
+  </div>
+
+  <div class="mt-6">
+    <p-button
+      pButton
+      type="button"
+      icon="pi pi-plus"
+      label="Agregar"
+      class="w-full p-button-outlined p-button-sm"
+      (click)="add.emit()"
+    />
+  </div>
+</div>
+

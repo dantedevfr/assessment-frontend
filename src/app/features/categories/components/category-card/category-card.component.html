@@ -1,0 +1,22 @@
+<div
+(click)="onClick()"
+class="cursor-pointer transition-all duration-300"
+[ngClass]="{
+  'scale-[1.01]': active,
+  'scale-[0.9] opacity-50 pointer-events-auto': dimmed
+}"
+>
+<app-common-card
+  [title]="category.name"
+  [value]="category.description || ''"
+  [icon]="'pi-folder'"
+  [iconColor]="'text-primary'"
+  [iconBgColor]="category.color || 'bg-gray-100'"
+  [showMenu]="true"
+  [menuItems]="menuItems"
+  (menuAction)="handleAction($event)"
+  [dimmed]="dimmed"
+  [active]="active"
+
+/>
+</div>

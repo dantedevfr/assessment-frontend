@@ -1,10 +1,17 @@
-<div class="col-span-12 lg:col-span-6 xl:col-span-3">
-  <div class="card mb-0 rounded-2xl shadow-sm p-4 bg-white dark:bg-slate-800 transition-colors">
-    <div class="flex justify-between mb-4">
+<div class="relative w-full">
+  <div
+    class="rounded-xl p-4 bg-white dark:bg-slate-800 transition-all duration-300 ease-in-out"
+    [ngClass]="{
+      'ring ring-primary shadow-lg': active,
+      'shadow-md': !active,
+      'opacity-90 pointer-events-none': dimmed,
+      'hover:shadow-lg hover:scale-[1.01]': !dimmed
+    }"
+  ><div class="flex justify-between mb-4">
       <div>
         <span class="block text-muted-color font-medium mb-2">{{ title }}</span>
 
-        <div class="text-black dark:text-white font-medium text-xl">
+        <div class="text-gray-500 dark:text-white font-medium text-xl">
           {{ value }}
         </div>
       </div>
@@ -20,5 +27,17 @@
 
     <span class="text-primary font-medium"> {{ trendText }}</span>
     <span class="text-muted-color">{{ trendDescription }}</span>
+
+     <!-- Ícono de menú contextual (3 puntos) -->
+     <div *ngIf="showMenu" class="absolute bottom-1.5 right-2.5 z-10" (click)="$event.stopPropagation()">
+      <p-menu #menu [popup]="true" [model]="menuItems" appendTo="body"></p-menu>
+      <button
+        type="button"
+        pButton
+        icon="pi pi-ellipsis-v"
+        class="p-button-sm p-button-text p-button-rounded !text-gray-600 dark:!text-gray-300"
+        (click)="dimmed?null:menu.toggle($event)"
+      ></button>
+    </div>
   </div>
 </div>

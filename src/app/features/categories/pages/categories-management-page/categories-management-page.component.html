@@ -1,0 +1,21 @@
+<div class="w-full overflow-x-auto">
+  <div class="flex gap-4 p-4 min-w-full">
+    <ng-container *ngFor="let level of categoryLevels(); let i = index">
+    <app-category-column
+      [categories]="level"
+      [selectedCategory]="selectedCategories()[i] || null"
+      [columnTitle]="getColumnTitle(i)"
+      (select)="loadSubcategories($event, i)"
+      (add)="openAddModal(i)"
+      (delete)="confirmDelete($event)"
+    />
+  </ng-container>
+  </div>
+</div>
+
+<app-common-confirm-dialog
+  #confirmDialog
+  [header]="'Eliminar categoría'"
+  [message]="'¿Estás seguro que deseas eliminar esta categoría?'"
+  (accept)="handleConfirmedDelete()"
+/>

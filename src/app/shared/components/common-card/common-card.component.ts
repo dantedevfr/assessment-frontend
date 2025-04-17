@@ -1,13 +1,14 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
-
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MenuItem } from 'primeng/api';
+import { Menu } from 'primeng/menu';
+import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-common-card',
-  standalone:true,
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, Menu, ButtonModule],
   templateUrl: './common-card.component.html',
-  styleUrl: './common-card.component.scss'
+  styleUrl: './common-card.component.scss',
 })
 export class CommonCardComponent {
   @Input() title = '';
@@ -17,4 +18,10 @@ export class CommonCardComponent {
   @Input() iconBgColor = 'bg-blue-100 dark:bg-blue-400/10';
   @Input() trendText = '';
   @Input() trendDescription = '';
+
+  @Input() showMenu = false;
+  @Input() menuItems: MenuItem[] = [];
+  @Input() dimmed = false;
+  @Input() active = false;
+  @Output() menuAction = new EventEmitter<string>(); // Opcional si quieres manejarlo como un string
 }
