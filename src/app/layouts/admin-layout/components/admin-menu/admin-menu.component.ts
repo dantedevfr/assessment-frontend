@@ -20,7 +20,9 @@ export class AdminMenuComponent {
               label: 'Home',
               items: [
               { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/admin', 'dashboard'] },
-              { label: 'Categories', icon: 'pi pi-fw pi-list', routerLink: ['/admin', 'categories'] }]
+              { label: 'Categories', icon: 'pi pi-fw pi-list', routerLink: ['/admin', 'categories'] },
+              { label: 'Activities', icon: 'pi pi-fw pi-play', routerLink: ['/admin', 'activities'] }
+            ]
           },
 
           {

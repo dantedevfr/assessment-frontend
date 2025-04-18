@@ -1,0 +1,83 @@
+
+<ng-template #customBody let-activity let-columns="columns">
+  <td>{{ activity.title }}</td>
+
+  <td>
+    <p-tag
+      [value]="activity.difficulty"
+      [severity]="getDifficultyColor(activity.difficulty)"
+      styleClass="px-3"
+    />
+  </td>
+
+  <td>{{ activity.activity_type?.name }}</td>
+  <td>{{ activity.creator_name }}</td>
+
+  <td>
+    <p-tag
+      [value]="activity.is_visible ? 'Visible' : 'Oculta'"
+      [severity]="activity.is_visible ? 'success' : 'info'"
+    />
+  </td>
+
+  <td>
+    <p-tag
+      [value]="activity.is_expired ? 'Expirada' : 'Activa'"
+      [severity]="activity.is_expired ? 'danger' : 'success'"
+    />
+  </td>
+
+  <td>{{ activity.created_at | date: 'short' }}</td>
+</ng-template>
+
+<ng-template #statusTemplate let-option>
+  <p-tag [value]="option.label" [severity]="getSeverityFromLabel(option.label)" />
+</ng-template>
+
+<div class="col-span-12 xl:col-span-12">
+  <app-common-table
+    [columns]="columns_activities"
+    [data]="(activities$ | async) || []"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [size]="'small'"
+    [showGridlines]="true"
+    [stripedRows]="true"
+
+    [paginator]="true"
+    [rows]="(tableState$ | async)?.rows || 10"
+    [rowsPerPageOptions]="[5, 10, 20]"
+
+    [showCaption]="true"
+    captionTitle="Actividades"
+    [showRefreshButton]="true"
+    [refreshButtonIcon]="'pi pi-sync'"
+
+    [showSearch]="true"
+    [searchPlaceholder]="'Buscar por título, tipo o creador'"
+    [globalFilterFields]="globalFilterFields"
+    [enableColumnFilter]="true"
+
+    [sortMode]="'single'"
+    [sortField]="(tableState$ | async)?.sortField || 'title'"
+    [sortOrder]="(tableState$ | async)?.sortOrder || -1"
+
+    [enableSelection]="true"
+    [selection]="selectedActivities"
+    (selectionChange)="handleCheckBoxAction($event)"
+    [dataKey]="'id_activity'"
+    [rowActions]="rowActions"
+
+    [scrollable]="true"
+    scrollHeight="500px"
+
+    [lazy]="true"
+    [totalRecords]="(totalItems$ | async) || 0"
+    [loading]="(isLoading$ | async) || false"
+
+    [first]="(tableState$ | async)?.first || 0"
+    [filters]="(filters$ | async) || {}"
+
+    (onLazyLoad)="handleLazyLoad($event)"
+    (onRefresh)="reloadData()"
+  />
+</div>
