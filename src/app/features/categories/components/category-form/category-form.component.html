@@ -23,7 +23,7 @@
       <!-- Subtítulo (contexto) -->
       <div *ngIf="parentCategoryName" class="flex items-center gap-2 text-sm text-muted">
         <i class="pi pi-folder-open text-slate-400"></i>
-        <span>Agregar en: <span class="font-medium text-slate-600 dark:text-slate-300">{{ parentCategoryName }}</span></span>
+        <span>Add in: <span class="font-medium text-slate-600 dark:text-slate-300">{{ parentCategoryName }}</span></span>
       </div>
     </div>
   </ng-template>
@@ -31,7 +31,7 @@
   <!-- CONTENIDO -->
   <div class="flex flex-col gap-5 mt-2">
     <div class="flex flex-col gap-1">
-      <label for="name" class="font-semibold">Nombre</label>
+      <label for="name" class="font-semibold">Name</label>
       <input
         pInputText
         id="name"
@@ -43,7 +43,7 @@
     </div>
 
     <div class="flex flex-col gap-1">
-      <label for="description" class="font-semibold">Descripción</label>
+      <label for="description" class="font-semibold">Description</label>
       <textarea
         pTextarea
         id="description"
