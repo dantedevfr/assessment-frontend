@@ -11,12 +11,13 @@ class="cursor-pointer transition-all duration-300"
   [value]="category.description || ''"
   [icon]="'pi-folder'"
   [iconColor]="'text-primary'"
-  [iconBgColor]="category.color || 'bg-gray-100'"
+  [iconBgColor]="'#FFF7E6'"
   [showMenu]="true"
   [menuItems]="menuItems"
   (menuAction)="handleAction($event)"
   [dimmed]="dimmed"
   [active]="active"
+  [expandable]="true"
 
 />
 </div>

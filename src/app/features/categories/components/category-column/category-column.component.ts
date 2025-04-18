@@ -18,5 +18,6 @@ export class CategoryColumnComponent {
   @Output() add = new EventEmitter<void>();
   @Input() columnTitle: string = 'Categoría';
   @Output() delete = new EventEmitter<Category>();
+  @Output() edit = new EventEmitter<Category>();
 
 }

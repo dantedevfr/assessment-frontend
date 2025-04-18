@@ -9,6 +9,7 @@
       [dimmed]="!!selectedCategory && selectedCategory.id !== category.id"
       (select)="select.emit(category)"
       (delete)="delete.emit($event)"
+      (edit)="edit.emit($event)"
       class="transition-all duration-300"
     />
   </div>

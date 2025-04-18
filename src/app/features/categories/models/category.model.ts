@@ -5,4 +5,6 @@ export interface Category {
   color?: string;
   image?: string;
   id_parent_category?: number | null;
+  created_at?: string;
+  updated_at?: string;
 }

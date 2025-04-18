@@ -22,6 +22,7 @@ export class CategoryCardComponent {
 
   @Output() toggleMenu = new EventEmitter<void>();
   @Output() delete = new EventEmitter<Category>();
+  @Output() edit = new EventEmitter<Category>();
 
 
   onClick() {
@@ -49,7 +50,7 @@ export class CategoryCardComponent {
   handleAction(action: string) {
     if (action === 'edit') {
       console.log('✏️ Editar:', this.category);
-      // Aquí iría el modo edición
+      this.edit.emit(this.category);
     } else if (action === 'delete') {
       console.log('🗑 Eliminar:', this.category);
       this.delete.emit(this.category); // <- Emitir al padre

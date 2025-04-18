@@ -45,4 +45,15 @@ export class CategoryFormComponent {
 
     this.submit.emit(payload);
   }
+
+  get isEditing(): boolean {
+    return !!this.category?.id;
+  }
+
+  resetForm() {
+    this.name = '';
+    this.description = '';
+  }
+
+
 }

@@ -6,15 +6,18 @@
   [closable]="true"
   [draggable]="false"
   appendTo="body"
-  [baseZIndex]="1100"
 >
+<!--  [baseZIndex]="1100" -->
   <!-- HEADER personalizado -->
   <ng-template #header>
     <div class="flex flex-col gap-1">
       <!-- Título principal -->
       <div class="flex items-center gap-2 text-lg font-semibold text-slate-800 dark:text-white">
         <i class="pi pi-pencil text-primary"></i>
-        <span>Add new category</span>
+        <span>
+          {{ isEditing ? 'Editar categoría:' : 'Nueva categoría' }}
+          <span *ngIf="isEditing" class="text-primary"> {{ category?.name }} </span>
+        </span>
       </div>
 
       <!-- Subtítulo (contexto) -->
@@ -42,12 +45,15 @@
     <div class="flex flex-col gap-1">
       <label for="description" class="font-semibold">Descripción</label>
       <textarea
-      pTextarea
+        pTextarea
         id="description"
         rows="3"
         class="w-full"
         [(ngModel)]="description"
-        placeholder="Descripción opcional"
+        placeholder="Descripción"
+        autocomplete="off"
+        minlength="3"
+        maxlength="100"
       ></textarea>
     </div>
   </div>
@@ -64,7 +70,7 @@
       label="Guardar"
       [outlined]="true"
       severity="primary"
-      [disabled]="!name.trim()"
+      [disabled]="!name.trim() || !description.trim()"
       (click)="onSubmit()"
     />
   </ng-template>

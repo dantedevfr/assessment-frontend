@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { DashboardPageComponent } from './features/dashboard/pages/dashboard-page/dashboard-page.component';
 import { CategoriesManagementPageComponent } from './features/categories/pages/categories-management-page/categories-management-page.component';
+import { provideState } from '@ngrx/store';
+import { categoriesReducer } from './features/categories/state';
+import { provideEffects } from '@ngrx/effects';
+//import { CategoriesEffects } from './features/categories/state/categories.effects';
+
 export const routes: Routes = [
   {
     path: 'admin',
@@ -15,7 +20,11 @@ export const routes: Routes = [
         loadChildren: () => import('./features/courses/courses.routes').then(m => m.COURSES_ROUTES)
       },
       { path: 'categories',
-        component: CategoriesManagementPageComponent
+        component: CategoriesManagementPageComponent,
+        providers: [
+          provideState('categories', categoriesReducer),
+          //provideEffects(CategoriesEffects)
+        ]
       },
       // Add more child routes
     ]

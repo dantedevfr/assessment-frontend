@@ -12,7 +12,7 @@ import { ButtonModule } from 'primeng/button';
 })
 export class CommonCardComponent {
   @Input() title = '';
-  @Input() value = '';
+  @Input() value: string = '';
   @Input() icon = 'pi-info-circle';
   @Input() iconColor = 'text-blue-500';
   @Input() iconBgColor = 'bg-blue-100 dark:bg-blue-400/10';
@@ -24,4 +24,11 @@ export class CommonCardComponent {
   @Input() dimmed = false;
   @Input() active = false;
   @Output() menuAction = new EventEmitter<string>(); // Opcional si quieres manejarlo como un string
+  @Input() expandable: boolean = false;
+  isExpanded = false;
+
+  toggleExpand(event: Event) {
+    event.stopPropagation();
+    this.isExpanded = !this.isExpanded;
+  }
 }
