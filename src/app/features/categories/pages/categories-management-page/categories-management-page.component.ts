@@ -31,6 +31,7 @@ export class CategoriesManagementPageComponent {
   modalVisible = signal(false);
   modalEditing = signal<Category | null>(null);
   modalParentId = signal<number | null>(null);
+  modalParentName = signal<string | null>(null);
 
   constructor(private notification: NotificationService) {
     this.loadRootCategories();
@@ -74,6 +75,7 @@ export class CategoriesManagementPageComponent {
     const parent = this.selectedCategories()[level - 1] || null;
     this.modalEditing.set(null);
     this.modalParentId.set(parent?.id ?? null);
+    this.modalParentName.set(parent?.name ?? null); // 👈
     this.modalVisible.set(true);
   }
 

@@ -5,14 +5,23 @@
   [breakpoints]="{ '960px': '95vw' }"
   [closable]="true"
   [draggable]="false"
+  appendTo="body"
+  [baseZIndex]="1100"
 >
   <!-- HEADER personalizado -->
   <ng-template #header>
-    <div class="flex items-center gap-2">
-      <i class="pi pi-pencil text-primary text-xl"></i>
-      <span class="font-bold">
-        {{ category ? 'Editar categoría' : 'Nueva categoría' }}
-      </span>
+    <div class="flex flex-col gap-1">
+      <!-- Título principal -->
+      <div class="flex items-center gap-2 text-lg font-semibold text-slate-800 dark:text-white">
+        <i class="pi pi-pencil text-primary"></i>
+        <span>Add new category</span>
+      </div>
+
+      <!-- Subtítulo (contexto) -->
+      <div *ngIf="parentCategoryName" class="flex items-center gap-2 text-sm text-muted">
+        <i class="pi pi-folder-open text-slate-400"></i>
+        <span>Agregar en: <span class="font-medium text-slate-600 dark:text-slate-300">{{ parentCategoryName }}</span></span>
+      </div>
     </div>
   </ng-template>
 

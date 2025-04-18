@@ -27,6 +27,7 @@ export class CategoryFormComponent {
   get category(): Category | null {
     return this._category;
   }
+  @Input() parentCategoryName: string | null = null;
 
   @Output() submit = new EventEmitter<Partial<Category>>();
   @Output() cancel = new EventEmitter<void>();
