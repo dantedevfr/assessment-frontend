@@ -57,6 +57,18 @@
   />
 </ng-template>
 
+
+<div class="flex justify-between items-center mb-4">
+  <h2 class="text-xl font-semibold">Actividades</h2>
+  <p-button
+    pButton
+    label="Nueva actividad"
+    icon="pi pi-plus"
+    class="p-button-success"
+    (click)="navigateToCreation()"
+  ></p-button>
+</div>
+
 <div class="col-span-12 xl:col-span-12">
   <app-common-table
     [columns]="columns_activities"

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-  
+import { ButtonModule } from 'primeng/button';
+
 import { CommonTableComponent } from '../../../../shared/components/common-table/common-table.component';
 import { TableFacadeService } from '../../../../core/services/table-facade-service';
 import { getDefaultTableState } from '../../../../shared/state/table/table.utils';
@@ -19,6 +20,7 @@ import {
   ACTIVITY_TABLE_FILTERS,
 } from '../../config/activities-table.config';
 import { RatingModule } from 'primeng/rating';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-activities-management-page',
@@ -30,7 +32,8 @@ import { RatingModule } from 'primeng/rating';
        TagModule,
        RatingModule,
        CommonTableComponent,
-       TooltipModule
+       TooltipModule,
+       ButtonModule
   ],
   templateUrl: './activities-management-page.component.html',
   styleUrl: './activities-management-page.component.scss',
@@ -39,7 +42,8 @@ export class ActivitiesManagementPageComponent {
   private tableId = 'activitiesTable';
   private endpoint = 'activities';
   private tableService = inject(TableFacadeService);
- 
+  private router = inject(Router);
+
   tableState$ = this.tableService.getState$(this.tableId);
   activities$!: Observable<any[]>;
   isLoading$!: Observable<boolean>;
@@ -201,5 +205,10 @@ export class ActivitiesManagementPageComponent {
   
     return map[normalized] ?? 'info';
   }
-  
+
+  navigateToCreation() {
+    this.router.navigate(['activities/creation']);
+  }
+  goToItems() {
+  }
 }

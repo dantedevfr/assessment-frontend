@@ -1,0 +1,27 @@
+<div>
+    <label>Type</label>
+    <input type="text" [value]="type" disabled class="w-full mb-4" />
+  
+    <textarea
+      [(ngModel)]="questionText"
+      placeholder="Escribe la pregunta..."
+      rows="4"
+      class="w-full mb-4"
+    ></textarea>
+  
+    <div class="mb-4">
+      <label>¿Quieres agregar traducción?</label>
+      <p-inputSwitch [(ngModel)]="showTranslation"></p-inputSwitch>
+    </div>
+  
+    <div *ngFor="let option of options; let i = index" class="mb-4">
+      <input
+        [(ngModel)]="option.text"
+        placeholder="Texto opción"
+        class="w-full mb-2"
+      />
+      <!-- Aquí podrías poner controles de audio, imagen, check de respuesta -->
+    </div>
+  
+    <button pButton label="Guardar" icon="pi pi-save" class="p-button-success"></button>
+  </div>
