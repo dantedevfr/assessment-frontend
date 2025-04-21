@@ -61,7 +61,7 @@ export const ACTIVITY_COLUMNS: TableColumn[] = [
     field: 'title',
     header: 'Título',
     sortable: true,
-    filter: { type: 'text', placeholder: 'Buscar por título' },
+    filter: { type: 'text', placeholder: 'Título' },
   },
   {
     field: 'difficulty',
@@ -69,7 +69,7 @@ export const ACTIVITY_COLUMNS: TableColumn[] = [
     sortable: true,
     filter: {
       type: 'custom-select',
-      placeholder: 'Filtrar por dificultad',
+      placeholder: 'Dificultad',
       options: ACTIVITY_DIFFICULTY_OPTIONS || [],
       templateType: 'tag',
     },
@@ -80,7 +80,7 @@ export const ACTIVITY_COLUMNS: TableColumn[] = [
     sortable: true,
     filter: {
       type: 'custom-select',
-      placeholder: 'Filtrar por tipo',
+      placeholder: 'Tipo',
       options: ACTIVITY_TYPE_OPTIONS || [],
     },
   },
@@ -88,7 +88,7 @@ export const ACTIVITY_COLUMNS: TableColumn[] = [
     field: 'creatorName',
     header: 'Creador',
     sortable: true,
-    filter: { type: 'text', placeholder: 'Buscar creador' },
+    filter: { type: 'text', placeholder: 'Creador' },
   },
   {
     field: 'category',
@@ -96,7 +96,7 @@ export const ACTIVITY_COLUMNS: TableColumn[] = [
     sortable: true,
     filter: {
       type: 'custom-select',
-      placeholder: 'Filtrar por categoría',
+      placeholder: 'Categoría',
       options: ACTIVITY_CATEGORY_OPTIONS || [],
     },
   },
@@ -111,7 +111,7 @@ export const ACTIVITY_COLUMNS: TableColumn[] = [
     sortable: true,
     filter: {
       type: 'custom-select',
-      placeholder: 'Filtrar visibilidad',
+      placeholder: 'Visibilidad',
       options: ACTIVITY_VISIBILITY_OPTIONS || [],
       templateType: 'tag',
     },
@@ -122,7 +122,7 @@ export const ACTIVITY_COLUMNS: TableColumn[] = [
     sortable: true,
     filter: {
       type: 'custom-select',
-      placeholder: 'Filtrar estado',
+      placeholder: 'Estado',
       options: ACTIVITY_EXPIRED_OPTIONS || [],
       templateType: 'tag',
     },
@@ -133,7 +133,7 @@ export const ACTIVITY_COLUMNS: TableColumn[] = [
     sortable: true,
     filter: {
       type: 'text',
-      placeholder: 'Buscar por fecha',
+      placeholder: 'Fecha',
     },
   },
 ];

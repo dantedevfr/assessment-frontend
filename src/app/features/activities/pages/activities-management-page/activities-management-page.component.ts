@@ -10,6 +10,7 @@ import { getDefaultTableState } from '../../../../shared/state/table/table.utils
 import { LazyLoadEvent } from 'primeng/api';
 import { map, Observable, take } from 'rxjs';
 import { TableColumn, RowAction } from '../../../../shared/models/table.model';
+import { TooltipModule } from 'primeng/tooltip';
 
 import {
   ACTIVITY_COLUMNS,
@@ -28,7 +29,8 @@ import { RatingModule } from 'primeng/rating';
        TableModule,
        TagModule,
        RatingModule,
-       CommonTableComponent
+       CommonTableComponent,
+       TooltipModule
   ],
   templateUrl: './activities-management-page.component.html',
   styleUrl: './activities-management-page.component.scss',
@@ -83,18 +85,12 @@ export class ActivitiesManagementPageComponent {
     this.tableService.loadData(this.tableId, this.endpoint, event);    
   }
 
-  reloadData() {
-    console.log("entra al reload");
-    
+  reloadData() {    
     this.tableService.reset(this.tableId, getDefaultTableState({
       filters: ACTIVITY_TABLE_FILTERS,
       sortField: 'title'
     }));
-    console.log("pasa");
-
     this.tableState$.pipe(take(1)).subscribe((state) => {
-      console.log("entra al suscribe");
-
       if (state) {
         this.handleLazyLoad(state);
       }

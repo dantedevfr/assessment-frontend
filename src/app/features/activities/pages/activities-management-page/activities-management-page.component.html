@@ -1,7 +1,14 @@
 
 <ng-template #customBody let-activity let-columns="columns">
-  <td>{{ activity.title }}</td>
-
+  <td>
+    <span
+      class="line-clamp-1 overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px]"
+      [pTooltip]="activity.title"
+      tooltipPosition="top"
+    >
+      {{ activity.title }}
+    </span>
+  </td>
   <td>
     <p-tag
       [value]="getDifficultyLabel(activity.difficulty)"
@@ -55,8 +62,8 @@
     [columns]="columns_activities"
     [data]="(activities$ | async)||[]"
     [tableStyle]="{ 'min-width': '50rem' }"
-    [size]="'small'"
-    [showGridlines]="true" 
+    [size]=""
+    [showGridlines]="false" 
     [stripedRows]="true"
     [bodyTemplate]="customBody"
 
