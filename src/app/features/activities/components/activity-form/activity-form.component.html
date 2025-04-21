@@ -1,27 +1,20 @@
-<div>
-    <label>Type</label>
-    <input type="text" [value]="type" disabled class="w-full mb-4" />
-  
+<!-- Ejemplo: solo muestra este si es de tipo pregunta -->
+ {{type | json}}
+<div *ngIf="type === 'simple_question' || type === 'open_question' || type === 'true_false' || type === 'multiple_choice'">
+    <!-- Aquí va tu formulario base para preguntas -->
+    <label class="block mb-2">Pregunta</label>
     <textarea
       [(ngModel)]="questionText"
-      placeholder="Escribe la pregunta..."
+      placeholder="Escribe tu pregunta..."
       rows="4"
       class="w-full mb-4"
     ></textarea>
   
-    <div class="mb-4">
-      <label>¿Quieres agregar traducción?</label>
-      <p-inputSwitch [(ngModel)]="showTranslation"></p-inputSwitch>
-    </div>
+    <!-- Campos comunes: opciones, check de respuesta, etc -->
+  </div>
   
-    <div *ngFor="let option of options; let i = index" class="mb-4">
-      <input
-        [(ngModel)]="option.text"
-        placeholder="Texto opción"
-        class="w-full mb-2"
-      />
-      <!-- Aquí podrías poner controles de audio, imagen, check de respuesta -->
-    </div>
-  
-    <button pButton label="Guardar" icon="pi pi-save" class="p-button-success"></button>
+  <!-- En el futuro -->
+  <div *ngIf="type === 'match_pairs'">
+    <!-- Componente especializado para emparejar -->
+    <p>Aquí irá la lógica de emparejamiento</p>
   </div>

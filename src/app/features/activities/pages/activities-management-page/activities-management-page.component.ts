@@ -207,7 +207,7 @@ export class ActivitiesManagementPageComponent {
   }
 
   navigateToCreation() {
-    this.router.navigate(['activities/creation']);
+    this.router.navigate(['/admin/activities/creation']);
   }
   goToItems() {
   }
