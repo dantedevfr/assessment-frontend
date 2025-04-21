@@ -1,5 +1,17 @@
 import { RowAction, TableColumn } from '../../../shared/models/table.model';
 
+export const ACTIVITY_TABLE_FILTERS = {
+  global: { value: '', matchMode: 'contains' },
+  title: { value: null, matchMode: 'startsWith' },
+  difficulty: { value: null, matchMode: 'equals' },
+  activityType: { value: null, matchMode: 'startsWith' },
+  creatorName: { value: null, matchMode: 'startsWith' },
+  category: { value: null, matchMode: 'startsWith' },
+  isVisible: { value: null, matchMode: 'equals' },
+  isExpired: { value: null, matchMode: 'equals' },
+  createdAt: { value: null, matchMode: 'startsWith' },
+};
+
 export const ACTIVITY_VISIBILITY_OPTIONS = [
   { label: 'Visible', value: 'true' },
   { label: 'Oculta', value: 'false' },
@@ -11,11 +23,37 @@ export const ACTIVITY_EXPIRED_OPTIONS = [
 ];
 
 export const ACTIVITY_DIFFICULTY_OPTIONS = [
-  { label: '1', value: '1' },
-  { label: '2', value: '2' },
-  { label: '3', value: '3' },
-  { label: '4', value: '4' },
-  { label: '5', value: '5' },
+  { label: 'Fácil', value: 'easy' },
+  { label: 'Media', value: 'medium' },
+  { label: 'Difícil', value: 'hard' },
+];
+
+export const ACTIVITY_TYPE_OPTIONS = [
+  { label: 'Pregunta simple', value: 'simple_question' },
+  { label: 'Pregunta abierta', value: 'open_question' },
+  { label: 'Selección múltiple', value: 'multiple_choice' },
+  { label: 'Verdadero/Falso', value: 'true_false' },
+  { label: 'Traducción', value: 'translation_word' },
+  { label: 'Emparejamiento', value: 'match_pairs' },
+  { label: 'Ordenar palabras', value: 'word_order' },
+  { label: 'Selección de audio', value: 'audio_selection' },
+  { label: 'Encuentra la palabra', value: 'odd_one_out' }, 
+  { label: 'Selecciona la gramatica', value: 'grammar_selection' },
+  { label: 'Selecciona la imagen', value: 'image_selection' },
+  { label: 'Multiples respuestas', value: 'multiple_answer' },
+  { label: 'Escoge el sinonimo', value: 'synonym_choice' },
+  { label: 'Traduce la palabra', value: 'translation_phrase' },
+
+];
+
+export const ACTIVITY_CATEGORY_OPTIONS = [
+  { label: 'Vocabulario', value: 'vocabulary' },
+  { label: 'Gramática', value: 'grammar' },
+  { label: 'Comprensión', value: 'comprehension' },
+  { label: 'Saludos', value: 'greetings' },
+  { label: 'Educación', value: 'education' },
+  { label: 'Lógica', value: 'logic' },
+  { label: 'Cultura', value: 'culture' },
 ];
 
 export const ACTIVITY_COLUMNS: TableColumn[] = [
@@ -32,56 +70,75 @@ export const ACTIVITY_COLUMNS: TableColumn[] = [
     filter: {
       type: 'custom-select',
       placeholder: 'Filtrar por dificultad',
-      options: ACTIVITY_DIFFICULTY_OPTIONS,
+      options: ACTIVITY_DIFFICULTY_OPTIONS || [],
       templateType: 'tag',
     },
   },
   {
-    field: 'activity_type.name',
+    field: 'activityType',
     header: 'Tipo de actividad',
     sortable: true,
-    filter: { type: 'text', placeholder: 'Buscar por tipo' },
+    filter: {
+      type: 'custom-select',
+      placeholder: 'Filtrar por tipo',
+      options: ACTIVITY_TYPE_OPTIONS || [],
+    },
   },
   {
-    field: 'creator_name',
+    field: 'creatorName',
     header: 'Creador',
     sortable: true,
     filter: { type: 'text', placeholder: 'Buscar creador' },
   },
   {
-    field: 'is_visible',
+    field: 'category',
+    header: 'Categoría',
+    sortable: true,
+    filter: {
+      type: 'custom-select',
+      placeholder: 'Filtrar por categoría',
+      options: ACTIVITY_CATEGORY_OPTIONS || [],
+    },
+  },
+  {
+    field: 'tags',
+    header: 'Tags',
+    sortable: false
+  },
+  {
+    field: 'isVisible',
     header: 'Visible',
     sortable: true,
     filter: {
       type: 'custom-select',
       placeholder: 'Filtrar visibilidad',
-      options: ACTIVITY_VISIBILITY_OPTIONS,
+      options: ACTIVITY_VISIBILITY_OPTIONS || [],
       templateType: 'tag',
     },
   },
   {
-    field: 'is_expired',
+    field: 'isExpired',
     header: 'Estado',
     sortable: true,
     filter: {
       type: 'custom-select',
       placeholder: 'Filtrar estado',
-      options: ACTIVITY_EXPIRED_OPTIONS,
+      options: ACTIVITY_EXPIRED_OPTIONS || [],
       templateType: 'tag',
     },
   },
   {
-    field: 'created_at',
+    field: 'createdAt',
     header: 'Fecha de creación',
     sortable: true,
     filter: {
-      type: 'text', // Si luego tienes un filtro tipo date-picker, cámbialo
+      type: 'text',
       placeholder: 'Buscar por fecha',
     },
   },
 ];
 
-export const ACTIVITY_GLOBAL_FILTERS = ['title', 'creator_name', 'activity_type.name'];
+export const ACTIVITY_GLOBAL_FILTERS = ['title', 'creator_name'];
 
 export const ACTIVITY_ACTIONS: RowAction[] = [
   {

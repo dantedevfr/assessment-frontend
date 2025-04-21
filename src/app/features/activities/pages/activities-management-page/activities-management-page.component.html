@@ -4,44 +4,61 @@
 
   <td>
     <p-tag
-      [value]="activity.difficulty"
+      [value]="getDifficultyLabel(activity.difficulty)"
       [severity]="getDifficultyColor(activity.difficulty)"
       styleClass="px-3"
     />
   </td>
 
-  <td>{{ activity.activity_type?.name }}</td>
-  <td>{{ activity.creator_name }}</td>
+  <td>{{ getLocalizedActivityType(activity.activityType) }}</td>
+  <td>{{ activity.creatorName }}</td>
+
+  <td>{{ getLocalizedCategory(activity.category) }}</td>
+
+  <td>
+    <div class="flex gap-1 flex-wrap">
+      <p-tag
+        *ngFor="let tag of activity.tags"
+        [value]="getLocalizedTag(tag)"
+        severity="contrast"
+      />
+    </div>
+  </td>
 
   <td>
     <p-tag
-      [value]="activity.is_visible ? 'Visible' : 'Oculta'"
-      [severity]="activity.is_visible ? 'success' : 'info'"
+      [value]="activity.isVisible ? 'Visible' : 'Oculta'"
+      [severity]="activity.isVisible ? 'success' : 'warn'"
     />
   </td>
 
   <td>
     <p-tag
-      [value]="activity.is_expired ? 'Expirada' : 'Activa'"
-      [severity]="activity.is_expired ? 'danger' : 'success'"
+      [value]="activity.isExpired ? 'Expirada' : 'Activa'"
+      [severity]="activity.isExpired ? 'danger' : 'success'"
     />
   </td>
 
-  <td>{{ activity.created_at | date: 'short' }}</td>
+  <td>{{ activity.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
 </ng-template>
 
 <ng-template #statusTemplate let-option>
-  <p-tag [value]="option.label" [severity]="getSeverityFromLabel(option.label)" />
+  <p-tag
+    *ngIf="option"
+    [value]="option.label"
+    [severity]="getSeverityFromLabel(option.label)"
+  />
 </ng-template>
 
 <div class="col-span-12 xl:col-span-12">
   <app-common-table
     [columns]="columns_activities"
-    [data]="(activities$ | async) || []"
+    [data]="(activities$ | async)||[]"
     [tableStyle]="{ 'min-width': '50rem' }"
     [size]="'small'"
-    [showGridlines]="true"
+    [showGridlines]="true" 
     [stripedRows]="true"
+    [bodyTemplate]="customBody"
 
     [paginator]="true"
     [rows]="(tableState$ | async)?.rows || 10"
@@ -56,6 +73,7 @@
     [searchPlaceholder]="'Buscar por título, tipo o creador'"
     [globalFilterFields]="globalFilterFields"
     [enableColumnFilter]="true"
+    [customFilterTemplate]="statusTemplate"
 
     [sortMode]="'single'"
     [sortField]="(tableState$ | async)?.sortField || 'title'"
@@ -64,7 +82,7 @@
     [enableSelection]="true"
     [selection]="selectedActivities"
     (selectionChange)="handleCheckBoxAction($event)"
-    [dataKey]="'id_activity'"
+    [dataKey]="'id'"
     [rowActions]="rowActions"
 
     [scrollable]="true"

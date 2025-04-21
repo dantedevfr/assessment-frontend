@@ -9,9 +9,9 @@ import { TableModule } from 'primeng/table';
 import { RowAction, TableColumn } from '../../../../shared/models/table.model';
 import { LazyLoadEvent } from 'primeng/api';
 import { map, Observable, take } from 'rxjs';
-import { defaultTableState } from '../../../../shared/state/table/table.constants';
+import { getDefaultTableState } from '../../../../shared/state/table/table.utils';
 import { TableFacadeService } from '../../../../core/services/table-facade-service';
-
+import { PRODUCT_TABLE_FILTERS } from '../../config/products-table.config';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -44,7 +44,10 @@ export class DashboardPageComponent {
   );
 
   ngOnInit() {
-    this.tableService.init(this.tableId, defaultTableState);
+    this.tableService.init(this.tableId, getDefaultTableState({
+      filters: PRODUCT_TABLE_FILTERS,
+      sortField: 'name',
+    }));
     this.products$ = this.tableService.getData$(this.tableId);
     this.isLoading$ = this.tableService.getLoading$(this.tableId);
     this.totalItems$ = this.tableService.getTotalItems$(this.tableId);
@@ -121,7 +124,10 @@ export class DashboardPageComponent {
   }
 
   reloadData() {
-    this.tableService.reset(this.tableId);
+    this.tableService.reset(this.tableId, getDefaultTableState({
+          filters: PRODUCT_TABLE_FILTERS,
+          sortField: 'name'
+    }));
     this.tableState$.pipe(take(1)).subscribe((state) => {
       if (state) {
         this.handleLazyLoad(state);

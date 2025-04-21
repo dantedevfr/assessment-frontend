@@ -5,6 +5,16 @@ export const PRODUCT_STATUSES = [
   { label: 'Low Stock', value: 'LOWSTOCK' },
   { label: 'Out of Stock', value: 'OUTOFSTOCK' },
 ];
+
+export const PRODUCT_TABLE_FILTERS = {
+  global: { value: '', matchMode: 'contains' },
+  name: { value: null, matchMode: 'startsWith' },
+  image: { value: null, matchMode: 'startsWith' },
+  price: { value: null, matchMode: 'startsWith' },
+  inventoryStatus: { value: null, matchMode: 'equals' },
+};
+
+
 export const PRODUCT_COLUMNS: TableColumn[] = [
   {
     field: 'name',

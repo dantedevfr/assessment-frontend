@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { TableStateMap } from './table-state.model';
 import { TableActions } from './table.actions';
-import { defaultTableState } from './table.constants';
+import { getDefaultTableState } from './table.utils';
 
 export const initialState: TableStateMap = {};
 
@@ -11,7 +11,7 @@ export const tableReducer = createReducer(
     if (state[tableId]) return state;
     return {
       ...state,
-      [tableId]: initialState ?? defaultTableState,
+      [tableId]: initialState ?? getDefaultTableState(),
     };
   }),
   on(TableActions.updateTable, (state, { tableId, changes }) => ({
@@ -21,8 +21,8 @@ export const tableReducer = createReducer(
       ...changes,
     },
   })),
-  on(TableActions.resetTable, (state, { tableId }) => ({
+  on(TableActions.resetTable, (state, { tableId, initialState }) => ({
     ...state,
-    [tableId]: defaultTableState,
+    [tableId]: initialState ?? getDefaultTableState(),
   }))
 );

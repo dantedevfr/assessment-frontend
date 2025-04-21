@@ -5,7 +5,7 @@ export interface TableColumn {
   filter?: {
     type: 'text' | 'custom-select';
     placeholder?: string;
-    options?: { label: string; value: string }[];
+    options?: { label: string; value: string | number }[];
     templateType?: string;
   };
 }

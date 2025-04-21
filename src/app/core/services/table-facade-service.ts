@@ -5,6 +5,7 @@ import { TableActions } from '../../shared/state/table/table.actions';
 import { selectTableById } from '../../shared/state/table/table.selectors';
 import { LazyTableLoaderService } from './lazy-table-loader.service';
 import { LazyLoadEvent } from 'primeng/api';
+import { TableState } from '../../shared/state/table/table-state.model';
 
 @Injectable({ providedIn: 'root' })
 export class TableFacadeService {
@@ -78,8 +79,8 @@ export class TableFacadeService {
     });
   }
 
-  reset(tableId: string) {
-    this.store.dispatch(TableActions.resetTable({ tableId }));
+  reset(tableId: string, initialState?: TableState) {
+    this.store.dispatch(TableActions.resetTable({ tableId, initialState }));
   }
 
   private setLoading(tableId: string, value: boolean) {

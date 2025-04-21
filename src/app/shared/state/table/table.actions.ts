@@ -6,6 +6,6 @@ export const TableActions = createActionGroup({
   events: {
     'Init Table': props<{ tableId: string; initialState?: TableState }>(),
     'Update Table': props<{ tableId: string; changes: Partial<TableState> }>(),
-    'Reset Table': props<{ tableId: string }>(),
+    'Reset Table': props<{ tableId: string; initialState?: TableState }>(),
   },
 });

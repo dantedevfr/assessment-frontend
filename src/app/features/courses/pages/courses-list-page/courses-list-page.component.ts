@@ -1,4 +1,4 @@
-import { PRODUCT_COLUMNS,PRODUCT_ACTIONS,PRODUCT_GLOBAL_FILTERS } from '../../../dashboard/config/products-table.config';
+import { PRODUCT_COLUMNS,PRODUCT_ACTIONS,PRODUCT_GLOBAL_FILTERS,PRODUCT_TABLE_FILTERS } from '../../../dashboard/config/products-table.config';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CounterComponent } from '../../../counter/components/counter/counter.component';
@@ -8,7 +8,7 @@ import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 
 import { TableFacadeService } from '../../../../core/services/table-facade-service';
-import { defaultTableState } from '../../../../shared/state/table/table.constants';
+import { getDefaultTableState } from '../../../../shared/state/table/table.utils';
 import { CommonTableComponent } from '../../../../shared/components/common-table/common-table.component';
 import { map, Observable, take } from 'rxjs';
 import { RowAction, TableColumn } from '../../../../shared/models/table.model';
@@ -42,10 +42,13 @@ export class CoursesListPageComponent {
 
   filters$ = this.tableState$.pipe(
     map(state => state?.filters ? JSON.parse(JSON.stringify(state.filters)) : {})
-  );
+  ); 
 
   ngOnInit() {
-    this.tableService.init(this.tableId, defaultTableState);
+    this.tableService.init(this.tableId, getDefaultTableState({
+      filters: PRODUCT_TABLE_FILTERS,
+      sortField: 'name',
+    }));
     this.products$ = this.tableService.getData$(this.tableId);
     this.isLoading$ = this.tableService.getLoading$(this.tableId);
     this.totalItems$ = this.tableService.getTotalItems$(this.tableId);
@@ -57,7 +60,7 @@ export class CoursesListPageComponent {
     });
   }
 
-  selectedProducts: any[] = [];
+  selectedProducts: any[] = []; 
   columns_products: TableColumn[] = PRODUCT_COLUMNS;
   globalFilterFields = PRODUCT_GLOBAL_FILTERS;
 
@@ -75,7 +78,10 @@ export class CoursesListPageComponent {
   }
 
   reloadData() {
-    this.tableService.reset(this.tableId);
+    this.tableService.reset(this.tableId, getDefaultTableState({
+          filters: PRODUCT_TABLE_FILTERS,
+          sortField: 'name'
+    }));
     this.tableState$.pipe(take(1)).subscribe((state) => {
       if (state) {
         this.handleLazyLoad(state);
