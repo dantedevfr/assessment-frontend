@@ -12,3 +12,8 @@ export const selectSelectedCategories = createSelector(
   selectCategoriesState,
   (state) => state.selectedCategories
 );
+
+export const selectAllCategories = createSelector(
+  selectCategoriesState,
+  (state) => state.allCategories
+);

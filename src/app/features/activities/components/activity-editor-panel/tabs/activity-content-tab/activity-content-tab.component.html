@@ -1,24 +1,58 @@
 <div class="space-y-4">
+
+  <!-- Tipo de actividad -->
   <div>
     <label class="block text-sm font-medium mb-1">Tipo de actividad</label>
     <p-select
-      [(ngModel)]="selectedType"
-      [options]="activityTypes"
+    [ngModel]="activity.type"
+    [options]="activityTypes"
+    optionLabel="label"
+    optionValue="value"
+    class="w-full"
+    placeholder="Selecciona un tipo"
+    (ngModelChange)="onActivityTypeChange($event)"
+  />
+  </div>
+
+  <!-- Subtipo si es pregunta -->
+  <div *ngIf="isQuestion">
+    <label class="block text-sm font-medium mb-1">Tipo de pregunta</label>
+      <p-select
+      [ngModel]="activity.questionSubtype"
+      [options]="questionSubtypes"
       optionLabel="label"
       optionValue="value"
-      placeholder="Selecciona un tipo"
       class="w-full"
+      placeholder="Selecciona subtipo"
+      (ngModelChange)="updateField('questionSubtype', $event)"
     />
   </div>
 
+  <!-- Categoría -->
   <div>
-    <label class="block text-sm font-medium mb-1">Título de la pregunta</label>
+    <label class="block text-sm font-medium mb-1">Categoría</label>
+    <p-treeSelect
+      [options]="categoryTree"
+      [(ngModel)]="selectedNode"
+      selectionMode="single"
+      placeholder="Selecciona categoría"
+      optionValue="value"
+      class="md:w-80 w-full"
+      containerStyleClass="w-full"
+      (onNodeSelect)="onCategorySelect($event)"
+    />
+  </div>
+
+  <!-- Título -->
+  <div>
+    <label class="block text-sm font-medium mb-1">Título</label>
     <input
-      type="text"
       pInputText
+      type="text"
       class="w-full"
+      [(ngModel)]="activity.title"
       placeholder="Ej. ¿Cuál es la capital de Francia?"
-      [(ngModel)]="questionTitle"
+      (ngModelChange)="updateField('title', $event)"
     />
   </div>
 </div>

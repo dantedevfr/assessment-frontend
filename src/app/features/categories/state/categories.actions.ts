@@ -11,4 +11,10 @@ export const setSelectedCategories = createAction(
   props<{ selected: (Category | null)[] }>()
 );
 
+export const loadAllCategories = createAction('[Categories] Load All');
+export const loadAllCategoriesSuccess = createAction(
+  '[Categories] Load All Success',
+  props<{ categories: Category[] }>()
+);
+
 export const resetCategories = createAction('[Categories] Reset');

@@ -6,6 +6,7 @@ import * as CategoryActions from './categories.actions';
 const initialState: CategoryState = {
   categoryLevels: [],
   selectedCategories: [],
+  allCategories: []
 };
 
 export const categoriesReducer = createReducer(
@@ -18,5 +19,9 @@ export const categoriesReducer = createReducer(
     ...state,
     selectedCategories: selected,
   })),
-  on(CategoryActions.resetCategories, () => initialState)
+  on(CategoryActions.resetCategories, () => initialState),
+  on(CategoryActions.loadAllCategoriesSuccess, (state, { categories }) => ({
+    ...state,
+    allCategories: categories
+  }))
 );
