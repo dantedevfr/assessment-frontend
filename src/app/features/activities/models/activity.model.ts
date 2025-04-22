@@ -1,0 +1,21 @@
+import { QuestionModel } from "./question.model";
+
+export interface ActivityModel {
+  id?: number;
+  title?: string;
+  description?: string;
+  type: 'question' | 'match_pairs' | 'translation' | 'fill_in_blank' | 'guess_the_word';
+  questionSubtype?: 'multiple_choice' | 'true_false' | 'simple' | 'open';
+  difficulty?: number;
+  is_visible?: boolean;
+  is_expired?: boolean;
+  id_category?: number;
+  media?: ActivityMedia;
+  question?: QuestionModel;
+}
+
+export interface ActivityMedia {
+  imageUrl?: string;
+  audioUrl?: string;
+  videoUrl?: string;
+}
