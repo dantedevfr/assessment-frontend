@@ -1,0 +1,20 @@
+<div class="flex h-full gap-6">
+  <!-- Preview -->
+  <div class="card-surface flex-1 bg-white  rounded-sm shadow-sm p-6">
+    <!-- Encabezado -->
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold">Crear actividad</h2>
+      <button class="p-button p-button-success">Guardar</button>
+    </div>
+
+    <!-- Vista previa en tiempo real -->
+    <div class="min-h-[400px]">
+      <p class="text-gray-500 text-sm">Aquí se mostrará la vista previa de la actividad.</p>
+    </div>
+  </div>
+
+  <!-- Editor Panel -->
+  <div class="card-surface w-[400px] bg-white  rounded-sm shadow-sm px-4 py-6">
+    <app-activity-editor-panel />
+  </div>
+</div>

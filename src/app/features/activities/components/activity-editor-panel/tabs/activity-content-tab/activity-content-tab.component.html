@@ -1,0 +1,24 @@
+<div class="space-y-4">
+  <div>
+    <label class="block text-sm font-medium mb-1">Tipo de actividad</label>
+    <p-select
+      [(ngModel)]="selectedType"
+      [options]="activityTypes"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Selecciona un tipo"
+      class="w-full"
+    />
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Título de la pregunta</label>
+    <input
+      type="text"
+      pInputText
+      class="w-full"
+      placeholder="Ej. ¿Cuál es la capital de Francia?"
+      [(ngModel)]="questionTitle"
+    />
+  </div>
+</div>

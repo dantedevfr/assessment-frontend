@@ -65,7 +65,7 @@ export class ActivitiesManagementPageComponent {
     this.tableState$.pipe(take(1)).subscribe((state) => {
       if (state) {
         this.handleLazyLoad(state);
-      } 
+      }
     });
   }
 
@@ -81,15 +81,15 @@ export class ActivitiesManagementPageComponent {
     }
   }));
 
-  handleLazyLoad(event: LazyLoadEvent) {    
+  handleLazyLoad(event: LazyLoadEvent) {
     console.log("se lanza primero");
     console.log(event);
-    
-    
-    this.tableService.loadData(this.tableId, this.endpoint, event);    
+
+
+    this.tableService.loadData(this.tableId, this.endpoint, event);
   }
 
-  reloadData() {    
+  reloadData() {
     this.tableService.reset(this.tableId, getDefaultTableState({
       filters: ACTIVITY_TABLE_FILTERS,
       sortField: 'title'
@@ -123,7 +123,7 @@ export class ActivitiesManagementPageComponent {
     };
     return map[key] ?? key;
   }
-  
+
   getDifficultyColor(key: string): 'success' | 'info' | 'danger' | 'secondary' {
     const map: Record<string, 'success' | 'info' | 'danger'> = {
       easy: 'success',
@@ -132,7 +132,7 @@ export class ActivitiesManagementPageComponent {
     };
     return map[key] ?? 'secondary';
   }
-  
+
   getLocalizedActivityType(key: string): string {
     const map: Record<string, string> = {
       translation_word: 'Traducción',
@@ -153,7 +153,7 @@ export class ActivitiesManagementPageComponent {
     };
     return map[key] ?? key;
   }
-  
+
   getLocalizedCategory(key: string): string {
     const map: Record<string, string> = {
       vocabulary: 'Vocabulario',
@@ -167,7 +167,7 @@ export class ActivitiesManagementPageComponent {
     };
     return map[key] ?? key;
   }
-  
+
   getLocalizedTag(key: string): string {
     const map: Record<string, string> = {
       beginner: 'Principiante',
@@ -191,7 +191,7 @@ export class ActivitiesManagementPageComponent {
 
   getSeverityFromLabel(label?: string): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | undefined {
     if (!label) return 'info';
-   
+
     const normalized = label.toLowerCase();
     const map: Record<string, 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast'> = {
       visible: 'success',
@@ -202,12 +202,12 @@ export class ActivitiesManagementPageComponent {
       media: 'info',
       difícil: 'danger',
     };
-  
+
     return map[normalized] ?? 'info';
   }
 
   navigateToCreation() {
-    this.router.navigate(['/admin/activities/creation']);
+    this.router.navigate(['/admin/activities/create']);
   }
   goToItems() {
   }
