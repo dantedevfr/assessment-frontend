@@ -9,6 +9,7 @@ export const initialActivityBuilderState: ActivityBuilderState = {
   is_expired: false,
   question: {
     text: '',
-    answers: []
+    type: 'multiple_choice',
+    answers: [],
   }
 };

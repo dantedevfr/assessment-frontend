@@ -1,15 +1,17 @@
-import { ActivityMedia } from "./activity.model";
+import { MediaModel } from "./media.model";
+import { AnswerModel } from "./answer.model";
+import { TranslationModel } from "./translation.model";
+import { WordModel } from "./word.model";
+
+export type QuestionType = 'multiple_choice' | 'true_false' | 'open' | 'simple';
 
 export interface QuestionModel {
-  text: string;
+  id?: number;
+  text: string; // Rich HTML from editor
+  type: QuestionType;
+  isMandatory?: boolean;
+  translation?: TranslationModel;
+  wordBreakdown?: WordModel[]; // Breakdown per word
+  media?: MediaModel[]; // General media for question
   answers: AnswerModel[];
-  allowMultipleCorrect?: boolean;
-  explanation?: string;
-}
-
-export interface AnswerModel {
-  id?: string;
-  text: string;
-  isCorrect: boolean;
-  media?: ActivityMedia;
 }

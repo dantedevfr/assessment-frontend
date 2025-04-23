@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
@@ -11,8 +11,9 @@ import { buildCategoryTree } from '../../../../utils/build-tree.util';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { selectAllCategories } from '../../../../../categories/state/categories.selectors';
 import * as CategoryActions from '../../../../../categories/state/categories.actions';
-import { ApiClientService } from '../../../../../../core/services/api-client.service';
-
+import { combineLatest } from 'rxjs';
+import { ACTIVITY_TYPES, QUESTION_SUBTYPES } from '../../../../config/activity-config';
+import { findNodeById } from '../../../../utils/build-tree.util';
 @Component({
   selector: 'app-activity-content-tab',
   imports: [CommonModule, FormsModule, SelectModule,TreeSelectModule],
@@ -24,42 +25,29 @@ export class ActivityContentTabComponent {
     type: 'question'
   };
 
-  activityTypes = [
-    { label: 'Pregunta', value: 'question' },
-    { label: 'Emparejamiento', value: 'match_pairs' },
-    { label: 'Traducción', value: 'translation' },
-    { label: 'Completar espacios', value: 'fill_in_blank' },
-    { label: 'Adivina la palabra', value: 'guess_the_word' }
-  ];
+  activityTypes = ACTIVITY_TYPES;
+  questionSubtypes = QUESTION_SUBTYPES;
 
-  questionSubtypes = [
-    { label: 'Opción múltiple', value: 'multiple_choice' },
-    { label: 'Verdadero/Falso', value: 'true_false' },
-    { label: 'Pregunta abierta', value: 'open' },
-    { label: 'Pregunta simple', value: 'simple' }
-  ];
-
-  categories: Category[] = []; // ⚠️ Deberías inyectar servicio y cargar esto desde backend
+  categories: Category[] = [];
   categoryTree: TreeNode[] = [];
   selectedNode: TreeNode | null = null;
-  private api = inject(ApiClientService);
 
   constructor(private store: Store) {}
 
   ngOnInit(): void {
-    // Escuchar cambios en la actividad
-    this.store.select(selectActivityBuilder).subscribe((activity) => {
+    combineLatest([
+      this.store.select(selectActivityBuilder),
+      this.store.select(selectAllCategories)
+    ]).subscribe(([activity, categories]) => {
       this.activity = activity;
-      this.selectedNode = this.findNodeById(this.categoryTree, activity.id_category);
-    });
 
-    // Escuchar categorías del store
-    this.store.select(selectAllCategories).subscribe((categories) => {
       if (!categories || categories.length === 0) {
-        this.store.dispatch(CategoryActions.loadAllCategories()); // 🔄 carga inicial
-      } else {
-        this.categoryTree = buildCategoryTree(categories);
+        this.store.dispatch(CategoryActions.loadAllCategories());
+        return;
       }
+
+      this.categoryTree = buildCategoryTree(categories);
+      this.selectedNode = findNodeById(this.categoryTree, activity.id_category);
     });
   }
 
@@ -70,18 +58,6 @@ export class ActivityContentTabComponent {
   onCategorySelect(event: any) {
     const id = event.node?.data?.id;
     this.updateField('id_category', id);
-  }
-
-  private findNodeById(nodes: TreeNode[], id?: number): TreeNode | null {
-    if (!id) return null;
-    for (const node of nodes) {
-      if (node.data?.id === id) return node;
-      if (node.children) {
-        const found = this.findNodeById(node.children, id);
-        if (found) return found;
-      }
-    }
-    return null;
   }
 
   get isQuestion(): boolean {

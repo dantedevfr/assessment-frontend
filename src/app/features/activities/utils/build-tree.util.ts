@@ -26,3 +26,17 @@ export function buildCategoryTree(categories: Category[]): TreeNode[] {
 
   return roots;
 }
+
+export function findNodeById(nodes: TreeNode[], id?: number): TreeNode | null {
+  if (!id) return null;
+
+  for (const node of nodes) {
+    if (node.data?.id === id) return node;
+    if (node.children) {
+      const found = findNodeById(node.children, id);
+      if (found) return found;
+    }
+  }
+
+  return null;
+}

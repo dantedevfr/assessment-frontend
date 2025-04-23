@@ -10,12 +10,13 @@ export interface ActivityModel {
   is_visible?: boolean;
   is_expired?: boolean;
   id_category?: number;
-  media?: ActivityMedia;
+  media?: ActivityMediaModel;
   question?: QuestionModel;
 }
 
-export interface ActivityMedia {
+export interface ActivityMediaModel {
   imageUrl?: string;
   audioUrl?: string;
   videoUrl?: string;
 }
+//comment
