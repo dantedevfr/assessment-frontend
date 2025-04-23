@@ -178,13 +178,9 @@
   "categories": [
     {
       "id": 1,
-      "name": "Matemáticas",
+      "name": "Matemáticas 2",
       "description": "Actividades relacionadas con lógica y números",
-      "color": "#ff5733",
-      "image": "https://example.com/images/matematicas.png",
-      "id_parent_category": null,
-      "created_at": "2025-01-15T10:30:00Z",
-      "updated_at": "2025-04-10T12:00:00Z"
+      "id_parent_category": 0
     },
     {
       "id": 2,
@@ -196,13 +192,13 @@
       "id": 3,
       "name": "Ciencias Naturales",
       "description": "Description",
-      "id_parent_category": null
+      "id_parent_category": 0
     },
     {
-      "name": "Geometria",
+      "id": 4,
+      "name": "Geometria actualizado",
       "description": "Info",
-      "id_parent_category": 1,
-      "id": 4
+      "id_parent_category": 1
     },
     {
       "name": "geometri",
@@ -221,12 +217,6 @@
       "description": "asd",
       "id_parent_category": 6,
       "id": 7
-    },
-    {
-      "name": "New category",
-      "description": "new category",
-      "id_parent_category": null,
-      "id": 8
     },
     {
       "name": "asd",
@@ -259,10 +249,70 @@
       "id": 14
     },
     {
+      "name": "New categorie added",
+      "description": "new value added",
+      "id_parent_category": 3,
+      "id": 16
+    },
+    {
+      "name": "test",
+      "description": "test",
+      "id_parent_category": 8,
+      "id": 17
+    },
+    {
       "name": "New value",
-      "description": "updated",
-      "id_parent_category": 1,
-      "id": 15
+      "description": "test",
+      "id_parent_category": 8,
+      "id": 18
+    },
+    {
+      "name": "asd",
+      "description": "asd",
+      "id_parent_category": 8,
+      "id": 19
+    },
+    {
+      "name": "asasd",
+      "description": "asd",
+      "id_parent_category": 8,
+      "id": 20
+    },
+    {
+      "name": "asd",
+      "description": "asd",
+      "id_parent_category": 19,
+      "id": 21
+    },
+    {
+      "name": "aaaaa",
+      "description": "dddddd",
+      "id_parent_category": 8,
+      "id": 22
+    },
+    {
+      "name": "s",
+      "description": "s",
+      "id_parent_category": 23,
+      "id": 24
+    },
+    {
+      "name": "fff",
+      "description": "fff",
+      "id_parent_category": 23,
+      "id": 25
+    },
+    {
+      "name": "asfsdsd",
+      "description": "sdfsdf",
+      "id_parent_category": 3,
+      "id": 26
+    },
+    {
+      "name": "Test",
+      "description": "asasdasdasd",
+      "id_parent_category": 23,
+      "id": 27
     }
   ],
   "activities": [

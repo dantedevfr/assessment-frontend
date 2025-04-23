@@ -18,3 +18,4 @@ export const loadAllCategoriesSuccess = createAction(
 );
 
 export const resetCategories = createAction('[Categories] Reset');
+export const rebuildCategoryLevels = createAction('[Categories] Rebuild Levels');

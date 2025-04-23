@@ -43,11 +43,7 @@ export class CategoriesManagementPageComponent {
   constructor(private notification: NotificationService) {
     this.store.select(CategorySelectors.selectCategoryLevels).subscribe(levels => {
       this.categoryLevels.set(levels);
-
-      // Solo cargamos si no hay datos
-      if (!levels || levels.length === 0) {
-        this.loadRootCategories();
-      }
+      if (!levels.length) this.loadRootCategories();
     });
 
     this.store.select(CategorySelectors.selectSelectedCategories).subscribe(selected => {
@@ -56,19 +52,16 @@ export class CategoriesManagementPageComponent {
   }
 
   loadRootCategories() {
-    this.api.getAll<Category>(this.endpoint).subscribe((data) => {
-      const roots = data.filter((c) => !c.id_parent_category);
+    this.api.getAll<Category>('categories?id_parent_category=0').subscribe((roots) => {
       this.store.dispatch(CategoryActions.loadCategoryLevels({ levels: [roots] }));
       this.store.dispatch(CategoryActions.setSelectedCategories({ selected: [] }));
     });
   }
 
   loadSubcategories(parent: Category, levelIndex: number) {
-    this.api.getAll<Category>(this.endpoint).subscribe((data) => {
-      const children = data.filter((c) => c.id_parent_category === parent.id);
+    this.api.getAll<Category>(`categories?id_parent_category=${parent.id}`).subscribe((children) => {
       const updatedLevels = this.categoryLevels().slice(0, levelIndex + 1);
       const updatedSelected = this.selectedCategories().slice(0, levelIndex);
-
       this.store.dispatch(CategoryActions.loadCategoryLevels({
         levels: [...updatedLevels, children]
       }));
@@ -99,6 +92,7 @@ export class CategoriesManagementPageComponent {
         const parentId = category.id_parent_category ?? null;
         this.cleanupAfterDelete(category.id);
         this.reloadParentLevel(parentId);
+        this.store.dispatch(CategoryActions.loadAllCategories()); // actualiza árbol y formulario
         this.categoryToDelete.set(null);
       },
       error: () => {
@@ -111,18 +105,14 @@ export class CategoriesManagementPageComponent {
     const parent = this.selectedCategories()[level - 1] || null;
     this.modalEditing.set(null);
     this.modalParentId.set(parent?.id ?? null);
-    this.modalParentName.set(parent?.name ?? null); // 👈
+    this.modalParentName.set(parent?.name ?? null);
     this.modalVisible.set(true);
-
     queueMicrotask(() => this.categoryFormModal.resetForm?.());
 
   }
 
   openEditModal(category: Category) {
-    // Limpieza forzada antes de editar
     queueMicrotask(() => this.categoryFormModal.resetForm?.());
-
-    // Ahora sí, cargar datos
     this.modalEditing.set(category);
     this.modalParentId.set(category.id_parent_category ?? null);
     this.modalParentName.set(null);
@@ -144,12 +134,13 @@ export class CategoriesManagementPageComponent {
           isEditing ? 'Categoría actualizada correctamente' : 'Categoría creada correctamente'
         );
 
-        // Recargar solo el nivel afectado (ver paso 4)
         if (isEditing && category.id) {
           this.reloadLevelForCategory(category.id);
         } else {
           this.reloadParentLevel(newCategory.id_parent_category ?? null);
         }
+
+        this.store.dispatch(CategoryActions.loadAllCategories());
       },
       error: () => {
         // El interceptor ya se encarga de mostrar errores 👍
@@ -158,40 +149,35 @@ export class CategoriesManagementPageComponent {
   }
 
   reloadLevelForCategory(categoryId: number) {
-    this.api.getAll<Category>(this.endpoint).subscribe((data) => {
-      const allCategories = data;
-      const updatedLevels = [...this.categoryLevels()];
-
-      // encontrar la categoría y su padre
-      const category = allCategories.find(c => c.id === categoryId);
+    this.api.getAll<Category>('categories').subscribe((data) => {
+      const category = data.find(c => c.id === categoryId);
       const parentId = category?.id_parent_category ?? null;
-
       const levelIndex = parentId
         ? this.selectedCategories().findIndex(cat => cat?.id === parentId) + 1
         : 0;
 
-      updatedLevels[levelIndex] = allCategories.filter(c => c.id_parent_category === parentId);
+      const updatedLevels = [...this.categoryLevels()];
+      updatedLevels[levelIndex] = data.filter(c => c.id_parent_category === parentId);
       this.categoryLevels.set(updatedLevels);
     });
   }
 
 
   reloadParentLevel(parentId: number | null) {
-    this.api.getAll<Category>(this.endpoint).subscribe((data) => {
-      const updatedLevels = [...this.categoryLevels()];
 
-      if (!parentId) {
-        // es root
-        updatedLevels[0] = data.filter(c => !c.id_parent_category);
-      } else {
-        const levelIndex = this.selectedCategories().findIndex(cat => cat?.id === parentId);
-        if (levelIndex >= 0) {
-          updatedLevels[levelIndex + 1] = data.filter(c => c.id_parent_category === parentId);
-        }
-      }
+    const query = parentId === null
+    ? 'categories?id_parent_category=null'
+    : `categories?id_parent_category=${parentId}`;
 
-      this.categoryLevels.set(updatedLevels);
-    });
+  this.api.getAll<Category>(query).subscribe((children) => {
+    const updatedLevels = [...this.categoryLevels()];
+    const levelIndex = parentId === null
+      ? 0
+      : this.selectedCategories().findIndex(cat => cat?.id === parentId) + 1;
+
+    updatedLevels[levelIndex] = children;
+    this.categoryLevels.set(updatedLevels);
+  });
   }
 
   handleCancel() {

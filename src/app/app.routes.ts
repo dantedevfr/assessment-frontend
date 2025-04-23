@@ -4,6 +4,8 @@ import { DashboardPageComponent } from './features/dashboard/pages/dashboard-pag
 import { CategoriesManagementPageComponent } from './features/categories/pages/categories-management-page/categories-management-page.component';
 import { provideState } from '@ngrx/store';
 import { categoriesReducer } from './features/categories/state';
+import { provideEffects } from '@ngrx/effects';
+import { CategoriesEffects } from './features/categories/state/categories.effects';
 
 export const routes: Routes = [
   {
@@ -21,6 +23,8 @@ export const routes: Routes = [
         component: CategoriesManagementPageComponent,
         providers: [
           provideState('categories', categoriesReducer),
+          provideEffects(CategoriesEffects) // 👈 ¡Esto activa los effects!
+
         ]
       },
       {
