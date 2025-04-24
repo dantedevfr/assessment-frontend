@@ -1,3 +1,7 @@
 @charset "UTF-8";
 @use './assets/admin-layout/layout.scss';
 @import 'primeicons/primeicons.css';
+html, body {
+  overflow: hidden; // Evita scroll global
+
+}

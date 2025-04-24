@@ -15,9 +15,10 @@ import { combineLatest } from 'rxjs';
 import { ACTIVITY_TYPES, QUESTION_SUBTYPES } from '../../../../config/activity-config';
 import { findNodeById } from '../../../../utils/build-tree.util';
 import { QuestionType } from '../../../../models/question.model';
+import { QuestionBuilderComponent } from './builders/question-builder/question-builder.component';
 @Component({
   selector: 'app-activity-content-tab',
-  imports: [CommonModule, FormsModule, SelectModule,TreeSelectModule],
+  imports: [CommonModule, FormsModule, SelectModule,TreeSelectModule,QuestionBuilderComponent],
   templateUrl: './activity-content-tab.component.html',
   styleUrl: './activity-content-tab.component.scss'
 })

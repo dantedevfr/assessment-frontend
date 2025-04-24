@@ -1,1 +1,87 @@
-<p>question-builder works!</p>
+<div class="space-y-4">
+  <!-- Texto de la pregunta -->
+  <div>
+    <label class="block text-sm font-medium mb-1">Texto de la pregunta</label>
+    <p-editor
+      [(ngModel)]="question.text"
+      [style]="{ height: '250px' }"
+      (ngModelChange)="updateField('text', $event)"
+    ></p-editor>
+  </div>
+
+  <!-- Descripción opcional -->
+  <div>
+    <label class="block text-sm font-medium mb-1">Descripción</label>
+    <textarea
+      pInputTextarea
+      rows="3"
+      [(ngModel)]="question.description"
+      (ngModelChange)="updateField('description', $event)"
+      class="w-full"
+    ></textarea>
+  </div>
+
+  <!-- ¿Es obligatoria? -->
+  <div class="flex items-center gap-2">
+    <label class="block text-sm font-medium">¿Es obligatoria?</label>
+    <p-toggleSwitch
+      [(ngModel)]="question.isMandatory"
+      (ngModelChange)="updateField('isMandatory', $event)"
+    />
+  </div>
+
+  <!-- Mostrar traducción -->
+  <div class="flex items-center gap-2">
+    <label class="block text-sm font-medium">¿Agregar traducción?</label>
+    <p-toggleSwitch [(ngModel)]="showTranslation" />
+  </div>
+
+  <!-- Traducción -->
+  <div *ngIf="showTranslation">
+    <label class="block text-sm font-medium mb-1">Traducción</label>
+    <input
+      type="text"
+      pInputText
+      class="w-full"
+      [ngModel]="question.translation?.translatedText"
+      (ngModelChange)="updateTranslation($event)"
+    />
+  </div>
+
+  <!-- Selector de tipo de medio -->
+  <div>
+    <label class="block text-sm font-medium mb-1">Tipo de medio</label>
+    <select [(ngModel)]="selectedMediaType" class="w-full p-2 border rounded">
+      <option value="image">Imagen</option>
+      <option value="audio">Audio</option>
+      <option value="video">Video</option>
+    </select>
+  </div>
+
+  <!-- File Upload -->
+  <div>
+    <p-fileUpload
+      #fu
+      mode="basic"
+      chooseLabel="Seleccionar archivo"
+      chooseIcon="pi pi-upload"
+      name="file"
+      url="https://www.primefaces.org/cdn/api/upload.php"
+      accept="*/*"
+      maxFileSize="1000000"
+      [auto]="false"
+      (onUpload)="onUpload($event)"
+    />
+    <p-button label="Subir archivo" (onClick)="uploadManually(fu)" severity="secondary" />
+  </div>
+
+  <!-- Vista previa -->
+  <div *ngIf="question.media?.length">
+    <h3 class="text-sm font-bold mt-4 mb-2">Archivos añadidos:</h3>
+    <ul class="list-disc ml-5">
+      <li *ngFor="let media of question.media">
+        {{ media.type }} - <a [href]="media.url" target="_blank">{{ media.url }}</a>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -16,3 +16,11 @@
   background-color: #f9fafb;
 }
 
+
+.activity-panel-scrollable {
+  height: calc(100vh - 8rem); // ajusta el espacio según topbar/footer
+  overflow-y: auto;
+  padding: 1.5rem; // opcional
+  background-color: var(--surface-overlay); // si quieres mantener estilo
+  border-radius: var(--content-border-radius); // igual que el sidebar
+}

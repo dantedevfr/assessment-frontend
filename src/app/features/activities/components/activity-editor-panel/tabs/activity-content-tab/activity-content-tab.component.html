@@ -44,15 +44,5 @@
   </div>
 
   <!-- Título -->
-  <div>
-    <label class="block text-sm font-medium mb-1">Título</label>
-    <input
-      pInputText
-      type="text"
-      class="w-full"
-      [(ngModel)]="activity.title"
-      placeholder="Ej. ¿Cuál es la capital de Francia?"
-      (ngModelChange)="updateField('title', $event)"
-    />
-  </div>
+  <app-question-builder *ngIf="isQuestion" />
 </div>
