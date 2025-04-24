@@ -4,7 +4,7 @@
     <label class="block text-sm font-medium mb-1">Texto de la pregunta</label>
     <p-editor
       [(ngModel)]="question.text"
-      [style]="{ height: '250px' }"
+      [style]="editorStyle"
       (ngModelChange)="updateField('text', $event)"
     ></p-editor>
   </div>
@@ -13,7 +13,7 @@
   <div>
     <label class="block text-sm font-medium mb-1">Descripción</label>
     <textarea
-      pInputTextarea
+      pTextarea
       rows="3"
       [(ngModel)]="question.description"
       (ngModelChange)="updateField('description', $event)"
@@ -39,23 +39,19 @@
   <!-- Traducción -->
   <div *ngIf="showTranslation">
     <label class="block text-sm font-medium mb-1">Traducción</label>
-    <input
-      type="text"
-      pInputText
-      class="w-full"
-      [ngModel]="question.translation?.translatedText"
-      (ngModelChange)="updateTranslation($event)"
-    />
+      <textarea
+        pTextarea
+        rows="3"
+        [ngModel]="question.translation?.translatedText"
+        (ngModelChange)="updateTranslation($event)"
+        class="w-full"
+    ></textarea>
   </div>
 
   <!-- Selector de tipo de medio -->
   <div>
     <label class="block text-sm font-medium mb-1">Tipo de medio</label>
-    <select [(ngModel)]="selectedMediaType" class="w-full p-2 border rounded">
-      <option value="image">Imagen</option>
-      <option value="audio">Audio</option>
-      <option value="video">Video</option>
-    </select>
+    <p-select [options]="mediaTypes" [(ngModel)]="selectedMediaType" optionLabel="Tipo de medio" placeholder="Select a media" class="w-full border rounded" />
   </div>
 
   <!-- File Upload -->

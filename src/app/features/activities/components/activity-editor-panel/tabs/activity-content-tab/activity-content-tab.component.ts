@@ -1,3 +1,4 @@
+import { QUESTION_TYPES } from './../../../../config/question.config';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +13,7 @@ import { TreeSelectModule } from 'primeng/treeselect';
 import { selectAllCategories } from '../../../../../categories/state/categories.selectors';
 import * as CategoryActions from '../../../../../categories/state/categories.actions';
 import { combineLatest } from 'rxjs';
-import { ACTIVITY_TYPES, QUESTION_SUBTYPES } from '../../../../config/activity-config';
+import { ACTIVITY_TYPES } from '../../../../config/activity-config';
 import { findNodeById } from '../../../../utils/build-tree.util';
 import { QuestionType } from '../../../../models/question.model';
 import { QuestionBuilderComponent } from './builders/question-builder/question-builder.component';
@@ -28,7 +29,7 @@ export class ActivityContentTabComponent {
   };
 
   activityTypes = ACTIVITY_TYPES;
-  questionSubtypes = QUESTION_SUBTYPES;
+  questionSubtypes = QUESTION_TYPES;
 
   categories: Category[] = [];
   categoryTree: TreeNode[] = [];

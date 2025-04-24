@@ -12,13 +12,5 @@ import { TabViewModule } from 'primeng/tabview';
   styleUrl: './activity-editor-panel.component.scss'
 })
 export class ActivityEditorPanelComponent {
-  @Input() selectedType: string | null = null;
-  @Input() selectedCategory: string | null = null;
 
-  activityTypes = [
-    { label: 'Pregunta simple', value: 'simple_question' },
-    { label: 'Opción múltiple', value: 'multiple_choice' },
-    { label: 'Verdadero o falso', value: 'true_false' },
-    { label: 'Pregunta abierta', value: 'open_question' },
-  ];
 }
