@@ -18,14 +18,14 @@
   <div *ngIf="isQuestion">
     <label class="block text-sm font-medium mb-1">Tipo de pregunta</label>
       <p-select
-      [ngModel]="activity.questionSubtype"
+      [ngModel]="activity.question?.type"
       [options]="questionSubtypes"
       optionLabel="label"
       optionValue="value"
       class="w-full"
       placeholder="Selecciona subtipo"
-      (ngModelChange)="updateField('questionSubtype', $event)"
-    />
+      (ngModelChange)="onQuestionTypeChange($event)"
+      />
   </div>
 
   <!-- Categoría -->

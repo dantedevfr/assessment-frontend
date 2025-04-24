@@ -14,6 +14,7 @@ import * as CategoryActions from '../../../../../categories/state/categories.act
 import { combineLatest } from 'rxjs';
 import { ACTIVITY_TYPES, QUESTION_SUBTYPES } from '../../../../config/activity-config';
 import { findNodeById } from '../../../../utils/build-tree.util';
+import { QuestionType } from '../../../../models/question.model';
 @Component({
   selector: 'app-activity-content-tab',
   imports: [CommonModule, FormsModule, SelectModule,TreeSelectModule],
@@ -66,5 +67,16 @@ export class ActivityContentTabComponent {
 
   onActivityTypeChange(newType: ActivityModel['type']) {
     this.updateField('type', newType);
+  }
+
+  onQuestionTypeChange(type: QuestionType) {
+    this.store.dispatch(updateActivity({
+      changes: {
+        question: {
+          ...this.activity.question,
+          type,
+        }
+      }
+    }));
   }
 }

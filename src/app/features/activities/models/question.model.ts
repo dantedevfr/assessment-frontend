@@ -7,11 +7,11 @@ export type QuestionType = 'multiple_choice' | 'true_false' | 'open' | 'simple';
 
 export interface QuestionModel {
   id?: number;
-  text: string; // Rich HTML from editor
+  text?: string; // Rich HTML from editor
   type: QuestionType;
   isMandatory?: boolean;
   translation?: TranslationModel;
   wordBreakdown?: WordModel[]; // Breakdown per word
   media?: MediaModel[]; // General media for question
-  answers: AnswerModel[];
+  answers?: AnswerModel[];
 }
