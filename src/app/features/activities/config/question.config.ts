@@ -7,8 +7,12 @@ export const QUESTION_TYPES: { label: string; value: QuestionType }[] = [
   { label: 'Pregunta simple', value: 'simple' }
 ];
 
-export const MEDIA_TYPES = ['image', 'audio', 'video'] as const;
-
+export const MEDIA_POSITIONS = [
+  { label: 'Arriba', value: 'top' },
+  { label: 'Izquierda', value: 'left' },
+  { label: 'Derecha', value: 'right' },
+  { label: 'Abajo', value: 'bottom' }
+];
 export const QUESTION_MEDIA_TYPES = [
   { label: 'Imagen', value: 'image' },
   { label: 'Audio', value: 'audio' },
@@ -17,8 +21,6 @@ export const QUESTION_MEDIA_TYPES = [
 
 export const DEFAULT_SOURCE_LANG = 'en';
 export const DEFAULT_TARGET_LANG = 'es';
-export const QUESTION_EDITOR_HEIGHT = '250px';
-
 export const QUESTION_EDITOR_STYLE = {
   height: '250px',
 };

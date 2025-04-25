@@ -3,7 +3,7 @@ import { QuestionModel } from '../models/question.model';
 
 export interface ActivityBuilderState extends ActivityModel {}
 
-const defaultQuestion: QuestionModel = {
+export const defaultQuestion: QuestionModel = {
   text: '',
   description: '',
   type: 'multiple_choice',
