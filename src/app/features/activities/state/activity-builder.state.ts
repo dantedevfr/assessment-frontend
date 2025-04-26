@@ -8,13 +8,7 @@ export const defaultQuestion: QuestionModel = {
   description: '',
   type: 'multiple_choice',
   isMandatory: false,
-  translation: {
-    translatedText: '',
-    sourceLanguageCode: 'en',
-    targetLanguageCode: 'es',
-    explanation: '',
-    media: []
-  },
+  translations: [],
   wordBreakdown: [],
   media: [],
   answers: []

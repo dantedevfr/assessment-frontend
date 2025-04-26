@@ -11,7 +11,7 @@ export interface QuestionModel {
   description?:string;
   type: QuestionType;
   isMandatory?: boolean;
-  translation?: TranslationModel;
+  translations?: TranslationModel[];
   wordBreakdown?: WordModel[]; // Breakdown per word
   media?: MediaModel[]; // General media for question
   answers?: AnswerModel[];

@@ -131,22 +131,32 @@ export class QuestionBuilderComponent {
     this.updateState();
   }
 
-  updateTranslation(value: string) {
-    const updated = {
-      ...this.question,
-      translation: {
-        ...this.question.translation ?? {
-          sourceLanguageCode: DEFAULT_SOURCE_LANG,
-          targetLanguageCode: DEFAULT_TARGET_LANG,
-          translatedText: '',
-          explanation: '',
-          media: []
-        },
-        translatedText: value
+  updateTranslation(value: string) { 
+    const translationList = this.question.translations ?? [];
+    
+    const updatedList = translationList.map(t => {
+      if (t.languageCode === DEFAULT_TARGET_LANG) {
+        return { ...t, translatedText: value };
       }
+      return t;
+    });
+  
+    const exists = updatedList.some(t => t.languageCode === DEFAULT_TARGET_LANG);
+  
+    if (!exists) {
+      updatedList.push({
+        languageCode: DEFAULT_TARGET_LANG, 
+        translatedText: value,
+        explanation: '',
+        media: []
+      });
+    }
+  
+    this.question = {
+      ...this.question,
+      translations: updatedList
     };
-
-    this.question = updated;
+  
     this.updateState();
   }
 
@@ -222,13 +232,14 @@ export class QuestionBuilderComponent {
       text: w,
       languageCode: DEFAULT_SOURCE_LANG,
       type: 'word',
-      translation: {
-        translatedText: '',
-        sourceLanguageCode: DEFAULT_SOURCE_LANG,
-        targetLanguageCode: DEFAULT_TARGET_LANG,
-        explanation: '',
-        media: []
-      }
+      translations: [
+        {
+          translatedText: '',
+          languageCode: DEFAULT_TARGET_LANG,
+          explanation: '',
+          media: []
+        }
+      ]
     }));
 
     console.log(this.wordBreakdown);
@@ -250,12 +261,47 @@ export class QuestionBuilderComponent {
   onWordMediaUpload(event: any, word: WordModel) {
     const file = event.files[0];
     const fakeUrl = 'https://www.primefaces.org/cdn/api/' + file.name;
+  
+    if (word.translations && word.translations.length > 0) {
+      const firstTranslation = word.translations[0];
+  
+      if (!firstTranslation.media) {
+        firstTranslation.media = [];
+      }
+  
+      firstTranslation.media.push({
+        type: 'audio',
+        url: fakeUrl
+      });
+    }
+  
+    this.question.wordBreakdown = this.wordBreakdown;
+    this.updateState();
+  }
 
-    word.media = {
-      type: 'audio',
-      url: fakeUrl
-    };
+  getTranslationText(): string {
+    const t = this.question.translations?.find(tr => tr.languageCode === DEFAULT_TARGET_LANG);
+    return t?.translatedText || '';
+  }
 
+  getWordTranslation(word: WordModel): string {
+    const t = word.translations?.find(tr => tr.languageCode === DEFAULT_TARGET_LANG);
+    return t?.translatedText || '';
+  }
+  
+  onWordTranslationChange(value: string, word: WordModel) {
+    const t = word.translations?.find(tr => tr.languageCode === DEFAULT_TARGET_LANG);
+    if (t) {
+      t.translatedText = value;
+    } else {
+      word.translations = word.translations ?? [];
+      word.translations.push({
+        languageCode: DEFAULT_TARGET_LANG,
+        translatedText: value,
+        explanation: '',
+        media: []
+      });
+    }
     this.question.wordBreakdown = this.wordBreakdown;
     this.updateState();
   }

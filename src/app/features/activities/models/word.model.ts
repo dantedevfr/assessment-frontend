@@ -1,4 +1,3 @@
-import { MediaModel } from "./media.model";
 import { TranslationModel } from "./translation.model";
 
 export interface WordModel {
@@ -6,8 +5,8 @@ export interface WordModel {
   text: string;
   languageCode: string;
   type?: 'word' | 'phrase' | 'expression';
-  translation?: TranslationModel;
-  media?: MediaModel;
+  translations?: TranslationModel[];
+  //media?: MediaModel;
   startTime?: number;
   endTime?: number;
 }

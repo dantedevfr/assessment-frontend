@@ -94,7 +94,7 @@
       <textarea
         pTextarea
         rows="3"
-        [ngModel]="question.translation?.translatedText"
+        [ngModel]="getTranslationText()"
         (ngModelChange)="updateTranslation($event)"
         class="w-full"
     ></textarea>
@@ -113,8 +113,8 @@
           <span class="text-sm font-medium w-24 text-gray-700">{{ word.text }}</span>
           <input
             type="text"
-            [ngModel]="word.translation?.translatedText"
-            (ngModelChange)="updateWordTranslation(word)"
+            [ngModel]="getWordTranslation(word)"
+            (ngModelChange)="onWordTranslationChange($event, word)"
             placeholder="Traducción"
             class="p-inputtext w-full"
           />
