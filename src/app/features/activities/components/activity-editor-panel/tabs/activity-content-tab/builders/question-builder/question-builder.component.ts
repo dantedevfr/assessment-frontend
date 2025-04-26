@@ -10,6 +10,10 @@ import { EditorModule } from 'primeng/editor';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
+import { Dialog } from 'primeng/dialog';
+import { MessageModule } from 'primeng/message';
+
+
 import { QUESTION_MEDIA_TYPES,
   DEFAULT_SOURCE_LANG,
   DEFAULT_TARGET_LANG,
@@ -37,7 +41,9 @@ import { WordModel } from '../../../../../../models/word.model';
     SelectModule,
     FileUpload,
     DividerModule,
-    CardModule],
+    CardModule,
+    Dialog,
+    MessageModule],
   templateUrl: './question-builder.component.html',
   styleUrl: './question-builder.component.scss'
 })
@@ -52,7 +58,13 @@ export class QuestionBuilderComponent {
   showTranslation = false;
   uploadedFiles: any[] = [];
   showWordTranslation = false;
+
+  showWordModal = false; // 👈 para mostrar el modal
+  tempWordBreakdown: WordModel[] = []; // 👈 edición temporal antes de guardar
   wordBreakdown: WordModel[] = [];
+  textHasChanged = false;
+  expandedWordIds: Set<number> = new Set();
+
   constructor(
     private store: Store,
     private notification: NotificationService
@@ -160,15 +172,6 @@ export class QuestionBuilderComponent {
     this.updateState();
   }
 
-  private updateState() {
-    this.store.dispatch(
-      updateActivity({
-        changes: { question: this.question }
-      })
-    );
-  }
-
-
   onFileSelect(files: File[]) {
     this.uploadedFiles = files;
 
@@ -246,12 +249,6 @@ export class QuestionBuilderComponent {
 
   }
 
-  stripHtml(html: string): string {
-    const temp = document.createElement('div');
-    temp.innerHTML = html;
-    return temp.textContent || '';
-  }
-
   updateWordTranslation(word: WordModel) {
     // Si quieres guardar el state en tiempo real:
     this.question.wordBreakdown = this.wordBreakdown;
@@ -289,20 +286,162 @@ export class QuestionBuilderComponent {
     return t?.translatedText || '';
   }
   
-  onWordTranslationChange(value: string, word: WordModel) {
-    const t = word.translations?.find(tr => tr.languageCode === DEFAULT_TARGET_LANG);
-    if (t) {
-      t.translatedText = value;
-    } else {
-      word.translations = word.translations ?? [];
-      word.translations.push({
-        languageCode: DEFAULT_TARGET_LANG,
-        translatedText: value,
-        explanation: '',
-        media: []
-      });
+  onWordTranslationChange(newValue: string, word: WordModel) {
+    const idx = this.tempWordBreakdown.findIndex(w => w.id === word.id);
+    if (idx !== -1) {
+      const updatedWord: WordModel = {
+        ...this.tempWordBreakdown[idx],
+        translations: [{
+          ...this.tempWordBreakdown[idx].translations?.[0],
+          translatedText: newValue
+        }]
+      };
+      // 🔥 Importantísimo: debes reemplazar el objeto completo en el array
+      this.tempWordBreakdown = [
+        ...this.tempWordBreakdown.slice(0, idx),
+        updatedWord,
+        ...this.tempWordBreakdown.slice(idx + 1)
+      ];
     }
-    this.question.wordBreakdown = this.wordBreakdown;
+  }
+
+  // 📦 Método para abrir el modal
+  openWordTranslationModal() {
+    if (!this.wordBreakdown.length) {
+      const plainText = this.stripHtml(this.question.text ?? '');
+      const words = plainText.split(/\s+/).filter(Boolean);
+    
+      this.wordBreakdown = words.map((w, i) => ({
+        id: i,
+        text: w,
+        languageCode: DEFAULT_SOURCE_LANG,
+        type: 'word',
+        translations: [{
+          translatedText: '',
+          languageCode: DEFAULT_TARGET_LANG,
+          explanation: '',
+          media: []
+        }]
+      }));
+    
+      this.question = {
+        ...this.question,
+        wordBreakdown: [...this.wordBreakdown]
+      };
+      this.updateState();
+    }
+  
+    // ✅ Clona para que puedas mutar libremente en el modal
+    this.tempWordBreakdown = JSON.parse(JSON.stringify(this.wordBreakdown));
+  
+    this.checkTextChange();
+    this.showWordModal = true;
+  }
+
+  // ✅ Método para guardar cambios del modal
+  saveWordTranslation() {
+    this.wordBreakdown = [...this.tempWordBreakdown];
+  
+    this.question = {
+      ...this.question,
+      wordBreakdown: [...this.wordBreakdown]
+    };
+  
     this.updateState();
+    this.showWordModal = false;
+  }
+
+  // ❌ Método para cancelar cambios
+  cancelWordTranslation() {
+    this.showWordModal = false;
+  }
+
+  // 🔥 Regenerar inteligentemente
+  regenerateWordBreakdown() {
+    const plainText = this.stripHtml(this.question.text ?? '');
+    const words = plainText.split(/\s+/).filter(Boolean);
+    
+    const existingWords = new Map(this.wordBreakdown.map(w => [w.text.toLowerCase(), w]));
+  
+    this.wordBreakdown = words.map((word, index) => {
+      const existing = existingWords.get(word.toLowerCase());
+      if (existing) {
+        return { ...existing, id: index };
+      }
+      return {
+        id: index,
+        text: word,
+        languageCode: DEFAULT_SOURCE_LANG,
+        type: 'word',
+        translations: [{
+          translatedText: '',
+          languageCode: DEFAULT_TARGET_LANG,
+          explanation: '',
+          media: []
+        }]
+      };
+    });
+  
+    this.question = {
+      ...this.question,
+      wordBreakdown: [...this.wordBreakdown]
+    };
+  
+    // ✅ Importante: también actualizar el TEMPORAL
+    this.tempWordBreakdown = JSON.parse(JSON.stringify(this.wordBreakdown));
+  
+    this.updateState();
+    this.textHasChanged = false; // 🔥 Ya regeneraste, ya no hay cambios
+  }
+
+  // 🔥 Util
+  stripHtml(html: string): string {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    return temp.textContent || '';
+  }
+
+  updateState() {
+    this.store.dispatch(
+      updateActivity({
+        changes: { question: this.question }
+      })
+    );
+  }
+  getFirstTranslation(word: WordModel) {
+    return word.translations?.[0] ?? { translatedText: '' };
+  }
+
+  checkTextChange() {
+    const plainText = this.stripHtml(this.question.text ?? '');
+    const currentWords = plainText.split(/\s+/).filter(Boolean);
+  
+    const breakdownWords = this.wordBreakdown.map(w => w.text);
+  
+    this.textHasChanged = currentWords.join(' ').toLowerCase() !== breakdownWords.join(' ').toLowerCase();
+  }
+
+  toggleExpandWord(wordId: number) {
+    if (this.expandedWordIds.has(wordId)) {
+      this.expandedWordIds.delete(wordId);
+    } else {
+      this.expandedWordIds.add(wordId);
+    }
+  }
+
+  onWordMediaSelect(event: any, word: WordModel) {
+    const file = event.files[0];
+    const fakeUrl = 'https://www.primefaces.org/cdn/api/' + file.name; // solo preview fake
+    
+    const type = file.type.startsWith('image')
+      ? 'image'
+      : file.type.startsWith('audio')
+      ? 'audio'
+      : 'video';
+  
+    word.translations[0].media.push({
+      type,
+      url: fakeUrl
+    });
   }
 }
