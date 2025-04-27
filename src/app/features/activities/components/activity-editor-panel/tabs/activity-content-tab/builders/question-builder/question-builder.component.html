@@ -1,67 +1,93 @@
+<div class="space-y-6">
 
-<div class="space-y-4">
- <!-- Menu de iconos multimedia -->
- <div class="flex items-center gap-4 mb-2">
-  <p-button icon="pi pi-image" [rounded]="true" [text]="true" pTooltip="Agregar imagen" (onClick)="toggleMediaType('image')" [severity]="selectedMediaType === 'image' ? 'primary' : 'secondary'" />
-  <p-button icon="pi pi-video" [rounded]="true" [text]="true" pTooltip="Agregar video" (onClick)="toggleMediaType('video')" [severity]="selectedMediaType === 'video' ? 'primary' : 'secondary'" />
-  <p-button icon="pi pi-volume-up" [rounded]="true" [text]="true" pTooltip="Agregar audio" (onClick)="toggleMediaType('audio')" [severity]="selectedMediaType === 'audio' ? 'primary' : 'secondary'" />
-  <p-button icon="pi pi-align-left" [rounded]="true" [text]="true" pTooltip="Solo texto" (onClick)="clearMedia()" [severity]="!selectedMediaType ? 'primary' : 'secondary'" />
-</div>
+  <!-- 🎥 Menú de iconos multimedia -->
+  <div class="flex items-center gap-4 mb-4">
+    <p-button 
+      icon="pi pi-image" 
+      [rounded]="true" 
+      [text]="true" 
+      pTooltip="Agregar imagen" 
+      (onClick)="toggleMediaType('image')" 
+      [severity]="selectedMediaType === 'image' ? 'primary' : 'secondary'" 
+    />
+    <p-button 
+      icon="pi pi-video" 
+      [rounded]="true" 
+      [text]="true" 
+      pTooltip="Agregar video" 
+      (onClick)="toggleMediaType('video')" 
+      [severity]="selectedMediaType === 'video' ? 'primary' : 'secondary'" 
+    />
+    <p-button 
+      icon="pi pi-volume-up" 
+      [rounded]="true" 
+      [text]="true" 
+      pTooltip="Agregar audio" 
+      (onClick)="toggleMediaType('audio')" 
+      [severity]="selectedMediaType === 'audio' ? 'primary' : 'secondary'" 
+    />
+    <p-button 
+      icon="pi pi-align-left" 
+      [rounded]="true" 
+      [text]="true" 
+      pTooltip="Solo texto" 
+      (onClick)="clearMedia()" 
+      [severity]="!selectedMediaType ? 'primary' : 'secondary'" 
+    />
+  </div>
 
-  <!-- Texto de la pregunta -->
+  <!-- ✍️ Texto de la pregunta -->
   <div>
     <label class="block text-sm font-medium mb-1">Texto de la pregunta</label>
     <p-editor
-    [ngModel]="question.text"
-    (ngModelChange)="updateField('text', $event)"
-    [style]="editorStyle"
+      [ngModel]="question.text"
+      (ngModelChange)="updateField('text', $event)"
+      [style]="editorStyle"
     ></p-editor>
   </div>
-  
 
-  <!-- Selector de posicion del medio -->
-<div *ngIf="uploadedFiles.length > 0" class="mb-2">
-  <label class="block text-sm font-medium mb-1">Posición del medio</label>
-  <p-select
-    [options]="mediaPositions"
-    [ngModel]="mediaPosition"
-    (ngModelChange)="onMediaPositionChange($event)"
-    optionLabel="label"
-    optionValue="value"
-    class="w-full" />
-</div>
+  <!-- 📦 Selector de posición de media -->
+  <div *ngIf="uploadedFiles.length > 0">
+    <label class="block text-sm font-medium mb-1">Posición del medio</label>
+    <p-select
+      [options]="mediaPositions"
+      [ngModel]="mediaPosition"
+      (ngModelChange)="onMediaPositionChange($event)"
+      optionLabel="label"
+      optionValue="value"
+      class="w-full"
+    />
+  </div>
 
-<div>
-  <p-fileupload
-  #fileUploader
-  *ngIf="selectedMediaType"
-  name="demo[]"
-  url="https://www.primefaces.org/cdn/api/upload.php"
-  (onUpload)="onUpload($event)"
-  (onSelect)="onFileSelect(fileUploader.files)"
-  (onClear)="onClearUpload()"
-  (onRemove)="onClearUpload()"
-  [multiple]="false"
-  [accept]="mediaAcceptType"
-  maxFileSize="1000000"
-  mode="advanced">
-  <ng-template #empty>
-    <div>Drag and drop files to here to upload.</div>
-  </ng-template>
-  <ng-template #content>
-    <ul *ngIf="uploadedFiles.length">
-      <li *ngFor="let file of uploadedFiles">
-        {{ file.name }} - {{ file.size }} bytes
-      </li>
-    </ul>
-  </ng-template>
-  </p-fileupload>
-</div>
+  <!-- 📤 Upload de archivo -->
+  <div *ngIf="selectedMediaType">
+    <p-fileupload
+      #fileUploader
+      name="demo[]"
+      url="https://www.primefaces.org/cdn/api/upload.php"
+      (onUpload)="onUpload($event)"
+      (onSelect)="onFileSelect(fileUploader.files)"
+      (onClear)="onClearUpload()"
+      (onRemove)="onClearUpload()"
+      [multiple]="false"
+      [accept]="mediaAcceptType"
+      maxFileSize="1000000"
+      mode="advanced"
+    >
+      <ng-template #empty>
+        <div>Arrastra los archivos aquí para subirlos.</div>
+      </ng-template>
+      <ng-template #content>
+        <ul *ngIf="uploadedFiles.length">
+          <li *ngFor="let file of uploadedFiles">
+            {{ file.name }} - {{ file.size }} bytes
+          </li>
+        </ul>
+      </ng-template>
+    </p-fileupload>
+  </div>
 
-
-
-
-  <!-- Descripción opcional -->
+  <!-- 📝 Descripción opcional -->
   <div>
     <label class="block text-sm font-medium mb-1">Descripción</label>
     <textarea
@@ -73,7 +99,7 @@
     ></textarea>
   </div>
 
-  <!-- ¿Es obligatoria? -->
+  <!-- 🔔 ¿Es obligatoria? -->
   <div class="flex items-center gap-2">
     <label class="block text-sm font-medium">¿Es obligatoria?</label>
     <p-toggleSwitch
@@ -82,127 +108,29 @@
     />
   </div>
 
-  <!-- Mostrar traducción -->
+  <!-- 🌎 Mostrar opción de traducción -->
   <div class="flex items-center gap-2">
     <label class="block text-sm font-medium">¿Agregar traducción?</label>
     <p-toggleSwitch [(ngModel)]="showTranslation" />
   </div>
+
   <p-divider type="solid" />
 
-  <!-- Traducción -->
-  <div *ngIf="showTranslation">
-    <label class="block text-sm font-medium mb-1">Traducción</label>
-      <textarea
-        pTextarea
-        rows="3"
-        [ngModel]="getTranslationText()"
-        (ngModelChange)="updateTranslation($event)"
-        class="w-full"
-    ></textarea>
+  <!-- 🌟 Componente de traducción -->
+  <app-question-builder-translation
+    [showTranslation]="showTranslation"
+    [showWordModal]="showWordModal"
+    [translationText]="getTranslationText()"
+    [tempWordBreakdown]="tempWordBreakdown"
+    [textHasChanged]="textHasChanged"
+    [expandedWordIds]="expandedWordIds"
+    (translationTextChange)="updateTranslation($event)"
+    (openWordTranslationModal)="openWordTranslationModal()"
+    (saveWordTranslation)="saveWordTranslation()"
+    (cancelWordTranslation)="cancelWordTranslation()"
+    (regenerateWordBreakdown)="regenerateWordBreakdown()"
+    (toggleExpandWord)="toggleExpandWord($event)"
+    (wordMediaSelect)="onWordMediaSelect($event.event, $event.word)"
+  />
 
-    <div class="flex justify-end mt-2">
-      <p-button 
-        label="Traducir palabra por palabra" 
-        icon="pi pi-book" 
-        (click)="openWordTranslationModal()" 
-        size="small"
-        styleClass="p-button-text p-button-sm text-blue-600" />
-    </div>
-
-
-  </div>
-
-<!-- 🌟 MODAL 🌟 -->
-<p-dialog 
-  [(visible)]="showWordModal" 
-  [modal]="true" 
-  [style]="{ width: '600px' }"
-  [closable]="false"
->
-  <ng-template pTemplate="header">
-    <div class="flex justify-between items-center">
-      <h2 class="text-lg font-semibold">Traducción palabra por palabra</h2>
-      
-    </div>
-  </ng-template>
-{{tempWordBreakdown|json}}
-  <div class="p-4 space-y-3 max-h-[400px] overflow-y-auto">
-    <p-message *ngIf="textHasChanged">El texto ha cambiado Puedes regenerar las palabras si lo deseas.</p-message>
-
-
-<p-button *ngIf="textHasChanged"
-  label="Regenerar palabras"
-  icon="pi pi-refresh"
-  severity="warn"
-  size="small"
-  (click)="regenerateWordBreakdown()"
-  styleClass="p-button-sm"
-/>
-<ng-container *ngFor="let word of tempWordBreakdown">
-  <div class="flex items-start gap-3 mb-2">
-    <div class="flex flex-col">
-      <span class="text-sm font-semibold">{{ word.text }}</span>
-      <input
-        pInputText
-        [(ngModel)]="word.translations[0].translatedText"
-        placeholder="Traducción"
-        class="mt-1 w-60"
-      />
-    </div>
-
-    <button pButton type="button"
-      icon="pi pi-plus"
-      size="small"
-      (click)="toggleExpandWord(word.id)"
-      class="p-button-rounded p-button-text p-button-sm ml-2"
-      pTooltip="Agregar detalles"
-    ></button>
-  </div>
-
-  <div *ngIf="expandedWordIds.has(word.id) || word.translations[0]?.explanation || word.translations[0]?.media?.length" 
-       class="ml-10 space-y-2">
-    <!-- Si ya tiene explicación o media, también se muestra automáticamente -->
-    <textarea
-      pTextarea
-      [(ngModel)]="word.translations[0].explanation"
-      rows="2"
-      placeholder="Explicación (opcional)"
-      class="w-full"
-    ></textarea>
-
-    <div class="flex items-center gap-3">
-      <p-fileUpload
-        mode="basic"
-        chooseLabel="Subir Media"
-        name="mediaUpload"
-        url="fake"
-        (onSelect)="onWordMediaSelect($event, word)"
-        [auto]="true"
-        [maxFileSize]="1000000"
-      ></p-fileUpload>
-    </div>
-
-    <div *ngIf="word.translations[0].media.length > 0" class="flex flex-wrap gap-2 mt-2">
-      <div *ngFor="let media of word.translations[0].media">
-        <img *ngIf="media.type === 'image'" [src]="media.url" alt="Imagen subida" class="w-20 h-20 object-cover rounded" />
-        <audio *ngIf="media.type === 'audio'" [src]="media.url" controls></audio>
-        <video *ngIf="media.type === 'video'" [src]="media.url" controls class="w-32 h-20"></video>
-      </div>
-    </div>
-  </div>
-
-  <p-divider />
-</ng-container>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-2">
-      <p-button label="Cancelar" (click)="cancelWordTranslation()" severity="secondary" />
-      <p-button label="Guardar" (click)="saveWordTranslation()" severity="primary" />
-    </div>
-  </ng-template>
-</p-dialog>
-  
 </div>
-
-

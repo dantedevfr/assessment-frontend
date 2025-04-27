@@ -1,36 +1,40 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { defaultQuestion, updateActivity } from '../../../../../../state';
+
 import { FileUploadModule } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
-import { MediaModel } from '../../../../../../models/media.model';
-import { QuestionModel } from '../../../../../../models/question.model'; // ajusta la ruta si es necesario
-import { NotificationService } from '../../../../../../../../core/services/notification.service'; // ajusta si cambia
 import { EditorModule } from 'primeng/editor';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
-import { Dialog } from 'primeng/dialog';
-import { MessageModule } from 'primeng/message';
-
-
-import { QUESTION_MEDIA_TYPES,
-  DEFAULT_SOURCE_LANG,
-  DEFAULT_TARGET_LANG,
-  QUESTION_EDITOR_STYLE,
-  MEDIA_POSITIONS  } from './../../../../../../config/question.config';
-  import { SelectModule } from 'primeng/select';
-  import { Store } from '@ngrx/store';
-import { updateActivity } from '../../../../../../state';
-import { defaultQuestion } from '../../../../../../state';
-import { FileUpload } from 'primeng/fileupload';
+import { SelectModule } from 'primeng/select';
 import { DividerModule } from 'primeng/divider';
 import { CardModule } from 'primeng/card';
+import { DialogModule } from 'primeng/dialog';
+import { MessageModule } from 'primeng/message';
+
+import { AppQuestionBuilderTranslationComponent } from './question-builder-translation/question-builder-translation.component';
+
+import { NotificationService } from '../../../../../../../../core/services/notification.service';
+import { MediaModel } from '../../../../../../models/media.model';
+import { QuestionModel } from '../../../../../../models/question.model';
 import { WordModel } from '../../../../../../models/word.model';
+import { 
+  QUESTION_MEDIA_TYPES, 
+  DEFAULT_SOURCE_LANG, 
+  DEFAULT_TARGET_LANG, 
+  QUESTION_EDITOR_STYLE, 
+  MEDIA_POSITIONS 
+} from './../../../../../../config/question.config';
+
 @Component({
   selector: 'app-question-builder',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     FormsModule,
     FileUploadModule,
     ButtonModule,
@@ -39,102 +43,55 @@ import { WordModel } from '../../../../../../models/word.model';
     InputTextModule,
     TextareaModule,
     SelectModule,
-    FileUpload,
     DividerModule,
     CardModule,
-    Dialog,
-    MessageModule],
+    DialogModule,
+    MessageModule,
+    AppQuestionBuilderTranslationComponent
+  ],
   templateUrl: './question-builder.component.html',
   styleUrl: './question-builder.component.scss'
 })
 export class QuestionBuilderComponent {
 
+  // 📦 Estado Principal
   question: QuestionModel = { ...defaultQuestion };
   mediaTypes = [...QUESTION_MEDIA_TYPES];
   mediaPositions = [...MEDIA_POSITIONS];
   editorStyle = QUESTION_EDITOR_STYLE;
-  mediaPosition: string = 'left';
-  selectedMediaType: 'image' | 'video' | 'audio' | null = null;
-  showTranslation = false;
-  uploadedFiles: any[] = [];
-  showWordTranslation = false;
 
-  showWordModal = false; // 👈 para mostrar el modal
-  tempWordBreakdown: WordModel[] = []; // 👈 edición temporal antes de guardar
+  selectedMediaType: 'image' | 'video' | 'audio' | null = null;
+  mediaPosition: string = 'left';
+  uploadedFiles: any[] = [];
+
+  showTranslation = false;
+  showWordModal = false;
+
   wordBreakdown: WordModel[] = [];
-  textHasChanged = false;
+  tempWordBreakdown: WordModel[] = [];
   expandedWordIds: Set<number> = new Set();
+  textHasChanged = false;
 
   constructor(
     private store: Store,
     private notification: NotificationService
   ) {}
 
+  // ⚡ Getters
   get mediaAcceptType(): string {
     switch (this.selectedMediaType) {
-      case 'image':
-        return 'image/*';
-      case 'video':
-        return 'video/*';
-      case 'audio':
-        return 'audio/*';
-      default:
-        return '*/*';
+      case 'image': return 'image/*';
+      case 'video': return 'video/*';
+      case 'audio': return 'audio/*';
+      default: return '*/*';
     }
   }
 
-  toggleMediaType(type: 'image' | 'video' | 'audio') {
-    this.selectedMediaType = type;
-    this.mediaPosition = 'top';
-
-    const filteredMedia = (this.question.media ?? []).filter(
-      m => !['image', 'video', 'audio'].includes(m.type)
-    );
-
-    this.question = {
-      ...this.question,
-      media: filteredMedia
-    };
-
-    this.updateState();
+  getTranslationText(): string {
+    return this.question.translations?.find(t => t.languageCode === DEFAULT_TARGET_LANG)?.translatedText || '';
   }
 
-  clearMedia() {
-    this.selectedMediaType = null;
-
-    this.question = {
-      ...this.question,
-      media: []
-    };
-
-    this.updateState();
-  }
-
-  onUpload(event: any) {
-    if (!this.selectedMediaType) return;
-
-    const file = event.files[0];
-    const fakeUrl = 'https://www.primefaces.org/cdn/api/' + file.name;
-
-    const newMedia: MediaModel = {
-      type: this.selectedMediaType,
-      url: fakeUrl,
-      position: this.mediaPosition
-    };
-
-    this.question = {
-      ...this.question,
-      media: [newMedia]
-    };
-
-    this.updateState();
-    this.notification.showSuccess('Archivo subido correctamente');
-  }
-
-  uploadManually(fu: any) {
-    fu.upload();
-  }
-
+  // 🛠️ Funciones Generales
   updateField<K extends keyof QuestionModel>(field: K, value: QuestionModel[K]) {
     this.question = {
       ...this.question,
@@ -143,21 +100,92 @@ export class QuestionBuilderComponent {
     this.updateState();
   }
 
-  updateTranslation(value: string) { 
-    const translationList = this.question.translations ?? [];
-    
-    const updatedList = translationList.map(t => {
-      if (t.languageCode === DEFAULT_TARGET_LANG) {
-        return { ...t, translatedText: value };
-      }
-      return t;
-    });
+  updateState() {
+    this.store.dispatch(updateActivity({ changes: { question: this.question } }));
+  }
+
+  // 🎥 Funciones Media (imagen, audio, video)
+  toggleMediaType(type: 'image' | 'video' | 'audio') {
+    this.selectedMediaType = type;
+    this.mediaPosition = 'top';
   
-    const exists = updatedList.some(t => t.languageCode === DEFAULT_TARGET_LANG);
+    const filteredMedia = (this.question.media ?? []).filter(
+      m => !['image', 'video', 'audio'].includes(m.type)
+    );
   
-    if (!exists) {
-      updatedList.push({
-        languageCode: DEFAULT_TARGET_LANG, 
+    this.question = {
+      ...this.question,
+      media: [...filteredMedia] // 👈 importante clonar
+    };
+  
+    this.updateState();
+  }
+
+  clearMedia() {
+    this.selectedMediaType = null;
+    this.question.media = [];
+    this.updateState();
+  }
+
+  onUpload(event: any) {
+    if (!this.selectedMediaType) return;
+  
+    const file = event.files[0];
+    const newMedia: MediaModel = {
+      type: this.selectedMediaType,
+      url: 'https://www.primefaces.org/cdn/api/' + file.name,
+      position: this.mediaPosition
+    };
+  
+    this.question = {
+      ...this.question,
+      media: [newMedia]
+    };
+  
+    this.updateState();
+    this.notification.showSuccess('Archivo subido correctamente');
+  }
+
+  onFileSelect(files: File[]) {
+    this.uploadedFiles = files;
+    if (!this.selectedMediaType || !files.length) return;
+    this.onUpload({ files });
+  }
+
+  onClearUpload() {
+    this.uploadedFiles = [];
+    this.question = {
+      ...this.question,
+      media: []
+    };
+    this.updateState();
+  }
+
+  onMediaPositionChange(newPosition: string) {
+    this.mediaPosition = newPosition;
+  
+    const updatedMedia = this.question.media?.map(m => ({ ...m, position: newPosition })) ?? [];
+  
+    this.question = {
+      ...this.question,
+      media: updatedMedia
+    };
+  
+    this.updateState();
+  }
+
+  // 📝 Funciones Traducción General
+  updateTranslation(value: string) {
+    const originalTranslations = this.question.translations ?? [];
+    const translations = [...originalTranslations]; // 👈 Clonamos el array primero
+  
+    const idx = translations.findIndex(t => t.languageCode === DEFAULT_TARGET_LANG);
+  
+    if (idx >= 0) {
+      translations[idx] = { ...translations[idx], translatedText: value };
+    } else {
+      translations.push({
+        languageCode: DEFAULT_TARGET_LANG,
         translatedText: value,
         explanation: '',
         media: []
@@ -166,282 +194,122 @@ export class QuestionBuilderComponent {
   
     this.question = {
       ...this.question,
-      translations: updatedList
+      translations: translations
     };
   
     this.updateState();
   }
 
-  onFileSelect(files: File[]) {
-    this.uploadedFiles = files;
-
-    if (!this.selectedMediaType || !files.length) return;
-
-    const file = files[0];
-    const fakeUrl = 'https://www.primefaces.org/cdn/api/' + file.name;
-
-    const newMedia: MediaModel = {
-      type: this.selectedMediaType,
-      url: fakeUrl,
-      position: this.mediaPosition
-    };
-
-    this.question = {
-      ...this.question,
-      media: [newMedia]
-    };
-
-    this.updateState();
-  }
-
-  onMediaPositionChange(newPosition: string) {
-    this.mediaPosition = newPosition;
-
-    const updatedMedia = this.question.media?.map(m => ({
-      ...m,
-      position: newPosition
-    })) ?? [];
-
-    this.question = {
-      ...this.question,
-      media: updatedMedia
-    };
-
-    this.updateState();
-  }
-
-  onClearUpload() {
-    this.uploadedFiles = [];
-
-    this.question = {
-      ...this.question,
-      media: []
-    };
-
-    this.updateState();
-  }
-
-  generateWordBreakdown() {
-    console.log("change");
-
-    const plainText = this.stripHtml(this.question.text ?? '');
-    console.log(plainText);
-
-    const words = plainText.split(/\s+/).filter(Boolean);
-    console.log(words);
-
-    this.wordBreakdown = words.map((w, i) => ({
-      id: i,
-      text: w,
-      languageCode: DEFAULT_SOURCE_LANG,
-      type: 'word',
-      translations: [
-        {
-          translatedText: '',
-          languageCode: DEFAULT_TARGET_LANG,
-          explanation: '',
-          media: []
-        }
-      ]
-    }));
-
-    console.log(this.wordBreakdown);
-
-  }
-
-  updateWordTranslation(word: WordModel) {
-    // Si quieres guardar el state en tiempo real:
-    this.question.wordBreakdown = this.wordBreakdown;
-    this.updateState();
-  }
-
-  onWordMediaUpload(event: any, word: WordModel) {
-    const file = event.files[0];
-    const fakeUrl = 'https://www.primefaces.org/cdn/api/' + file.name;
-  
-    if (word.translations && word.translations.length > 0) {
-      const firstTranslation = word.translations[0];
-  
-      if (!firstTranslation.media) {
-        firstTranslation.media = [];
-      }
-  
-      firstTranslation.media.push({
-        type: 'audio',
-        url: fakeUrl
-      });
-    }
-  
-    this.question.wordBreakdown = this.wordBreakdown;
-    this.updateState();
-  }
-
-  getTranslationText(): string {
-    const t = this.question.translations?.find(tr => tr.languageCode === DEFAULT_TARGET_LANG);
-    return t?.translatedText || '';
-  }
-
-  getWordTranslation(word: WordModel): string {
-    const t = word.translations?.find(tr => tr.languageCode === DEFAULT_TARGET_LANG);
-    return t?.translatedText || '';
-  }
-  
-  onWordTranslationChange(newValue: string, word: WordModel) {
-    const idx = this.tempWordBreakdown.findIndex(w => w.id === word.id);
-    if (idx !== -1) {
-      const updatedWord: WordModel = {
-        ...this.tempWordBreakdown[idx],
-        translations: [{
-          ...this.tempWordBreakdown[idx].translations?.[0],
-          translatedText: newValue
-        }]
-      };
-      // 🔥 Importantísimo: debes reemplazar el objeto completo en el array
-      this.tempWordBreakdown = [
-        ...this.tempWordBreakdown.slice(0, idx),
-        updatedWord,
-        ...this.tempWordBreakdown.slice(idx + 1)
-      ];
-    }
-  }
-
-  // 📦 Método para abrir el modal
+  // 🔤 Funciones Traducción Palabra por Palabra (Modal)
   openWordTranslationModal() {
     if (!this.wordBreakdown.length) {
-      const plainText = this.stripHtml(this.question.text ?? '');
-      const words = plainText.split(/\s+/).filter(Boolean);
-    
-      this.wordBreakdown = words.map((w, i) => ({
-        id: i,
-        text: w,
-        languageCode: DEFAULT_SOURCE_LANG,
-        type: 'word',
-        translations: [{
-          translatedText: '',
-          languageCode: DEFAULT_TARGET_LANG,
-          explanation: '',
-          media: []
-        }]
-      }));
-    
-      this.question = {
-        ...this.question,
-        wordBreakdown: [...this.wordBreakdown]
-      };
-      this.updateState();
+      this.generateWordBreakdown();
     }
-  
-    // ✅ Clona para que puedas mutar libremente en el modal
     this.tempWordBreakdown = JSON.parse(JSON.stringify(this.wordBreakdown));
-  
     this.checkTextChange();
     this.showWordModal = true;
   }
 
-  // ✅ Método para guardar cambios del modal
   saveWordTranslation() {
     this.wordBreakdown = [...this.tempWordBreakdown];
-  
     this.question = {
       ...this.question,
       wordBreakdown: [...this.wordBreakdown]
     };
-  
     this.updateState();
     this.showWordModal = false;
   }
 
-  // ❌ Método para cancelar cambios
   cancelWordTranslation() {
     this.showWordModal = false;
   }
 
-  // 🔥 Regenerar inteligentemente
   regenerateWordBreakdown() {
     const plainText = this.stripHtml(this.question.text ?? '');
     const words = plainText.split(/\s+/).filter(Boolean);
     
     const existingWords = new Map(this.wordBreakdown.map(w => [w.text.toLowerCase(), w]));
   
-    this.wordBreakdown = words.map((word, index) => {
+    const newWordBreakdown = words.map((word, index) => {
       const existing = existingWords.get(word.toLowerCase());
-      if (existing) {
-        return { ...existing, id: index };
-      }
-      return {
-        id: index,
-        text: word,
-        languageCode: DEFAULT_SOURCE_LANG,
-        type: 'word',
-        translations: [{
-          translatedText: '',
-          languageCode: DEFAULT_TARGET_LANG,
-          explanation: '',
-          media: []
-        }]
-      };
+      return existing ? { ...existing, id: index } : this.createNewWord(word, index);
     });
+  
+    this.wordBreakdown = [...newWordBreakdown];
+    this.tempWordBreakdown = JSON.parse(JSON.stringify(newWordBreakdown));
   
     this.question = {
       ...this.question,
-      wordBreakdown: [...this.wordBreakdown]
+      wordBreakdown: [...newWordBreakdown]
     };
   
-    // ✅ Importante: también actualizar el TEMPORAL
-    this.tempWordBreakdown = JSON.parse(JSON.stringify(this.wordBreakdown));
-  
+    this.textHasChanged = false;
     this.updateState();
-    this.textHasChanged = false; // 🔥 Ya regeneraste, ya no hay cambios
-  }
-
-  // 🔥 Util
-  stripHtml(html: string): string {
-    const temp = document.createElement('div');
-    temp.innerHTML = html;
-    return temp.textContent || '';
-  }
-
-  updateState() {
-    this.store.dispatch(
-      updateActivity({
-        changes: { question: this.question }
-      })
-    );
-  }
-  getFirstTranslation(word: WordModel) {
-    return word.translations?.[0] ?? { translatedText: '' };
-  }
-
-  checkTextChange() {
-    const plainText = this.stripHtml(this.question.text ?? '');
-    const currentWords = plainText.split(/\s+/).filter(Boolean);
-  
-    const breakdownWords = this.wordBreakdown.map(w => w.text);
-  
-    this.textHasChanged = currentWords.join(' ').toLowerCase() !== breakdownWords.join(' ').toLowerCase();
   }
 
   toggleExpandWord(wordId: number) {
-    if (this.expandedWordIds.has(wordId)) {
-      this.expandedWordIds.delete(wordId);
-    } else {
-      this.expandedWordIds.add(wordId);
+    this.expandedWordIds.has(wordId) ? this.expandedWordIds.delete(wordId) : this.expandedWordIds.add(wordId);
+  }
+
+  onWordTranslationChange(newValue: string, word: WordModel) {
+    const idx = this.tempWordBreakdown.findIndex(w => w.id === word.id);
+    if (idx !== -1) {
+      this.tempWordBreakdown[idx].translations[0].translatedText = newValue;
     }
   }
 
   onWordMediaSelect(event: any, word: WordModel) {
     const file = event.files[0];
-    const fakeUrl = 'https://www.primefaces.org/cdn/api/' + file.name; // solo preview fake
-    
-    const type = file.type.startsWith('image')
-      ? 'image'
-      : file.type.startsWith('audio')
-      ? 'audio'
-      : 'video';
-  
+    const type = file.type.startsWith('image') ? 'image' : file.type.startsWith('audio') ? 'audio' : 'video';
     word.translations[0].media.push({
       type,
-      url: fakeUrl
+      url: 'https://www.primefaces.org/cdn/api/' + file.name
     });
+  }
+
+  // 🔧 Utilidades
+  private stripHtml(html: string): string {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    return temp.textContent || '';
+  }
+
+  private checkTextChange() {
+    const plainText = this.stripHtml(this.question.text ?? '');
+    const currentWords = plainText.split(/\s+/).filter(Boolean);
+    const breakdownWords = this.wordBreakdown.map(w => w.text);
+    this.textHasChanged = currentWords.join(' ').toLowerCase() !== breakdownWords.join(' ').toLowerCase();
+  }
+
+  private generateWordBreakdown() {
+    const plainText = this.stripHtml(this.question.text ?? '');
+    const words = plainText.split(/\s+/).filter(Boolean);
+  
+    const newWordBreakdown = words.map((w, i) => this.createNewWord(w, i));
+  
+    this.wordBreakdown = [...newWordBreakdown];
+    this.tempWordBreakdown = JSON.parse(JSON.stringify(newWordBreakdown));
+  
+    this.question = {
+      ...this.question,
+      wordBreakdown: [...newWordBreakdown]
+    };
+  
+    this.updateState();
+  }
+
+  private createNewWord(word: string, index: number): WordModel {
+    return {
+      id: index,
+      text: word,
+      languageCode: DEFAULT_SOURCE_LANG,
+      type: 'word',
+      translations: [{
+        translatedText: '',
+        languageCode: DEFAULT_TARGET_LANG,
+        explanation: '',
+        media: []
+      }]
+    };
   }
 }
