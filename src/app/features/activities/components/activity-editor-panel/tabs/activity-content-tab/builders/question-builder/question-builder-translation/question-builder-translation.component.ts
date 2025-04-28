@@ -15,6 +15,7 @@ import { ListboxModule } from 'primeng/listbox';
 import { TagModule } from 'primeng/tag';
 import { OrderListModule } from 'primeng/orderlist';
 import { Chip } from 'primeng/chip';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-question-builder-translation',
@@ -34,7 +35,8 @@ import { Chip } from 'primeng/chip';
     ListboxModule,
     TagModule,
     OrderListModule,
-    Chip
+    Chip,
+    TooltipModule
   ],
   templateUrl: './question-builder-translation.component.html',
 })
@@ -61,6 +63,8 @@ export class AppQuestionBuilderTranslationComponent {
   selectedWordsForGrouping: WordModel[] = [];
   showGroupingModal = false;
   accordionActiveIndex: number | null = null;
+  accordionActiveIndexes: number[] = [];
+  accordionActiveValues: any[] = []; // 🔥 Ahora trabajamos con VALUES, no index.
 
   onTranslationChange(value: string) {
     this.translationTextChange.emit(value);
@@ -185,34 +189,68 @@ export class AppQuestionBuilderTranslationComponent {
     event.stopPropagation();
   }
 
-  playAudio(word: WordModel) {
-    const audio = new Audio(word.translations[0].media.find(m => m.type === 'audio')?.url);
-    audio.play();
-  }
+playAudio(word: WordModel) {
+  const audio = new Audio(word.translations[0].media.find(m => m.type === 'audio')?.url);
+  audio.play();
+}
 
-  pauseAudio(word: WordModel) {
-    const audio = new Audio(word.translations[0].media.find(m => m.type === 'audio')?.url);
-    audio.pause();
-  }
+pauseAudio(word: WordModel) {
+  const audio = new Audio(word.translations[0].media.find(m => m.type === 'audio')?.url);
+  audio.pause();
+}
 
-  hasAudio(word: WordModel): boolean {
-    return !!word.translations[0].media.find(m => m.type === 'audio');
-  }
+hasAudio(word: WordModel): boolean {
+  return !!word.translations[0].media.find(m => m.type === 'audio');
+}
 
-  onSelectWordAudio(event: any, word: WordModel) {
-    const file = event.files[0];
-    word.translations[0].media = [{
-      type: 'audio',
-      url: URL.createObjectURL(file),
-    }];
-  }
+onSelectWordAudio(event: any, word: WordModel) {
+  const file = event.files[0];
+  word.translations[0].media = [{
+    type: 'audio',
+    url: URL.createObjectURL(file),
+  }];
+}
 
-  onSelectWordImage(event: any, word: WordModel) {
-    const file = event.files[0];
-    word.translations[0].media.push({
-      type: 'image',
-      url: URL.createObjectURL(file),
-    });
+
+
+
+
+// 🔥 Bloquea que el header abra/cierre
+onHeaderClick(event: MouseEvent) {
+  console.log(event);
+
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+// 🔥 Solo el botón + maneja abrir/cerrar
+toggleAccordion(value: any, event: MouseEvent) {
+  event.stopPropagation();
+  const idx = this.accordionActiveValues.indexOf(value);
+  if (idx !== -1) {
+    this.accordionActiveValues.splice(idx, 1); // Cierra
+  } else {
+    this.accordionActiveValues.push(value); // Abre
   }
+  this.accordionActiveValues = [...this.accordionActiveValues]; // 💥 Angular necesita la referencia nueva para detectar cambios
+}
+
+onSelectWordImage(event: any, word: WordModel) {
+  const file = event.files[0];
+  if (file) {
+    word.translations[0].media = [
+      {
+        type: 'image',
+        url: URL.createObjectURL(file),
+      },
+    ];
+  }
+}
+
+getWordImageUrl(word: WordModel): string | null {
+  const image = word.translations[0].media?.find((m) => m.type === 'image');
+  return image ? image.url : null;
+}
+
 
 }
