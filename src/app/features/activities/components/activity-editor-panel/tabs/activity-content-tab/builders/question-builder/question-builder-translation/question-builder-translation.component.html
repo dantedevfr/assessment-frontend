@@ -9,17 +9,17 @@
       (ngModelChange)="onTranslationChange($event)"
       class="w-full"
     ></textarea>
-  
+
     <div class="flex justify-end">
-      <p-button 
-        label="Traducir palabra por palabra" 
-        icon="pi pi-book" 
-        (click)="onOpenWordTranslation()" 
+      <p-button
+        label="Traducir palabra por palabra"
+        icon="pi pi-book"
+        (click)="onOpenWordTranslation()"
         size="small"
         styleClass="p-button-text p-button-sm text-blue-600"
       />
     </div>
-  
+
     <!-- Modal -->
     <p-dialog
       [(visible)]="showWordModal"
@@ -30,23 +30,23 @@
       [contentStyle]="{ 'overflow-y': 'auto' }"
       [closable]="false"
     >
-      <ng-template pTemplate="header">
-        <div class="flex justify-between items-center">
-          <span class="font-bold whitespace-nowrap">Traducción palabra por palabra</span>
-        </div>
+    <ng-template pTemplate="header">
+      <div class="flex items-center justify-between w-full">
+        <span class="font-bold whitespace-nowrap">Traducción palabra por palabra</span>
 
-        <!-- ✅ Botón agrupar si hay palabras seleccionadas -->
-        <div *ngIf="selectedWordIds.length > 1" class="flex justify-end">
-            <p-button 
-              label="Agrupar palabras seleccionadas" 
-              icon="pi pi-link" 
-              (click)="groupSelectedWords()" 
-              severity="success"
-              size="small"
-            />
-          </div>
-      </ng-template>
-  
+        <div *ngIf="selectedWordIds.length > 1">
+          <p-button
+            label="Agrupar palabras seleccionadas"
+            icon="pi pi-link"
+            (click)="groupSelectedWords()"
+            severity="success"
+            size="small"
+            styleClass="p-button-sm"
+          />
+        </div>
+      </div>
+    </ng-template>
+
       <div class="space-y-4 p-2">
         <div *ngIf="textHasChanged" class="flex items-center justify-between bg-yellow-100 rounded p-3 mb-4">
             <span class="text-yellow-800 font-medium">
@@ -60,15 +60,15 @@
               size="small"
             />
           </div>
-        
-  
+
+
         <!-- 🚨 No hay palabras -->
         <div *ngIf="tempWordBreakdown.length === 0" class="text-center text-gray-600 p-4">
           No hay palabras para traducir.
         </div>
-  
+
         <!-- ⚡ Accordion de palabras -->
-        <p-accordion [multiple]="true">
+        <p-accordion [multiple]="false" >
           <ng-container *ngFor="let word of tempWordBreakdown; let i = index">
             <p-accordion-panel [value]="i">
               <p-accordion-header>
@@ -77,18 +77,20 @@
                 </ng-template>
                 <span class="flex items-center gap-2">
                   <!-- ⬅️ Checkbox aquí -->
-                  <p-checkbox 
-                    [(ngModel)]="selectedWordIds"
-                    [value]="word.id"
-                    [binary]="false"
-                    class="mr-2"
-                  ></p-checkbox>
-                  <span class="font-semibold capitalize">{{ word.text }}</span>
+                  <p-checkbox
+                  [(ngModel)]="selectedWordIds"
+                  [value]="word.id"
+                  [binary]="false"
+                  class="mr-2"
+                  (click)="onCheckboxClick($event)"
+                ></p-checkbox>
+                <p-chip [label]="word.text" />
+
                 </span>
               </p-accordion-header>
-  
+
               <p-accordion-content>
-                <div class="space-y-3">
+                <div class="space-y-4">
                   <input
                     pInputText
                     [(ngModel)]="word.translations[0].translatedText"
@@ -102,7 +104,7 @@
                     placeholder="Explicación (opcional)"
                     class="w-full"
                   ></textarea>
-  
+
                   <!-- 📤 Upload -->
                   <p-fileupload
                     name="demo[]"
@@ -127,23 +129,24 @@
                     </ng-template>
                   </p-fileupload>
                    <!-- 🆕 Botón para desagrupar si es phrase -->
-    <div *ngIf="word.type === 'phrase'" class="flex justify-end">
-        <p-button
-          label="Desagrupar"
-          icon="pi pi-times"
-          severity="warn"
-          size="small"
-          (click)="ungroupWord(word)"
-        />
-      </div>
+                   <div *ngIf="word.type === 'phrase'" class="flex justify-end pt-2">
+                    <p-button
+                      label="Desagrupar"
+                      icon="pi pi-times"
+                      severity="danger"
+                      size="small"
+                      styleClass="p-button-sm"
+                      (click)="ungroupWord(word)"
+                    />
+                  </div>
                 </div>
               </p-accordion-content>
             </p-accordion-panel>
           </ng-container>
         </p-accordion>
-  
+
       </div>
-  
+
       <ng-template pTemplate="footer">
         <div class="flex justify-end gap-2">
           <p-button label="Cancelar" (click)="onCancelWordTranslation()" severity="secondary" />
@@ -151,7 +154,7 @@
         </div>
       </ng-template>
     </p-dialog>
-  
+
   </div>
 
   <p-dialog
@@ -179,4 +182,3 @@
     <p-button label="Confirmar agrupación" severity="success" (click)="confirmGrouping()"></p-button>
   </div>
 </p-dialog>
-  

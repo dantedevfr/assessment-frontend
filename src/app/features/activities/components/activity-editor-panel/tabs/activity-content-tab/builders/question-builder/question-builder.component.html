@@ -2,37 +2,37 @@
 
   <!-- 🎥 Menú de iconos multimedia -->
   <div class="flex items-center gap-4 mb-4">
-    <p-button 
-      icon="pi pi-image" 
-      [rounded]="true" 
-      [text]="true" 
-      pTooltip="Agregar imagen" 
-      (onClick)="toggleMediaType('image')" 
-      [severity]="selectedMediaType === 'image' ? 'primary' : 'secondary'" 
+    <p-button
+      icon="pi pi-image"
+      [rounded]="true"
+      [text]="true"
+      pTooltip="Agregar imagen"
+      (onClick)="toggleMediaType('image')"
+      [severity]="selectedMediaType === 'image' ? 'primary' : 'secondary'"
     />
-    <p-button 
-      icon="pi pi-video" 
-      [rounded]="true" 
-      [text]="true" 
-      pTooltip="Agregar video" 
-      (onClick)="toggleMediaType('video')" 
-      [severity]="selectedMediaType === 'video' ? 'primary' : 'secondary'" 
+    <p-button
+      icon="pi pi-video"
+      [rounded]="true"
+      [text]="true"
+      pTooltip="Agregar video"
+      (onClick)="toggleMediaType('video')"
+      [severity]="selectedMediaType === 'video' ? 'primary' : 'secondary'"
     />
-    <p-button 
-      icon="pi pi-volume-up" 
-      [rounded]="true" 
-      [text]="true" 
-      pTooltip="Agregar audio" 
-      (onClick)="toggleMediaType('audio')" 
-      [severity]="selectedMediaType === 'audio' ? 'primary' : 'secondary'" 
+    <p-button
+      icon="pi pi-volume-up"
+      [rounded]="true"
+      [text]="true"
+      pTooltip="Agregar audio"
+      (onClick)="toggleMediaType('audio')"
+      [severity]="selectedMediaType === 'audio' ? 'primary' : 'secondary'"
     />
-    <p-button 
-      icon="pi pi-align-left" 
-      [rounded]="true" 
-      [text]="true" 
-      pTooltip="Solo texto" 
-      (onClick)="clearMedia()" 
-      [severity]="!selectedMediaType ? 'primary' : 'secondary'" 
+    <p-button
+      icon="pi pi-align-left"
+      [rounded]="true"
+      [text]="true"
+      pTooltip="Solo texto"
+      (onClick)="clearMedia()"
+      [severity]="!selectedMediaType ? 'primary' : 'secondary'"
     />
   </div>
 
@@ -126,7 +126,7 @@
     [expandedWordIds]="expandedWordIds"
     (translationTextChange)="updateTranslation($event)"
     (openWordTranslationModal)="openWordTranslationModal()"
-    (saveWordTranslation)="saveWordTranslation()"
+    (saveWordTranslation)="onSaveWordTranslation($event)"
     (cancelWordTranslation)="cancelWordTranslation()"
     (regenerateWordBreakdown)="regenerateWordBreakdown()"
     (toggleExpandWord)="toggleExpandWord($event)"

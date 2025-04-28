@@ -22,12 +22,12 @@ import { NotificationService } from '../../../../../../../../core/services/notif
 import { MediaModel } from '../../../../../../models/media.model';
 import { QuestionModel } from '../../../../../../models/question.model';
 import { WordModel } from '../../../../../../models/word.model';
-import { 
-  QUESTION_MEDIA_TYPES, 
-  DEFAULT_SOURCE_LANG, 
-  DEFAULT_TARGET_LANG, 
-  QUESTION_EDITOR_STYLE, 
-  MEDIA_POSITIONS 
+import {
+  QUESTION_MEDIA_TYPES,
+  DEFAULT_SOURCE_LANG,
+  DEFAULT_TARGET_LANG,
+  QUESTION_EDITOR_STYLE,
+  MEDIA_POSITIONS
 } from './../../../../../../config/question.config';
 
 @Component({
@@ -108,16 +108,16 @@ export class QuestionBuilderComponent {
   toggleMediaType(type: 'image' | 'video' | 'audio') {
     this.selectedMediaType = type;
     this.mediaPosition = 'top';
-  
+
     const filteredMedia = (this.question.media ?? []).filter(
       m => !['image', 'video', 'audio'].includes(m.type)
     );
-  
+
     this.question = {
       ...this.question,
       media: [...filteredMedia] // 👈 importante clonar
     };
-  
+
     this.updateState();
   }
 
@@ -129,19 +129,19 @@ export class QuestionBuilderComponent {
 
   onUpload(event: any) {
     if (!this.selectedMediaType) return;
-  
+
     const file = event.files[0];
     const newMedia: MediaModel = {
       type: this.selectedMediaType,
       url: 'https://www.primefaces.org/cdn/api/' + file.name,
       position: this.mediaPosition
     };
-  
+
     this.question = {
       ...this.question,
       media: [newMedia]
     };
-  
+
     this.updateState();
     this.notification.showSuccess('Archivo subido correctamente');
   }
@@ -163,14 +163,14 @@ export class QuestionBuilderComponent {
 
   onMediaPositionChange(newPosition: string) {
     this.mediaPosition = newPosition;
-  
+
     const updatedMedia = this.question.media?.map(m => ({ ...m, position: newPosition })) ?? [];
-  
+
     this.question = {
       ...this.question,
       media: updatedMedia
     };
-  
+
     this.updateState();
   }
 
@@ -178,9 +178,9 @@ export class QuestionBuilderComponent {
   updateTranslation(value: string) {
     const originalTranslations = this.question.translations ?? [];
     const translations = [...originalTranslations]; // 👈 Clonamos el array primero
-  
+
     const idx = translations.findIndex(t => t.languageCode === DEFAULT_TARGET_LANG);
-  
+
     if (idx >= 0) {
       translations[idx] = { ...translations[idx], translatedText: value };
     } else {
@@ -191,12 +191,12 @@ export class QuestionBuilderComponent {
         media: []
       });
     }
-  
+
     this.question = {
       ...this.question,
       translations: translations
     };
-  
+
     this.updateState();
   }
 
@@ -220,6 +220,19 @@ export class QuestionBuilderComponent {
     this.showWordModal = false;
   }
 
+  onSaveWordTranslation(newWordBreakdown: WordModel[]) {
+    this.wordBreakdown = [...newWordBreakdown];
+    this.tempWordBreakdown = [...newWordBreakdown];
+
+    this.question = {
+      ...this.question,
+      wordBreakdown: [...newWordBreakdown]
+    };
+
+    this.updateState();
+    this.showWordModal = false;
+  }
+
   cancelWordTranslation() {
     this.showWordModal = false;
   }
@@ -227,22 +240,22 @@ export class QuestionBuilderComponent {
   regenerateWordBreakdown() {
     const plainText = this.stripHtml(this.question.text ?? '');
     const words = plainText.split(/\s+/).filter(Boolean);
-    
+
     const existingWords = new Map(this.wordBreakdown.map(w => [w.text.toLowerCase(), w]));
-  
+
     const newWordBreakdown = words.map((word, index) => {
       const existing = existingWords.get(word.toLowerCase());
       return existing ? { ...existing, id: index } : this.createNewWord(word, index);
     });
-  
+
     this.wordBreakdown = [...newWordBreakdown];
     this.tempWordBreakdown = JSON.parse(JSON.stringify(newWordBreakdown));
-  
+
     this.question = {
       ...this.question,
       wordBreakdown: [...newWordBreakdown]
     };
-  
+
     this.textHasChanged = false;
     this.updateState();
   }
@@ -284,17 +297,17 @@ export class QuestionBuilderComponent {
   private generateWordBreakdown() {
     const plainText = this.stripHtml(this.question.text ?? '');
     const words = plainText.split(/\s+/).filter(Boolean);
-  
+
     const newWordBreakdown = words.map((w, i) => this.createNewWord(w, i));
-  
+
     this.wordBreakdown = [...newWordBreakdown];
     this.tempWordBreakdown = JSON.parse(JSON.stringify(newWordBreakdown));
-  
+
     this.question = {
       ...this.question,
       wordBreakdown: [...newWordBreakdown]
     };
-  
+
     this.updateState();
   }
 

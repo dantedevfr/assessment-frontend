@@ -14,6 +14,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ListboxModule } from 'primeng/listbox';
 import { TagModule } from 'primeng/tag';
 import { OrderListModule } from 'primeng/orderlist';
+import { Chip } from 'primeng/chip';
 
 @Component({
   selector: 'app-question-builder-translation',
@@ -32,7 +33,8 @@ import { OrderListModule } from 'primeng/orderlist';
     CheckboxModule,
     ListboxModule,
     TagModule,
-    OrderListModule
+    OrderListModule,
+    Chip
   ],
   templateUrl: './question-builder-translation.component.html',
 })
@@ -58,6 +60,8 @@ export class AppQuestionBuilderTranslationComponent {
   orderedGroupedWords: WordModel[] = []; // Para reordenar
   selectedWordsForGrouping: WordModel[] = [];
   showGroupingModal = false;
+  accordionActiveIndex: number | null = null;
+
   onTranslationChange(value: string) {
     this.translationTextChange.emit(value);
   }
@@ -97,17 +101,17 @@ export class AppQuestionBuilderTranslationComponent {
 
   groupSelectedWords() {
     if (this.selectedWordIds.length < 2) return;
-  
+
     this.selectedWordsForGrouping = this.tempWordBreakdown
       .filter(word => this.selectedWordIds.includes(word.id))
       .sort((a, b) => a.id - b.id);
-  
+
     this.showGroupingModal = true;
   }
 
   confirmGrouping() {
     const combinedText = this.selectedWordsForGrouping.map(w => w.text).join(' ');
-  
+
     const newGroup: WordModel = {
       id: Date.now(),
       text: combinedText,
@@ -120,15 +124,15 @@ export class AppQuestionBuilderTranslationComponent {
         media: []
       }]
     };
-  
+
     // Eliminar seleccionadas
     const idsToRemove = this.selectedWordsForGrouping.map(w => w.id);
     this.tempWordBreakdown = this.tempWordBreakdown.filter(w => !idsToRemove.includes(w.id));
-  
+
     // Insertar el nuevo grupo en el lugar del primer elemento seleccionado
     const insertIndex = Math.min(...this.selectedWordsForGrouping.map(w => w.id));
     this.tempWordBreakdown.splice(insertIndex, 0, newGroup);
-  
+
     // Limpiar
     this.selectedWordIds = [];
     this.selectedWordsForGrouping = [];
@@ -138,9 +142,9 @@ export class AppQuestionBuilderTranslationComponent {
   // 🆕 FUNCIÓN PARA DESAGRUPAR
   ungroupWord(word: WordModel) {
     if (word.type !== 'phrase') return;
-  
+
     const parts = word.text.split(/\s+/).filter(Boolean);
-  
+
     const newWords: WordModel[] = parts.map((p, idx) => ({
       id: Date.now() + idx, // Usamos Date.now para IDs únicos rápidos (o tu sistema de IDs)
       text: p,
@@ -153,10 +157,10 @@ export class AppQuestionBuilderTranslationComponent {
         media: []
       }]
     }));
-  
+
     // Encuentra el índice del phrase
     const index = this.tempWordBreakdown.findIndex(w => w.id === word.id);
-  
+
     if (index !== -1) {
       // 🔥 Reemplaza el phrase en su misma posición por las nuevas palabras
       this.tempWordBreakdown.splice(index, 1, ...newWords);
@@ -176,4 +180,39 @@ export class AppQuestionBuilderTranslationComponent {
     this.groupedWords = [];
     this.orderedGroupedWords = [];
   }
+
+  onCheckboxClick(event: MouseEvent) {
+    event.stopPropagation();
+  }
+
+  playAudio(word: WordModel) {
+    const audio = new Audio(word.translations[0].media.find(m => m.type === 'audio')?.url);
+    audio.play();
+  }
+
+  pauseAudio(word: WordModel) {
+    const audio = new Audio(word.translations[0].media.find(m => m.type === 'audio')?.url);
+    audio.pause();
+  }
+
+  hasAudio(word: WordModel): boolean {
+    return !!word.translations[0].media.find(m => m.type === 'audio');
+  }
+
+  onSelectWordAudio(event: any, word: WordModel) {
+    const file = event.files[0];
+    word.translations[0].media = [{
+      type: 'audio',
+      url: URL.createObjectURL(file),
+    }];
+  }
+
+  onSelectWordImage(event: any, word: WordModel) {
+    const file = event.files[0];
+    word.translations[0].media.push({
+      type: 'image',
+      url: URL.createObjectURL(file),
+    });
+  }
+
 }
