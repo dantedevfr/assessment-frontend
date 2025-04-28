@@ -16,6 +16,7 @@ import { TagModule } from 'primeng/tag';
 import { OrderListModule } from 'primeng/orderlist';
 import { Chip } from 'primeng/chip';
 import { TooltipModule } from 'primeng/tooltip';
+import { SliderModule } from 'primeng/slider';
 
 @Component({
   selector: 'app-question-builder-translation',
@@ -36,7 +37,8 @@ import { TooltipModule } from 'primeng/tooltip';
     TagModule,
     OrderListModule,
     Chip,
-    TooltipModule
+    TooltipModule,
+    SliderModule
   ],
   templateUrl: './question-builder-translation.component.html',
 })
@@ -205,11 +207,22 @@ hasAudio(word: WordModel): boolean {
 
 onSelectWordAudio(event: any, word: WordModel) {
   const file = event.files[0];
-  word.translations[0].media = [{
-    type: 'audio',
-    url: URL.createObjectURL(file),
-  }];
+  if (file) {
+    // Elimina audios anteriores
+    word.translations[0].media = word.translations[0].media.filter(m => m.type !== 'audio');
+
+    word.translations[0].media.push({
+      type: 'audio',
+      url: URL.createObjectURL(file),
+    });
+  }
 }
+
+getWordAudioUrl(word: WordModel): string | null {
+  const audio = word.translations[0].media.find(m => m.type === 'audio');
+  return audio ? audio.url : null;
+}
+
 
 
 
@@ -238,12 +251,13 @@ toggleAccordion(value: any, event: MouseEvent) {
 onSelectWordImage(event: any, word: WordModel) {
   const file = event.files[0];
   if (file) {
-    word.translations[0].media = [
-      {
-        type: 'image',
-        url: URL.createObjectURL(file),
-      },
-    ];
+    // Elimina imágenes anteriores
+    word.translations[0].media = word.translations[0].media.filter(m => m.type !== 'image');
+
+    word.translations[0].media.push({
+      type: 'image',
+      url: URL.createObjectURL(file),
+    });
   }
 }
 
@@ -252,5 +266,25 @@ getWordImageUrl(word: WordModel): string | null {
   return image ? image.url : null;
 }
 
+audioDurations: { [wordId: number]: number } = {};
+
+// ⚡ Cuando el audio se carga, setea duración y valores iniciales
+onLoadedMetadata(event: Event, word: WordModel) {
+  const audioPlayer = event.target as HTMLAudioElement;
+  if (audioPlayer?.duration && word) {
+    this.audioDurations[word.id] = audioPlayer.duration;
+
+    if (word.startTime === undefined || word.endTime === undefined) {
+      word.startTime = 0;
+      word.endTime = audioPlayer.duration;
+    }
+  }
+}
+
+// ⚡ Cuando el usuario mueve el slider
+onAudioRangeChange(event: number[], word: WordModel) {
+  word.startTime = event[0];
+  word.endTime = event[1];
+}
 
 }

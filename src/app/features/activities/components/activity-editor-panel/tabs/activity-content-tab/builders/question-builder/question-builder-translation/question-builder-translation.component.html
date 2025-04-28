@@ -26,7 +26,7 @@
       [modal]="true"
       [draggable]="false"
       [resizable]="false"
-      [style]="{ width: '900px', height: '80vh' }"
+      [style]="{ width: '1600px', height: '80vh' }"
       [contentStyle]="{ 'overflow-y': 'auto' }"
       [closable]="false"
     >
@@ -98,77 +98,89 @@
                   class="min-w-[150px] max-w-[250px] flex-1"
                 />
 
-                <!-- Botón Play -->
-                <button
-                  pButton
-                  type="button"
-                  icon="pi pi-play"
+              <!-- Reproductor de Audio (siempre) -->
+<!-- 🎵 Bloque de Audio + Rango de Tiempos -->
+<div class="flex flex-col w-[300px] gap-2">
+  <!-- Audio player -->
+  <audio
+    [src]="getWordAudioUrl(word) || ''"
+    controls
+    [attr.disabled]="!getWordAudioUrl(word) ? true : null"
+    class="w-full h-8"
+    (loadedmetadata)="onLoadedMetadata($event, word)"
+  ></audio>
+
+  <!-- Slider de tiempo (StartTime - EndTime basado en tu modelo) -->
+  <div *ngIf="word.startTime !== undefined && word.endTime !== undefined" class="w-full">
+    <p-slider
+      [ngModel]="[word.startTime, word.endTime]"
+      (ngModelChange)="onAudioRangeChange($event, word)"
+      [range]="true"
+      [min]="0"
+      [max]="audioDurations[word.id] || 30"
+      [step]="0.1"
+      styleClass="w-full"
+    ></p-slider>
+
+    <!-- Mostrar valores actuales -->
+    <div class="flex justify-between text-xs mt-1 px-1">
+      <span>Inicio: {{ word.startTime | number:'1.1-1' }}s</span>
+      <span>Fin: {{ word.endTime | number:'1.1-1' }}s</span>
+    </div>
+  </div>
+</div>
+
+
+
+              <!-- Botón Upload Audio -->
+              <div class="flex items-center">
+                <p-fileupload
+                  name="audio[]"
+                  mode="basic"
+                  [showUploadButton]="false"
+                  [showCancelButton]="false"
+                  [auto]="true"
+                  chooseIcon="pi pi-volume-up"
+                  chooseLabel=""
+                  accept="audio/*"
+                  maxFileSize="1000000"
                   class="p-button-rounded p-button-text p-button-sm"
-                  (click)="playAudio(word)"
-                  pTooltip="Reproducir audio"
-                  tooltipPosition="top"
-                ></button>
+                  (onSelect)="onSelectWordAudio($event, word)"
+                ></p-fileupload>
+              </div>
 
-                <!-- Botón Pause -->
-                <button
-                  pButton
-                  type="button"
-                  icon="pi pi-pause"
-                  class="p-button-rounded p-button-text p-button-sm"
-                  (click)="pauseAudio(word)"
-                  pTooltip="Pausar audio"
-                  tooltipPosition="top"
-                ></button>
+                <!-- Botón Upload Imagen -->
+<div class="flex items-center">
+  <p-fileupload
+    name="image[]"
+    mode="basic"
+    [showUploadButton]="false"
+    [showCancelButton]="false"
+    [auto]="true"
+    chooseIcon="pi pi-image"
+    chooseLabel=""
+    accept="image/*"
+    maxFileSize="1000000"
+    class="p-button-rounded p-button-text p-button-sm"
+    (onSelect)="onSelectWordImage($event, word)"
+  ></p-fileupload>
+</div>
 
-                <!-- Upload Imagen -->
-                <div class="flex items-center gap-2">
-                  <p-fileupload
-                    name="demo[]"
-                    mode="basic"
-                    [showUploadButton]="false"
-                    [showCancelButton]="false"
-                    [auto]="true"
-                    chooseIcon="pi pi-image"
-                    chooseLabel=""
-                    accept="image/*"
-                    maxFileSize="1000000"
-                    class="p-button-rounded p-button-text p-button-sm"
-                    (onSelect)="onSelectWordImage($event, word)"
-                  ></p-fileupload>
+<!-- Previsualización de Imagen (o placeholder) -->
+<div class="flex items-center justify-center w-10 h-10">
+  <ng-container *ngIf="getWordImageUrl(word); else noImage">
+    <img
+      [src]="getWordImageUrl(word)"
+      alt="Imagen subida"
+      class="w-10 h-10 object-cover rounded-md shadow-sm"
+    />
+  </ng-container>
+  <ng-template #noImage>
+    <div class="w-10 h-10 bg-gray-100 rounded-md"></div> <!-- Placeholder vacío -->
+  </ng-template>
+</div>
 
-                  <!-- Previsualización de imagen -->
-                  <img
-                    *ngIf="getWordImageUrl(word)"
-                    [src]="getWordImageUrl(word)"
-                    alt="Imagen subida"
-                    class="w-10 h-10 object-cover rounded-md shadow-sm"
-                  />
-                </div>
 
-                <!-- Upload Audio (modificado para alinear bonito) -->
-                <div class="flex items-center gap-2">
-                  <p-fileupload
-                    name="demo[]"
-                    mode="basic"
-                    [showUploadButton]="false"
-                    [showCancelButton]="false"
-                    [auto]="true"
-                    chooseIcon="pi pi-volume-up"
-                    chooseLabel=""
-                    accept="audio/*"
-                    maxFileSize="1000000"
-                    class="p-button-rounded p-button-text p-button-sm"
-                    (onSelect)="onSelectWordAudio($event, word)"
-                  ></p-fileupload>
-
-                  <!-- Icono si ya existe un audio subido -->
-                  <i
-                    *ngIf="hasAudio(word)"
-                    class="pi pi-check-circle text-green-500"
-                    pTooltip="Audio subido"
-                    tooltipPosition="top"
-                  ></i>
-                </div>
 
                 <!-- Botón para abrir/cerrar -->
                 <button
@@ -192,11 +204,6 @@
                     placeholder="Explicación (opcional)"
                     class="w-full h-24 resize-none"
                   ></textarea>
-
-                  <!-- 🔥 Mostrar imagen subida si existe -->
-                  <div *ngIf="getWordImageUrl(word)" class="flex justify-center">
-                    <img [src]="getWordImageUrl(word)" alt="Imagen subida" class="max-h-40 object-contain rounded shadow-md" />
-                  </div>
 
                   <!-- 🆕 Botón para desagrupar si es phrase -->
                   <div *ngIf="word.type === 'phrase'" class="flex justify-end pt-2">
