@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
@@ -17,6 +17,9 @@ import { OrderListModule } from 'primeng/orderlist';
 import { Chip } from 'primeng/chip';
 import { TooltipModule } from 'primeng/tooltip';
 import { SliderModule } from 'primeng/slider';
+import WaveSurfer from 'wavesurfer.js';
+import RegionsPlugin from 'wavesurfer.js/plugins/regions'; // 🛑 sin `.js` al final si usas Typescript
+import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 
 @Component({
   selector: 'app-question-builder-translation',
@@ -57,6 +60,10 @@ export class AppQuestionBuilderTranslationComponent {
   @Output() regenerateWordBreakdown = new EventEmitter<void>();
   @Output() toggleExpandWord = new EventEmitter<number>();
   @Output() wordMediaSelect = new EventEmitter<{ event: any, word: WordModel }>();
+  @ViewChildren('waveformContainerRef') waveformContainers!: QueryList<ElementRef>;
+
+  waveSurfers: { [wordId: number]: WaveSurfer } = {};
+  regionsPlugins: { [wordId: number]: ReturnType<typeof RegionsPlugin.create> } = {};
 
   uploadedWordFiles: File[] = [];
   selectedWordIds: number[] = []; // <-- IDs de las palabras seleccionadas para agrupar
@@ -67,6 +74,7 @@ export class AppQuestionBuilderTranslationComponent {
   accordionActiveIndex: number | null = null;
   accordionActiveIndexes: number[] = [];
   accordionActiveValues: any[] = []; // 🔥 Ahora trabajamos con VALUES, no index.
+  isPlaying: { [wordId: number]: boolean } = {};
 
   onTranslationChange(value: string) {
     this.translationTextChange.emit(value);
@@ -74,10 +82,32 @@ export class AppQuestionBuilderTranslationComponent {
 
   onOpenWordTranslation() {
     this.openWordTranslationModal.emit();
+
+    // Dale un poco de tiempo al DOM para montar los elementos
+    setTimeout(() => {
+      this.tempWordBreakdown.forEach(word => {
+        const audio = this.getAudioMedia(word);
+        if (audio?.url) {
+          this.initWaveSurferForWordFromUrl(word, audio.url);
+        }
+      });
+    }, 300); // puedes ajustar si es necesario
   }
 
   onSaveWordTranslation() {
-    this.saveWordTranslation.emit(this.tempWordBreakdown); // 🔥 Emitimos la nueva lista
+    // 🔄 Sync regions → word.media
+    this.tempWordBreakdown.forEach(word => {
+      const audio = this.getAudioMedia(word);
+      const region = this.regionsPlugins[word.id]?.getRegions()?.[0];
+
+      if (audio && region) {
+        audio.startTime = region.start;
+        audio.endTime = region.end;
+      }
+    });
+
+    // ✅ Ahora sí emite el modelo actualizado
+    this.saveWordTranslation.emit(this.tempWordBreakdown);
   }
 
   onCancelWordTranslation() {
@@ -207,16 +237,20 @@ hasAudio(word: WordModel): boolean {
 
 onSelectWordAudio(event: any, word: WordModel) {
   const file = event.files[0];
-  if (file) {
-    // Elimina audios anteriores
-    word.translations[0].media = word.translations[0].media.filter(m => m.type !== 'audio');
+  if (!file) return;
 
-    word.translations[0].media.push({
-      type: 'audio',
-      url: URL.createObjectURL(file),
-    });
-  }
+  word.translations[0].media = word.translations[0].media.filter(m => m.type !== 'audio');
+  const url = URL.createObjectURL(file);
+
+  word.translations[0].media.push({
+    type: 'audio',
+    url,
+  });
+
+  this.initWaveSurferForWord(word, file); // ✅ Carga individual por palabra
 }
+
+
 
 getWordAudioUrl(word: WordModel): string | null {
   const audio = word.translations[0].media.find(m => m.type === 'audio');
@@ -271,20 +305,181 @@ audioDurations: { [wordId: number]: number } = {};
 // ⚡ Cuando el audio se carga, setea duración y valores iniciales
 onLoadedMetadata(event: Event, word: WordModel) {
   const audioPlayer = event.target as HTMLAudioElement;
-  if (audioPlayer?.duration && word) {
+  if (audioPlayer?.duration) {
     this.audioDurations[word.id] = audioPlayer.duration;
 
-    if (word.startTime === undefined || word.endTime === undefined) {
-      word.startTime = 0;
-      word.endTime = audioPlayer.duration;
+    const audio = word.translations[0].media.find(m => m.type === 'audio');
+    if (audio) {
+      audio.startTime ??= 0;
+      audio.endTime ??= audioPlayer.duration;
     }
   }
 }
 
 // ⚡ Cuando el usuario mueve el slider
 onAudioRangeChange(event: number[], word: WordModel) {
-  word.startTime = event[0];
-  word.endTime = event[1];
+  const audio = word.translations[0].media.find(m => m.type === 'audio');
+  if (audio) {
+    audio.startTime = event[0];
+    audio.endTime = event[1];
+  }
+}
+
+getAudioMedia(word: WordModel) {
+  return word.translations[0]?.media.find(m => m.type === 'audio') || null;
+}
+
+initWaveSurferForWord(word: WordModel, file: File) {
+  const audioUrl = URL.createObjectURL(file);
+  const container = this.getWaveformContainerForWord(word.id);
+
+  if (!container) {
+    // Intenta nuevamente después de que el DOM esté disponible
+    setTimeout(() => this.initWaveSurferForWord(word, file), 100);
+    return;
+  }
+
+  // Limpia anterior
+  this.waveSurfers[word.id]?.destroy();
+
+  const waveSurfer = WaveSurfer.create({
+    container,
+    waveColor: '#A0AEC0',
+    progressColor: '#3182CE',
+    height: 80,
+  });
+
+  const regionsPlugin = RegionsPlugin.create();
+  waveSurfer.registerPlugin(regionsPlugin);
+  waveSurfer.load(audioUrl);
+
+  waveSurfer.once('ready', () => {
+    const duration = waveSurfer.getDuration();
+
+    const audio = word.translations[0].media.find(m => m.type === 'audio');
+
+    // Usa valores guardados o valores por defecto
+    const start = audio?.startTime ?? 0;
+    const end = audio?.endTime ?? duration;
+
+    // Crea la región visible
+    regionsPlugin.addRegion({
+      start,
+      end,
+      color: 'rgba(0, 123, 255, 0.1)',
+    });
+
+    // Guarda las referencias
+    this.waveSurfers[word.id] = waveSurfer;
+    this.regionsPlugins[word.id] = regionsPlugin;
+
+    // Asegura que el modelo también esté actualizado
+    if (audio) {
+      audio.startTime = start;
+      audio.endTime = end;
+    }
+  });
+
+  // Evento de actualización de región
+  regionsPlugin.on('region-updated', (region) => {
+    const audio = word.translations[0].media.find(m => m.type === 'audio');
+    if (audio) {
+      audio.startTime = region.start;
+      audio.endTime = region.end;
+    }
+  });
+}
+
+
+seekToStart(wordId: number) {
+  this.waveSurfers[wordId]?.seekTo(0);
+}
+
+playRegion(wordId: number) {
+  const region = this.regionsPlugins[wordId]?.getRegions()?.[0]; // ✅ Solo una región por palabra
+  if (region) {
+    this.waveSurfers[wordId]?.play(region.start, region.end);
+  }
+}
+
+getWaveformContainerForWord(wordId: number): HTMLElement | null {
+  const match = this.waveformContainers.find(el =>
+    el.nativeElement.id === 'waveform-' + wordId
+  );
+  return match?.nativeElement || null;
+}
+
+togglePlay(wordId: number) {
+  const wave = this.waveSurfers[wordId];
+  const region = this.regionsPlugins[wordId]?.getRegions()?.[0];
+
+  if (!wave) return;
+
+  if (this.isPlaying[wordId]) {
+    wave.pause();
+    this.isPlaying[wordId] = false;
+  } else {
+    if (region) {
+      wave.play(region.start, region.end);
+    } else {
+      wave.play(); // 🔁 fallback si no hay región
+    }
+    this.isPlaying[wordId] = true;
+
+    // 🛑 Marcar como "no playing" al terminar la reproducción
+    wave.once('finish', () => {
+      this.isPlaying[wordId] = false;
+    });
+  }
+}
+
+ngAfterViewInit() {
+  setTimeout(() => {
+    this.tempWordBreakdown.forEach(word => {
+      const audio = this.getAudioMedia(word);
+      if (audio?.url) {
+        this.initWaveSurferForWordFromUrl(word, audio.url);
+      }
+    });
+  });
+}
+
+initWaveSurferForWordFromUrl(word: WordModel, audioUrl: string) {
+  const container = this.getWaveformContainerForWord(word.id);
+  if (!container) {
+    setTimeout(() => this.initWaveSurferForWordFromUrl(word, audioUrl), 100);
+    return;
+  }
+
+  this.waveSurfers[word.id]?.destroy(); // limpia anterior
+
+  const waveSurfer = WaveSurfer.create({
+    container,
+    waveColor: '#A0AEC0',
+    progressColor: '#3182CE',
+    height: 80,
+  });
+
+  const regionsPlugin = RegionsPlugin.create();
+  waveSurfer.registerPlugin(regionsPlugin);
+  waveSurfer.load(audioUrl);
+
+  waveSurfer.once('ready', () => {
+    const duration = waveSurfer.getDuration();
+    const audio = word.translations[0].media.find(m => m.type === 'audio');
+
+    const start = audio?.startTime ?? 0;
+    const end = audio?.endTime ?? duration;
+
+    regionsPlugin.addRegion({
+      start,
+      end,
+      color: 'rgba(0, 123, 255, 0.1)',
+    });
+
+    this.waveSurfers[word.id] = waveSurfer;
+    this.regionsPlugins[word.id] = regionsPlugin;
+  });
 }
 
 }

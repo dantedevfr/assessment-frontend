@@ -7,6 +7,6 @@ export interface WordModel {
   type?: 'word' | 'phrase' | 'expression';
   translations: TranslationModel[];
   //media?: MediaModel;
-  startTime?: number;
-  endTime?: number;
+  //startTime?: number;
+  //endTime?: number;
 }
