@@ -20,7 +20,8 @@ import { SliderModule } from 'primeng/slider';
 import WaveSurfer from 'wavesurfer.js';
 import RegionsPlugin from 'wavesurfer.js/plugins/regions'; // 🛑 sin `.js` al final si usas Typescript
 import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-
+import { WaveformService } from '../../../../../../../services/waveform.service';
+import { getAudioMedia,getImageMedia } from '../../../../../../../utils/audio-utils';
 @Component({
   selector: 'app-question-builder-translation',
   standalone: true,
@@ -46,7 +47,198 @@ import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
   templateUrl: './question-builder-translation.component.html',
 })
 export class AppQuestionBuilderTranslationComponent {
+
   @Input() showTranslation = false;
+  @Input() showWordModal = false;
+  @Input() translationText = '';
+  @Input() tempWordBreakdown: WordModel[] = [];
+  @Input() textHasChanged = false;
+  @Input() expandedWordIds: Set<number> = new Set();
+
+  @Output() translationTextChange = new EventEmitter<string>();
+  @Output() openWordTranslationModal = new EventEmitter<void>();
+  @Output() saveWordTranslation = new EventEmitter<WordModel[]>();
+  @Output() cancelWordTranslation = new EventEmitter<void>();
+  @Output() regenerateWordBreakdown = new EventEmitter<void>();
+  @Output() toggleExpandWord = new EventEmitter<number>();
+  @Output() wordMediaSelect = new EventEmitter<{ event: any, word: WordModel }>();
+
+  @ViewChildren('waveformContainerRef') waveformContainers!: QueryList<ElementRef>;
+
+  isPlaying: { [wordId: number]: boolean } = {};
+  selectedWordIds: number[] = [];
+  groupedWords: WordModel[] = [];
+  orderedGroupedWords: WordModel[] = [];
+  selectedWordsForGrouping: WordModel[] = [];
+  showGroupingModal = false;
+  accordionActiveValues: any[] = [];
+
+  constructor(private waveformService: WaveformService) {}
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.tempWordBreakdown.forEach(word => {
+        const container = this.getWaveformContainerForWord(word.id);
+        const audio = getAudioMedia(word.translations[0].media);
+        if (container && audio?.url) {
+          this.waveformService.createWaveform(container, audio.url, word.id, audio.startTime ?? 0, audio.endTime);
+        }
+      });
+    });
+  }
+
+  getWaveformContainerForWord(wordId: number): HTMLElement | null {
+    const match = this.waveformContainers.find(el => el.nativeElement.id === 'waveform-' + wordId);
+    return match?.nativeElement || null;
+  }
+
+  onTranslationChange(value: string) {
+    this.translationTextChange.emit(value);
+  }
+
+  onOpenWordTranslation() {
+    this.openWordTranslationModal.emit();
+    setTimeout(() => {
+      this.tempWordBreakdown.forEach(word => {
+        const container = this.getWaveformContainerForWord(word.id);
+        const audio = getAudioMedia(word.translations[0].media);
+        if (container && audio?.url) {
+          this.waveformService.createWaveform(container, audio.url, word.id, audio.startTime ?? 0, audio.endTime);
+        }
+      });
+    }, 300);
+  }
+
+  onSaveWordTranslation() {
+    this.tempWordBreakdown.forEach(word => {
+      const audio = getAudioMedia(word.translations[0].media);
+      const region = this.waveformService.getRegion(word.id);
+      if (audio && region) {
+        audio.startTime = region.start;
+        audio.endTime = region.end;
+      }
+    });
+    this.saveWordTranslation.emit(this.tempWordBreakdown);
+  }
+
+  onCancelWordTranslation() {
+    this.cancelWordTranslation.emit();
+  }
+
+  onRegenerateWords() {
+    this.regenerateWordBreakdown.emit();
+  }
+
+  toggleAccordion(value: any, event: MouseEvent) {
+    event.stopPropagation();
+    const idx = this.accordionActiveValues.indexOf(value);
+    if (idx !== -1) {
+      this.accordionActiveValues.splice(idx, 1);
+    } else {
+      this.accordionActiveValues.push(value);
+    }
+    this.accordionActiveValues = [...this.accordionActiveValues];
+  }
+
+  onCheckboxClick(event: MouseEvent) {
+    event.stopPropagation();
+  }
+
+  togglePlay(wordId: number) {
+    this.isPlaying[wordId] = this.waveformService.togglePlay(wordId, () => {
+      this.isPlaying[wordId] = false;
+    });
+  }
+
+  onSelectWordAudio(event: any, word: WordModel) {
+    const file = event.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    word.translations[0].media = word.translations[0].media.filter(m => m.type !== 'audio');
+    word.translations[0].media.push({ type: 'audio', url });
+
+    const container = this.getWaveformContainerForWord(word.id);
+    if (container) {
+      this.waveformService.createWaveform(container, url, word.id);
+    }
+  }
+
+  onSelectWordImage(event: any, word: WordModel) {
+    const file = event.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    word.translations[0].media = word.translations[0].media.filter(m => m.type !== 'image');
+    word.translations[0].media.push({ type: 'image', url });
+  }
+
+  getWordImageUrl(word: WordModel): string | null {
+    const image = getImageMedia(word.translations[0].media);
+    return image ? image.url : null;
+  }
+
+  hasAudio(word: WordModel): boolean {
+    return !!getAudioMedia(word.translations[0].media);
+  }
+
+  groupSelectedWords() {
+    if (this.selectedWordIds.length < 2) return;
+    this.selectedWordsForGrouping = this.tempWordBreakdown
+      .filter(w => this.selectedWordIds.includes(w.id))
+      .sort((a, b) => a.id - b.id);
+    this.showGroupingModal = true;
+  }
+
+  confirmGrouping() {
+    const combinedText = this.selectedWordsForGrouping.map(w => w.text).join(' ');
+    const newGroup: WordModel = {
+      id: Date.now(),
+      text: combinedText,
+      languageCode: this.selectedWordsForGrouping[0].languageCode,
+      type: 'phrase',
+      translations: [{
+        translatedText: '',
+        languageCode: this.selectedWordsForGrouping[0].translations[0]?.languageCode ?? 'es',
+        explanation: '',
+        media: []
+      }]
+    };
+
+    const idsToRemove = this.selectedWordsForGrouping.map(w => w.id);
+    this.tempWordBreakdown = this.tempWordBreakdown.filter(w => !idsToRemove.includes(w.id));
+    const insertIndex = Math.min(...this.selectedWordsForGrouping.map(w => w.id));
+    this.tempWordBreakdown.splice(insertIndex, 0, newGroup);
+
+    this.selectedWordIds = [];
+    this.selectedWordsForGrouping = [];
+    this.showGroupingModal = false;
+  }
+
+  ungroupWord(word: WordModel) {
+    if (word.type !== 'phrase') return;
+
+    const parts = word.text.split(/\s+/).filter(Boolean);
+    const newWords: WordModel[] = parts.map((p, idx) => ({
+      id: Date.now() + idx,
+      text: p,
+      languageCode: word.languageCode,
+      type: 'word',
+      translations: [{
+        translatedText: '',
+        languageCode: word.translations[0]?.languageCode ?? 'es',
+        explanation: '',
+        media: []
+      }]
+    }));
+
+    const index = this.tempWordBreakdown.findIndex(w => w.id === word.id);
+    if (index !== -1) {
+      this.tempWordBreakdown.splice(index, 1, ...newWords);
+    }
+  }
+
+  /*@Input() showTranslation = false;
   @Input() showWordModal = false;
   @Input() translationText = '';
   @Input() tempWordBreakdown: WordModel[] = [];
@@ -480,6 +672,6 @@ initWaveSurferForWordFromUrl(word: WordModel, audioUrl: string) {
     this.waveSurfers[word.id] = waveSurfer;
     this.regionsPlugins[word.id] = regionsPlugin;
   });
-}
+}*/
 
 }
