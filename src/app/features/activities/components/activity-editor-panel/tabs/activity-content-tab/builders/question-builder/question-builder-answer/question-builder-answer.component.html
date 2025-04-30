@@ -39,6 +39,8 @@
           pTooltip="Opciones avanzadas"
           class="p-button-text p-button-sm"
           type="button"
+          (click)="openAdvancedOptions(i)"
+
         ></button>
         <button
           *ngIf="canAddMore() && question.answers!.length > 1"
@@ -69,3 +71,14 @@
 <div *ngIf="question.type === 'open'" class="p-3 italic text-gray-500 border border-gray-200 rounded">
   Esta es una pregunta abierta. El usuario ingresará su respuesta manualmente.
 </div>
+
+{{showAnswerModal}}
+<ng-container *ngIf="showAnswerModal">
+  <app-question-builder-answer-advanced
+    [visible]="showAnswerModal"
+    [initialTranslation]="selectedAdvancedAnswer?.translations?.[0]?.translatedText ?? ''"
+    [initialMedia]="selectedAdvancedAnswer?.media ?? []"
+    (visibleChange)="showAnswerModal = $event"
+    (save)="onAdvancedSave($event)"
+  ></app-question-builder-answer-advanced>
+</ng-container>

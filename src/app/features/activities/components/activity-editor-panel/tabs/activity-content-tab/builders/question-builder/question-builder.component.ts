@@ -16,7 +16,6 @@ import { DividerModule } from 'primeng/divider';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
 import { MessageModule } from 'primeng/message';
-
 import { AppQuestionBuilderTranslationComponent } from './question-builder-translation/question-builder-translation.component';
 import { NotificationService } from '../../../../../../../../core/services/notification.service';
 import { MediaModel } from '../../../../../../models/media.model';
@@ -50,8 +49,7 @@ import {
     DialogModule,
     MessageModule,
     AppQuestionBuilderTranslationComponent,
-    AppQuestionBuilderAnswerComponent
-  ],
+    AppQuestionBuilderAnswerComponent  ],
   templateUrl: './question-builder.component.html',
   styleUrl: './question-builder.component.scss'
 })
