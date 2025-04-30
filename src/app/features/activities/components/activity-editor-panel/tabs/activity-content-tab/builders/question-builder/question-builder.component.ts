@@ -1,3 +1,4 @@
+import { AppQuestionBuilderAnswerComponent } from './question-builder-answer/question-builder-answer.component';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,17 +18,18 @@ import { DialogModule } from 'primeng/dialog';
 import { MessageModule } from 'primeng/message';
 
 import { AppQuestionBuilderTranslationComponent } from './question-builder-translation/question-builder-translation.component';
-
 import { NotificationService } from '../../../../../../../../core/services/notification.service';
 import { MediaModel } from '../../../../../../models/media.model';
-import { QuestionModel } from '../../../../../../models/question.model';
+import { QuestionModel, QuestionType } from '../../../../../../models/question.model';
 import { WordModel } from '../../../../../../models/word.model';
 import {
   QUESTION_MEDIA_TYPES,
   DEFAULT_SOURCE_LANG,
   DEFAULT_TARGET_LANG,
   QUESTION_EDITOR_STYLE,
-  MEDIA_POSITIONS
+  MEDIA_POSITIONS,
+  QUESTION_TYPES
+
 } from './../../../../../../config/question.config';
 
 @Component({
@@ -47,7 +49,8 @@ import {
     CardModule,
     DialogModule,
     MessageModule,
-    AppQuestionBuilderTranslationComponent
+    AppQuestionBuilderTranslationComponent,
+    AppQuestionBuilderAnswerComponent
   ],
   templateUrl: './question-builder.component.html',
   styleUrl: './question-builder.component.scss'
@@ -59,6 +62,7 @@ export class QuestionBuilderComponent {
   mediaTypes = [...QUESTION_MEDIA_TYPES];
   mediaPositions = [...MEDIA_POSITIONS];
   editorStyle = QUESTION_EDITOR_STYLE;
+  questionTypes  = QUESTION_TYPES;
 
   selectedMediaType: 'image' | 'video' | 'audio' | null = null;
   mediaPosition: string = 'left';
@@ -144,6 +148,11 @@ export class QuestionBuilderComponent {
 
     this.updateState();
     this.notification.showSuccess('Archivo subido correctamente');
+  }
+
+  onQuestionTypeChange(type: QuestionType) {
+    this.question = { ...this.question, type };
+    this.updateState();
   }
 
   onFileSelect(files: File[]) {
@@ -324,5 +333,10 @@ export class QuestionBuilderComponent {
         media: []
       }]
     };
+  }
+
+  onAnswersChange(updatedQuestion: QuestionModel) {
+    this.question = { ...updatedQuestion };
+    this.updateState();
   }
 }

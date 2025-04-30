@@ -1,0 +1,71 @@
+<div *ngIf="showAnswers()" class="space-y-4">
+  <div
+    *ngFor="let answer of question.answers!; let i = index; trackBy: trackByIndex"
+    class="card-surface p-4 bg-white rounded-md border border-gray-300"
+  >
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-3 w-full">
+        <!-- Correct toggle (Radio para simple, Checkbox para multiple) -->
+        <p-radioButton
+          *ngIf="isSingleAnswer"
+          name="correctAnswer"
+          [value]="i"
+          [ngModel]="selectedSingleAnswerIndex"
+          (onClick)="setCorrectAnswer(i)"
+        ></p-radioButton>
+
+        <p-checkbox
+          *ngIf="!isSingleAnswer"
+          [binary]="true"
+          [ngModel]="answer.isCorrect"
+          (ngModelChange)="toggleCorrectAnswer(i)"
+        ></p-checkbox>
+
+        <!-- Texto de respuesta -->
+        <input
+          type="text"
+          pInputText
+          class="p-inputtext no-border-input w-full"
+          placeholder="Texto de la respuesta"
+          [ngModel]="answer.text"
+          (ngModelChange)="onAnswerTextChange(i, $event)"
+        />
+      </div>
+
+      <div class="flex gap-1">
+        <button
+          pButton
+          icon="pi pi-cog"
+          pTooltip="Opciones avanzadas"
+          class="p-button-text p-button-sm"
+          type="button"
+        ></button>
+        <button
+          *ngIf="canAddMore() && question.answers!.length > 1"
+          pButton
+          icon="pi pi-trash"
+          (click)="removeAnswer(i)"
+          pTooltip="Eliminar respuesta"
+          class="p-button-danger p-button-text p-button-sm"
+          type="button"
+        ></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón para agregar respuesta -->
+  <div *ngIf="canAddMore()" class="pt-2">
+    <button
+      pButton
+      label="Agregar respuesta"
+      icon="pi pi-plus"
+      (click)="addAnswer()"
+      class="p-button-sm"
+    ></button>
+  </div>
+</div>
+
+<!-- Mensaje para preguntas abiertas -->
+<div *ngIf="question.type === 'open'" class="p-3 italic text-gray-500 border border-gray-200 rounded">
+  Esta es una pregunta abierta. El usuario ingresará su respuesta manualmente.
+</div>

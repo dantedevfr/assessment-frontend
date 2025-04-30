@@ -1,5 +1,18 @@
 <div class="space-y-6">
 
+    <!-- Subtipo si es pregunta -->
+      <label class="block text-sm font-medium mb-1">Tipo de pregunta</label>
+        <p-select
+        [options]="questionTypes"
+        [ngModel]="question.type"
+        (ngModelChange)="onQuestionTypeChange($event)"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+        placeholder="Selecciona tipo"
+        />
+
+
   <!-- 🎥 Menú de iconos multimedia -->
   <div class="flex items-center gap-4 mb-4">
     <p-button
@@ -114,8 +127,6 @@
     <p-toggleSwitch [(ngModel)]="showTranslation" />
   </div>
 
-  <p-divider type="solid" />
-
   <!-- 🌟 Componente de traducción -->
   <app-question-builder-translation
     [showTranslation]="showTranslation"
@@ -132,5 +143,11 @@
     (toggleExpandWord)="toggleExpandWord($event)"
     (wordMediaSelect)="onWordMediaSelect($event.event, $event.word)"
   />
+  <label class="block text-sm font-medium mb-1">Answers</label>
+
+  <app-question-builder-answer
+  [question]="question"
+  (questionChange)="onAnswersChange($event)"
+/>
 
 </div>

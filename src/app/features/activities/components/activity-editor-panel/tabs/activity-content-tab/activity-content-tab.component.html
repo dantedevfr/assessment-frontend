@@ -1,4 +1,18 @@
 <div class="space-y-4">
+  <!-- Categoría -->
+  <div>
+      <label class="block text-sm font-medium mb-1">Categoría</label>
+      <p-treeSelect
+        [options]="categoryTree"
+        [(ngModel)]="selectedNode"
+        selectionMode="single"
+        placeholder="Selecciona categoría"
+        optionValue="value"
+        class="md:w-80 w-full"
+        containerStyleClass="w-full"
+        (onNodeSelect)="onCategorySelect($event)"
+      />
+  </div>
 
   <!-- Tipo de actividad -->
   <div>
@@ -12,35 +26,6 @@
     placeholder="Selecciona un tipo"
     (ngModelChange)="onActivityTypeChange($event)"
   />
-  </div>
-
-  <!-- Subtipo si es pregunta -->
-  <div *ngIf="isQuestion">
-    <label class="block text-sm font-medium mb-1">Tipo de pregunta</label>
-      <p-select
-      [ngModel]="activity.question?.type"
-      [options]="questionSubtypes"
-      optionLabel="label"
-      optionValue="value"
-      class="w-full"
-      placeholder="Selecciona subtipo"
-      (ngModelChange)="onQuestionTypeChange($event)"
-      />
-  </div>
-
-  <!-- Categoría -->
-  <div>
-    <label class="block text-sm font-medium mb-1">Categoría</label>
-    <p-treeSelect
-      [options]="categoryTree"
-      [(ngModel)]="selectedNode"
-      selectionMode="single"
-      placeholder="Selecciona categoría"
-      optionValue="value"
-      class="md:w-80 w-full"
-      containerStyleClass="w-full"
-      (onNodeSelect)="onCategorySelect($event)"
-    />
   </div>
 
   <!-- Título -->

@@ -6,7 +6,7 @@ export interface AnswerModel {
   id?: number;
   text: string;
   isCorrect: boolean;
-  translation?: TranslationModel;
-  perWord?: WordModel[];
+  translations?: TranslationModel[];
+  wordBreakdown?: WordModel[];
   media?: MediaModel[];
 }

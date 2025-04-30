@@ -5,3 +5,8 @@ html, body {
   overflow: hidden; // Evita scroll global
 
 }
+.no-border-input {
+  --p-inputtext-border-color: transparent;
+  --p-inputtext-shadow: none;
+  --p-inputtext-border-radius: 0;
+}
