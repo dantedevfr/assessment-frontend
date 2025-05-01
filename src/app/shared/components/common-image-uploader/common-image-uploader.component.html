@@ -1,0 +1,32 @@
+<div class="space-y-2">
+    <label class="block text-sm font-semibold">Imagen</label>
+  
+    <div class="w-full h-36 border border-gray-300 rounded-md bg-white flex items-center justify-center relative overflow-hidden">
+      <ng-container *ngIf="imageUrl; else placeholder">
+        <img [src]="imageUrl" class="w-full h-full object-cover" />
+        <button
+          (click)="onClear()"
+          class="absolute top-1 right-1 bg-white text-red-500 hover:bg-red-100 rounded-full p-1 shadow"
+        >
+          ✕
+        </button>
+      </ng-container>
+  
+      <ng-template #placeholder>
+        <span class="text-gray-400 text-sm">Arrastra o selecciona una imagen</span>
+      </ng-template>
+    </div>
+  
+    <p-fileupload
+      name="image[]"
+      mode="basic"
+      [auto]="true"
+      accept="image/*"
+      maxFileSize="1000000"
+      chooseLabel="Seleccionar imagen"
+      chooseIcon="pi pi-plus"
+      class="p-button-sm"
+      (onSelect)="onSelect($event)"
+    ></p-fileupload>
+  </div>
+  

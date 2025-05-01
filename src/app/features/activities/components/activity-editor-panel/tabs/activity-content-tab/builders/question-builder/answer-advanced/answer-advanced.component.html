@@ -23,98 +23,38 @@
     </div>
 
     <!-- Multimedia -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
- <!-- Imagen -->
-<div class="space-y-2">
-  <label class="block text-sm font-semibold">Imagen</label>
+<!-- Imagen -->
+<app-common-image-uploader
+  [imageUrl]="imageUrl"
+  (imageChange)="onImageChanged($event)"
+></app-common-image-uploader>
 
-  <p-fileupload
-    name="image[]"
-    mode="advanced"
-    [auto]="true"
-    accept="image/*"
-    maxFileSize="1000000"
-    [showUploadButton]="false"
-    [showCancelButton]="false"
-    customUpload="false"
-    (onSelect)="onImageSelect($event)"
-  >
-    <ng-template pTemplate="empty">
-      <div
-        *ngIf="!imageUrl"
-        class="w-full h-32 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center text-gray-500 text-sm"
-      >
-        Arrastra o haz clic para subir una imagen
-      </div>
-    </ng-template>
 
-    <ng-template pTemplate="content">
-      <div
-        *ngIf="imageUrl"
-        class="relative w-full h-32 rounded-md overflow-hidden"
-      >
-        <img
-          [src]="imageUrl"
-          alt="Previsualización"
-          class="w-full h-full  object-cover border"
-        />
-      </div>
-    </ng-template>
-  </p-fileupload>
-</div>
 
 <!-- Audio -->
-<div class="space-y-2 flex-1">
-  <label class="block text-sm font-semibold">Audio</label>
-
-  <div
-    class="relative w-full h-32 bg-gray-50 rounded-md border border-gray-300 overflow-hidden"
-    #waveformContainerRef
-  >
-    <ng-container *ngIf="!audioUrl">
-      <div
-        class="absolute inset-0 flex items-center justify-center text-sm text-gray-400"
-      >
-        Sin audio
-      </div>
-    </ng-container>
-  </div>
-
-  <!-- Controles -->
-  <div class="flex items-center gap-3 pt-2">
-    <p-fileupload
-      name="audio[]"
-      mode="basic"
-      [auto]="true"
-      accept="audio/*"
-      maxFileSize="1000000"
-      [showUploadButton]="false"
-      [showCancelButton]="false"
-      chooseIcon="pi pi-volume-up"
-      chooseLabel="Subir audio"
-      class="p-button-sm"
-      (onSelect)="onAudioSelect($event)"
-    ></p-fileupload>
-
-    <button
-      pButton
-      class="p-button-rounded p-button-icon-only bg-green-500 hover:bg-green-600"
-      [icon]="isPlaying ? 'pi pi-pause' : 'pi pi-play'"
-      (click)="togglePlay()"
-      [disabled]="!audioUrl"
-    ></button>
-  </div>
-</div>
-
-    </div>
+<app-common-audio-uploader
+  [audioUrl]="audioUrl"
+  [audioStart]="audioStart"
+  [audioEnd]="audioEnd"
+  (audioChange)="onAudioChanged($event)"
+  (regionChange)="onRegionChanged($event)"
+  (waveformReady)="onWaveformReady()"
+/>
+          </div>
   </div>
 
   <!-- Footer -->
   <ng-template pTemplate="footer">
     <div class="flex justify-end gap-2">
       <p-button label="Cancelar" severity="secondary" (click)="onCancel()" />
-      <p-button label="Guardar" severity="primary" (click)="onSave()" />
+      <p-button
+  label="Guardar"
+  severity="primary"
+  [disabled]="!isWaveformReady"
+  (click)="onSave()"
+/>
     </div>
   </ng-template>
 </p-dialog>

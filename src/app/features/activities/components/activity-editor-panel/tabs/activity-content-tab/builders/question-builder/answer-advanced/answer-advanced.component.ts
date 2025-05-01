@@ -7,6 +7,7 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  OnChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +17,8 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { InputTextModule } from 'primeng/inputtext';
 import { MediaModel } from '../../../../../../../models/media.model';
 import { WaveformService } from '../../../../../../../services/waveform.service';
+import { CommonImageUploaderComponent } from '../../../../../../../../../shared/components/common-image-uploader/common-image-uploader.component';
+import { CommonAudioUploaderComponent } from '../../../../../../../../../shared/components/common-audio-uploader/common-audio-uploader.component';
 
 @Component({
   selector: 'app-question-builder-answer-advanced',
@@ -26,14 +29,17 @@ import { WaveformService } from '../../../../../../../services/waveform.service'
     DialogModule,
     ButtonModule,
     FileUploadModule,
-    InputTextModule
+    InputTextModule,
+    CommonImageUploaderComponent,
+    CommonAudioUploaderComponent
   ],
   templateUrl: './answer-advanced.component.html'
 })
-export class QuestionBuilderAnswerAdvancedComponent implements AfterViewInit {
+export class QuestionBuilderAnswerAdvancedComponent implements AfterViewInit, OnChanges {
   @Input() visible: boolean = false;
   @Input() initialTranslation: string = '';
   @Input() initialMedia: MediaModel[] = [];
+  @ViewChild(CommonAudioUploaderComponent) audioUploaderRef!: CommonAudioUploaderComponent;
 
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() save = new EventEmitter<{
@@ -41,109 +47,81 @@ export class QuestionBuilderAnswerAdvancedComponent implements AfterViewInit {
     media: MediaModel[];
   }>();
 
-  @ViewChild('waveformContainerRef') waveformContainerRef!: ElementRef;
-
   translation: string = '';
   imageUrl: string | null = null;
   audioUrl: string | null = null;
   audioStart: number = 0;
   audioEnd: number | null = null;
+  isWaveformReady = false;
 
-  isPlaying = false;
-
-  private readonly audioId = 0; // ✅ Usamos un ID numérico constante
-
-  constructor(private waveformService: WaveformService) {}
-
-  ngAfterViewInit() {
-    this.setupWaveform();
-  }
+  ngAfterViewInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['initialTranslation']) {
-      this.translation = this.initialTranslation;
-    }
-
-    if (changes['initialMedia']) {
-      const image = this.initialMedia.find(m => m.type === 'image');
-      const audio = this.initialMedia.find(m => m.type === 'audio');
-
-      this.imageUrl = image?.url ?? null;
-      this.audioUrl = audio?.url ?? null;
-      this.audioStart = audio?.startTime ?? 0;
-      this.audioEnd = audio?.endTime ?? null;
-
-      this.setupWaveform();
-    }
-  }
-
-  setupWaveform() {
-    if (this.audioUrl && this.waveformContainerRef) {
-      setTimeout(() => {
-        this.waveformService.createWaveform(
-          this.waveformContainerRef.nativeElement,
-          this.audioUrl!,
-          this.audioId,
-          this.audioStart,
-          this.audioEnd ?? undefined
-        );
-      }, 300);
+    if (changes['visible'] && this.visible) {
+      this.isWaveformReady = false; // 👈 importante
+  
+      if (this.initialTranslation) {
+        this.translation = this.initialTranslation;
+      }
+  
+      if (this.initialMedia) {
+        const image = this.initialMedia.find(m => m.type === 'image');
+        const audio = this.initialMedia.find(m => m.type === 'audio');
+  
+        this.imageUrl = image?.url ?? null;
+        this.audioUrl = audio?.url ?? null;
+        this.audioStart = audio?.startTime ?? 0;
+        this.audioEnd = audio?.endTime ?? null;
+      }
     }
   }
-
-  togglePlay() {
-    this.isPlaying = this.waveformService.togglePlay(this.audioId, () => {
-      this.isPlaying = false;
-    });
+  onWaveformReady(): void {
+    this.isWaveformReady = true;
   }
-
   onCancel(): void {
     this.visible = false;
     this.visibleChange.emit(false);
   }
 
   onSave(): void {
-    const region = this.waveformService.getRegion(this.audioId);
-
     const media: MediaModel[] = [];
-
+  
+    const region = this.audioUploaderRef?.getRegion();
+  
     if (this.imageUrl) {
       media.push({ type: 'image', url: this.imageUrl });
     }
-
+  
     if (this.audioUrl) {
       media.push({
         type: 'audio',
         url: this.audioUrl,
-        startTime: region?.start ?? this.audioStart,
-        endTime: region?.end ?? this.audioEnd ?? undefined
+        startTime: region?.start ?? 0,
+        endTime: region?.end ?? undefined
       });
     }
-
+  
     this.save.emit({
       translation: this.translation,
       media
     });
-
+  
     this.visible = false;
     this.visibleChange.emit(false);
   }
 
-  onImageSelect(event: any): void {
-    const file = event.files?.[0];
-    if (file) {
-      this.imageUrl = URL.createObjectURL(file);
-    }
+  onImageChanged(file: File | null): void {
+    this.imageUrl = file ? URL.createObjectURL(file) : null;
   }
 
-  onAudioSelect(event: any): void {
-    const file = event.files?.[0];
-    if (file) {
-      this.audioUrl = URL.createObjectURL(file);
-      this.audioStart = 0;
-      this.audioEnd = null;
+  onAudioChanged(file: File | null): void {
+    this.audioUrl = file ? URL.createObjectURL(file) : null;
+    this.audioStart = 0;
+    this.audioEnd = null;
+  }
 
-      this.setupWaveform();
-    }
+  onRegionChanged(region: { start: number; end: number | null }): void {
+    this.audioStart = region.start;
+    this.audioEnd = region.end;
   }
 }

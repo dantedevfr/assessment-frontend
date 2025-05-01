@@ -10,32 +10,43 @@ export class WaveformService {
   /**
    * Crea un nuevo waveform y región para un audio
    */
-  createWaveform(container: HTMLElement, audioUrl: string, wordId: number, start = 0, end?: number): void {
+  createWaveform(
+    container: HTMLElement,
+    audioUrl: string,
+    wordId: number,
+    start = 0,
+    end?: number,
+    onRegionReady?: (region: { start: number; end: number }) => void
+  ): void {
     this.destroyWaveform(wordId);
-
+  
     const waveSurfer = WaveSurfer.create({
       container,
       waveColor: '#A0AEC0',
       progressColor: '#3182CE',
-      height: 80,
+      height: 120,
     });
-
+  
     const regionsPlugin = RegionsPlugin.create();
     waveSurfer.registerPlugin(regionsPlugin);
     waveSurfer.load(audioUrl);
-
+  
     waveSurfer.once('ready', () => {
       const duration = waveSurfer.getDuration();
-      regionsPlugin.addRegion({
+      const region = regionsPlugin.addRegion({
         start: start ?? 0,
         end: end ?? duration,
         color: 'rgba(0, 123, 255, 0.1)',
         drag: true,
         resize: true,
       });
-
+  
       this.waveSurfers[wordId] = waveSurfer;
       this.regionsPlugins[wordId] = regionsPlugin;
+  
+      if (onRegionReady) {
+        onRegionReady({ start: region.start, end: region.end });
+      }
     });
   }
 
@@ -115,5 +126,9 @@ export class WaveformService {
     Object.values(this.waveSurfers).forEach(w => w.destroy());
     this.waveSurfers = {};
     this.regionsPlugins = {};
+  }
+
+  getInstance(wordId: number): WaveSurfer | undefined {
+    return this.waveSurfers[wordId];
   }
 }

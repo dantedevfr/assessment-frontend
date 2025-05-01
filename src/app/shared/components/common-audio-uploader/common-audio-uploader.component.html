@@ -1,0 +1,50 @@
+<div class="space-y-2">
+    <label class="block text-sm font-semibold">Audio</label>
+  
+    <div
+      class="relative w-full h-36 bg-gray-50 rounded-md border border-gray-300 overflow-hidden"
+      #waveformContainerRef
+    >
+      <ng-container *ngIf="!audioUrl">
+        <div
+          class="absolute inset-0 flex items-center justify-center text-sm text-gray-400"
+        >
+          Sin audio
+        </div>
+      </ng-container>
+    </div>
+  
+    <div class="flex justify-center items-stretch gap-3 pt-3">
+        <p-fileupload
+          name="audio[]"
+          mode="basic"
+          [auto]="true"
+          accept="audio/*"
+          maxFileSize="1000000"
+          [showUploadButton]="false"
+          [showCancelButton]="false"
+          chooseIcon="pi pi-volume-up"
+          chooseLabel="Subir audio"
+          class="p-button-sm"
+          (onSelect)="onSelect($event)"
+        ></p-fileupload>
+      
+        <button
+          pButton
+          class="p-button-rounded p-button-icon-only bg-green-500 hover:bg-green-600 h-[38px] w-[38px]"
+          [icon]="isPlaying ? 'pi pi-pause' : 'pi pi-play'"
+          (click)="togglePlay()"
+          [disabled]="!audioUrl"
+        ></button>
+      
+        <!-- ✅ Botón para borrar audio -->
+        <button
+          pButton
+          class="p-button-rounded p-button-icon-only bg-red-500 hover:bg-red-600 h-[38px] w-[38px]"
+          icon="pi pi-trash"
+          (click)="clearAudio()"
+          [disabled]="!audioUrl"
+        ></button>
+      </div>
+  </div>
+  
