@@ -38,6 +38,13 @@
   [audioUrl]="audioUrl"
   [audioStart]="audioStart"
   [audioEnd]="audioEnd"
+  [waveOptions]="{
+    waveColor: '#F97316',
+    progressColor: '#EA580C',
+    height: 119,
+    barWidth: 2,
+    cursorColor: '#EF4444'
+  }"
   (audioChange)="onAudioChanged($event)"
   (regionChange)="onRegionChanged($event)"
   (waveformReady)="onWaveformReady()"

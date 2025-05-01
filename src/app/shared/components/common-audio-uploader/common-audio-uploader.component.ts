@@ -11,6 +11,10 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
 import { NgIf } from '@angular/common';
 import { WaveformService } from '../../../features/activities/services/waveform.service';
+import WaveSurfer from 'wavesurfer.js';
+
+type WaveSurferOptions = Parameters<typeof WaveSurfer.create>[0];
+
 @Component({
   selector: 'app-common-audio-uploader',
   standalone: true,
@@ -21,6 +25,7 @@ export class CommonAudioUploaderComponent implements AfterViewInit {
   @Input() audioUrl: string | null = null;
   @Input() audioStart: number = 0;
   @Input() audioEnd: number | null = null;
+  @Input() waveOptions: Partial<WaveSurferOptions> = {};
   @Output() audioChange = new EventEmitter<File | null>();
   @Output() regionChange = new EventEmitter<{ start: number; end: number | null }>();
   @Output() waveformReady = new EventEmitter<void>();
@@ -51,7 +56,8 @@ export class CommonAudioUploaderComponent implements AfterViewInit {
         (region) => {
           this.regionChange.emit(region);
           this.waveformReady.emit(); // ✅ emitir solo cuando ya está realmente lista la región
-        }
+        },
+        this.waveOptions // ✅ pasamos las opciones personalizadas
       );
     }
   }

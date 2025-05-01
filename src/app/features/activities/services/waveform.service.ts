@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import WaveSurfer from 'wavesurfer.js';
 import RegionsPlugin, { Region } from 'wavesurfer.js/plugins/regions';
+type WaveSurferOptions = Parameters<typeof WaveSurfer.create>[0];
 
 @Injectable({ providedIn: 'root' })
 export class WaveformService {
@@ -16,7 +17,9 @@ export class WaveformService {
     wordId: number,
     start = 0,
     end?: number,
-    onRegionReady?: (region: { start: number; end: number }) => void
+    onRegionReady?: (region: { start: number; end: number }) => void,
+    waveOptions: Partial<WaveSurferOptions> = {} // ✅ nuevo parámetro opcional
+
   ): void {
     this.destroyWaveform(wordId);
   
@@ -25,6 +28,8 @@ export class WaveformService {
       waveColor: '#A0AEC0',
       progressColor: '#3182CE',
       height: 120,
+      ...waveOptions // ✅ aquí se aplican las personalizaciones desde fuera
+
     });
   
     const regionsPlugin = RegionsPlugin.create();
