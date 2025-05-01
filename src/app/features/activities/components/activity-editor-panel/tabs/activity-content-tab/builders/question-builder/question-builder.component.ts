@@ -31,6 +31,8 @@ import {
 
 } from './../../../../../../config/question.config';
 
+import { CommonImageUploaderComponent } from '../../../../../../../../shared/components/common-image-uploader/common-image-uploader.component';
+import { CommonAudioUploaderComponent } from '../../../../../../../../shared/components/common-audio-uploader/common-audio-uploader.component';
 @Component({
   selector: 'app-question-builder',
   standalone: true,
@@ -49,7 +51,9 @@ import {
     DialogModule,
     MessageModule,
     AppQuestionBuilderTranslationComponent,
-    AppQuestionBuilderAnswerComponent  ],
+    AppQuestionBuilderAnswerComponent,
+    CommonImageUploaderComponent,
+    CommonAudioUploaderComponent  ],
   templateUrl: './question-builder.component.html',
   styleUrl: './question-builder.component.scss'
 })
@@ -335,6 +339,75 @@ export class QuestionBuilderComponent {
 
   onAnswersChange(updatedQuestion: QuestionModel) {
     this.question = { ...updatedQuestion };
+    this.updateState();
+  }
+
+  getImageUrl(): string | null {
+    return this.question.media?.find(m => m.type === 'image')?.url ?? null;
+  }
+  
+  getAudioUrl(): string | null {
+    return this.question.media?.find(m => m.type === 'audio')?.url ?? null;
+  }
+  
+  onImageChanged(file: File | null): void {
+    const newMedia: MediaModel | null = file
+    ? {
+        type: 'image',
+        url: URL.createObjectURL(file),
+        position: this.mediaPosition
+      }
+    : null;  
+    this.updateMedia('image', newMedia);
+  }
+  
+  onAudioChanged(file: File | null): void {
+    const newMedia: MediaModel | null = file
+  ? {
+      type: 'audio',
+      url: URL.createObjectURL(file),
+      startTime: 0,
+      endTime: undefined,
+      position: this.mediaPosition
+    }
+  : null;
+  
+    this.updateMedia('audio', newMedia);
+  }
+  
+  onAudioRegionChanged(region: { start: number; end: number | null }) {
+    const updatedMedia = this.question.media?.map(m => {
+      if (m.type === 'audio') {
+        return {
+          ...m,
+          startTime: region.start,
+          endTime: region.end ?? undefined
+        };
+      }
+      return m;
+    }) ?? [];
+  
+    this.question = {
+      ...this.question,
+      media: updatedMedia
+    };
+  
+    this.updateState();
+  }
+  
+  onWaveformReady(): void {
+    // Puedes usar esto si necesitas saber cuándo el waveform está cargado
+  }
+
+  private updateMedia(type: 'image' | 'audio', media: MediaModel | null): void {
+    const otherMedia = (this.question.media ?? []).filter(m => m.type !== type);
+    const newMediaList = media ? [...otherMedia, media] : [...otherMedia];
+  
+    this.question = {
+      ...this.question,
+      media: newMediaList
+    };
+  
     this.updateState();
   }
 }

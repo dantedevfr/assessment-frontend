@@ -60,7 +60,7 @@
   </div>
 
   <!-- 📦 Selector de posición de media -->
-  <div *ngIf="uploadedFiles.length > 0">
+  <div *ngIf="selectedMediaType">
     <label class="block text-sm font-medium mb-1">Posición del medio</label>
     <p-select
       [options]="mediaPositions"
@@ -72,33 +72,29 @@
     />
   </div>
 
-  <!-- 📤 Upload de archivo -->
-  <div *ngIf="selectedMediaType">
-    <p-fileupload
-      #fileUploader
-      name="demo[]"
-      url="https://www.primefaces.org/cdn/api/upload.php"
-      (onUpload)="onUpload($event)"
-      (onSelect)="onFileSelect(fileUploader.files)"
-      (onClear)="onClearUpload()"
-      (onRemove)="onClearUpload()"
-      [multiple]="false"
-      [accept]="mediaAcceptType"
-      maxFileSize="1000000"
-      mode="advanced"
-    >
-      <ng-template #empty>
-        <div>Arrastra los archivos aquí para subirlos.</div>
-      </ng-template>
-      <ng-template #content>
-        <ul *ngIf="uploadedFiles.length">
-          <li *ngFor="let file of uploadedFiles">
-            {{ file.name }} - {{ file.size }} bytes
-          </li>
-        </ul>
-      </ng-template>
-    </p-fileupload>
-  </div>
+  <!-- 📤 Carga de componente multimedia según tipo -->
+<div *ngIf="selectedMediaType === 'image'">
+  <app-common-image-uploader
+    [imageUrl]="getImageUrl()"
+    (imageChange)="onImageChanged($event)"
+  />
+</div>
+
+<div *ngIf="selectedMediaType === 'audio'">
+  <app-common-audio-uploader
+    [audioUrl]="getAudioUrl()"
+    [audioStart]="0"
+    [audioEnd]="null"
+    [waveOptions]="{
+      waveColor: '#F97316',
+      progressColor: '#EA580C',
+      height: 100
+    }"
+    (audioChange)="onAudioChanged($event)"
+    (regionChange)="onAudioRegionChanged($event)"
+    (waveformReady)="onWaveformReady()"
+  />
+</div>
 
   <!-- 📝 Descripción opcional -->
   <div>
