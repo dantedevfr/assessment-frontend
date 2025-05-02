@@ -1,0 +1,13 @@
+<div
+  class="question-preview"
+  [ngStyle]="{ 'background-color': layoutConfig.backgroundColor || '#fff' }"
+>
+  <ng-container *ngIf="layoutConfig.textPosition === 'top'">
+    <app-question-text
+        [text]="question.text"
+        [align]="layoutConfig.textAlign || 'center'"
+        [withBorder]="layoutConfig.showTextBorder ?? false"
+        />
+  </ng-container>
+
+</div>

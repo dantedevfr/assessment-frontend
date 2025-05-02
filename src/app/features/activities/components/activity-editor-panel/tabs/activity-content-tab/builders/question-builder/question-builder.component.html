@@ -52,11 +52,16 @@
   <!-- ✍️ Texto de la pregunta -->
   <div>
     <label class="block text-sm font-medium mb-1">Texto de la pregunta</label>
-    <p-editor
-      [ngModel]="question.text"
-      (ngModelChange)="updateField('text', $event)"
-      [style]="editorStyle"
-    ></p-editor>
+    <p-editor [(ngModel)]="question.text" (ngModelChange)="updateField('text', $event)"
+    [style]="editorStyle">
+      <ng-template #header>
+          <span class="ql-formats">
+              <button type="button" class="ql-bold" aria-label="Bold"></button>
+              <button type="button" class="ql-italic" aria-label="Italic"></button>
+              <button type="button" class="ql-underline" aria-label="Underline"></button>
+          </span>
+      </ng-template>
+  </p-editor>
   </div>
 
   <!-- 📦 Selector de posición de media -->

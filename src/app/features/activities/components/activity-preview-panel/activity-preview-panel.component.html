@@ -1,1 +1,19 @@
-<p>activity-preview-panel works!</p>
+<ng-container [ngSwitch]="activity.type">
+
+    <!-- 🟢 CASE: question -->
+    <ng-container *ngSwitchCase="'question'">  
+      <app-preview-question
+        *ngIf="activity.question && activity.layoutConfig"
+        [question]="activity.question"
+        [layoutConfig]="activity.layoutConfig"
+      />
+    </ng-container>
+  
+    <!-- 🔴 DEFAULT -->
+    <ng-container *ngSwitchDefault>
+      <div class="text-red-600">
+        Tipo de actividad no soportado: {{ activity.type }}
+      </div>
+    </ng-container>
+  
+  </ng-container>

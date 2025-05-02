@@ -7,7 +7,7 @@ export type QuestionType = 'multiple_choice' | 'true_false' | 'open' | 'simple';
 
 export interface QuestionModel {
   id?: number;
-  text?: string; // Rich HTML from editor
+  text: string; // Rich HTML from editor
   description?:string;
   type: QuestionType;
   isMandatory?: boolean;

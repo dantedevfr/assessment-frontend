@@ -1,0 +1,9 @@
+<div
+  class="question-text"
+  [ngStyle]="{
+    'text-align': align,
+    'border': withBorder ? '1px solid #ccc' : 'none',
+    'padding': withBorder ? '1rem' : '0'
+  }"
+  [innerHTML]="text"
+></div>

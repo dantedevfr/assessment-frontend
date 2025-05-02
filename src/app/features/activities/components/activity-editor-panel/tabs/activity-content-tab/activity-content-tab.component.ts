@@ -76,6 +76,7 @@ export class ActivityContentTabComponent {
       changes: {
         question: {
           ...this.activity.question,
+          text:"",
           type,
         }
       }

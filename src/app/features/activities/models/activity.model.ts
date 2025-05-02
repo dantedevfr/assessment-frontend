@@ -1,3 +1,4 @@
+import { QuestionLayoutConfig } from "./question-layout-config.model";
 import { QuestionModel } from "./question.model";
 
 export interface ActivityModel {
@@ -9,8 +10,10 @@ export interface ActivityModel {
   is_visible?: boolean;
   is_expired?: boolean;
   id_category?: number;
-  media?: ActivityMediaModel;
+  //media?: ActivityMediaModel;
   question?: QuestionModel;
+  layoutConfig?: QuestionLayoutConfig; // ✅ configuraciones visuales por actividad
+ 
 }
 
 export interface ActivityMediaModel {
