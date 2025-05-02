@@ -1,44 +1,40 @@
-export type LayoutPosition = 'top' | 'bottom' | 'left' | 'right' | 'center';
-export type LayoutDirection = 'vertical' | 'horizontal' | 'grid';
+export type BlockType = 'text' | 'description' | 'media' | 'options';
 export type LayoutAlignment = 'start' | 'center' | 'end' | 'space-between';
 export type BlockWidth = 'auto' | 'fit' | 'full';
 export type BlockSelfAlign = 'start' | 'center' | 'end' | 'stretch';
-export type BlockType = 'text' | 'description' | 'media' | 'options';
+
+export interface GridPosition {
+  colStart: number;
+  colSpan: number;
+  rowStart: number;
+  rowSpan?: number;
+}
 
 export interface BlockStyle {
   width?: BlockWidth;
   alignSelf?: BlockSelfAlign;
+  padding?: number;
+  border?: boolean;
+  backgroundColor?: string;
+  borderRadius?: number;
+}
+
+export interface LayoutBlock {
+  id: string;
+  type: BlockType;
+  content?: any;
+  position: GridPosition;
+  align?: LayoutAlignment;
+  style?: BlockStyle;
 }
 
 export interface QuestionLayoutConfig {
+  gridColumns: number;
+  gridGap?: number;
+  padding?: number;
   backgroundColor?: string;
   backgroundImageUrl?: string;
-  direction?: LayoutDirection;
-
-  blockOrder?: {
-    [P in LayoutPosition]?: BlockType[];
-  };
-  blockDirection?: {
-    [P in LayoutPosition]?: LayoutDirection;
-  };
-  blockAlign?: {
-    [P in LayoutPosition]?: LayoutAlignment;
-  };
-  blockStyles?: {
-    [K in BlockType]?: BlockStyle;
-  };
-
-  textAlign?: 'left' | 'center' | 'right';
-  descriptionAlign?: 'left' | 'center' | 'right';
-  padding?: number;
-  borderRadius?: number;
-  showTextBorder?: boolean;
-  showMediaBorder?: boolean;
-
-  mediaSize?: 'small' | 'medium' | 'large' | 'full';
-  audioBehavior?: 'autoplay' | 'onTextClick' | 'onIconClick' | 'manual';
-  audioStyle?: 'default' | 'duolingo' | 'minimal';
-
-  ambientEnabled?: boolean;
   animateOnLoad?: boolean;
+  ambientEnabled?: boolean;
+  blocks: LayoutBlock[];
 }

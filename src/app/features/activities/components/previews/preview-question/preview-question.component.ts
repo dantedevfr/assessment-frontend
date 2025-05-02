@@ -1,45 +1,49 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
+import { selectActivityBuilder, updateActivity } from '../../../state';
+import { FormsModule } from '@angular/forms';
 
 import {
+  QuestionModel
+} from '../../../models/question.model';
+import {
   QuestionLayoutConfig,
-  LayoutPosition,
-  LayoutAlignment,
+  LayoutBlock,
+  BlockStyle,
   BlockType,
   BlockWidth,
-  BlockSelfAlign,
-  BlockStyle
+  BlockSelfAlign
 } from '../../../models/question-layout-config.model';
-
-import { QuestionModel } from '../../../models/question.model';
-import { updateActivity, selectActivityBuilder } from '../../../state';
 
 @Component({
   selector: 'app-preview-question',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './preview-question.component.html',
   styleUrls: ['./preview-question.component.scss']
 })
 export class PreviewQuestionComponent implements OnInit {
   private store = inject(Store);
 
-  @Input() question!: QuestionModel;
-  @Input() layoutConfig!: QuestionLayoutConfig;
-
-  layoutPositions: LayoutPosition[] = ['top', 'left', 'center', 'right', 'bottom'];
-  blockTypes: BlockType[] = ['text', 'description', 'media', 'options'];
-  alignments: LayoutAlignment[] = ['start', 'center', 'end', 'space-between'];
+  layoutConfig!: QuestionLayoutConfig;
+  question!: QuestionModel;
   widths: BlockWidth[] = ['auto', 'fit', 'full'];
   selfAligns: BlockSelfAlign[] = ['start', 'center', 'end', 'stretch'];
-
+  
   ngOnInit() {
     this.store.select(selectActivityBuilder).subscribe(activity => {
-      // Clonamos para evitar mutaciones directas
-      this.layoutConfig = structuredClone(activity.layoutConfig ?? {});
-      this.question = activity.question ?? {
+      this.layoutConfig = structuredClone(activity.layoutConfig ?? {
+        gridColumns: 12,
+        gridGap: 16,
+        padding: 24,
+        backgroundColor: '#ffffff',
+        animateOnLoad: false,
+        ambientEnabled: false,
+        blocks: []
+      });
+      
+      this.question = structuredClone(activity.question ?? {
         text: '',
         description: '',
         type: 'multiple_choice',
@@ -48,100 +52,87 @@ export class PreviewQuestionComponent implements OnInit {
         wordBreakdown: [],
         media: [],
         answers: []
-      };
+      });
+
+      this.layoutConfig.blocks.forEach(block => this.initBlockStyle(block));
+
     });
   }
 
-  private updateLayoutConfig(config: QuestionLayoutConfig) {
-    this.layoutConfig = config;
+  getGridTemplateColumns(): string {
+    return `repeat(${this.layoutConfig.gridColumns}, 1fr)`;
+  }
+
+  getBlockGridStyle(block: LayoutBlock): Record<string, string> {
+    const pos = block.position;
+    return {
+      'grid-column': `${pos.colStart} / span ${pos.colSpan}`,
+      'grid-row': `${pos.rowStart} / span ${pos.rowSpan ?? 1}`
+    };
+  }
+
+  getBlockClasses(block: LayoutBlock): string[] {
+    const style = block.style;
+    const classes = ['block-container'];
+
+    switch (style?.alignSelf) {
+      case 'center': classes.push('self-center'); break;
+      case 'end': classes.push('self-end'); break;
+      case 'stretch': classes.push('self-stretch'); break;
+      default: classes.push('self-start'); break;
+    }
+
+    switch (style?.width) {
+      case 'full': classes.push('w-full'); break;
+      case 'fit': classes.push('w-fit'); break;
+      default: classes.push('w-auto'); break;
+    }
+
+    return classes;
+  }
+
+  getBlockContent(block: LayoutBlock): string {
+    switch (block.type) {
+      case 'text': return this.question.text;
+      case 'description': return this.question.description;
+      case 'options': return 'Opciones (respuestas)';
+      case 'media': return 'Contenido multimedia';
+      default: return '[Bloque desconocido]';
+    }
+  }
+
+  updateConfig() {
     this.store.dispatch(updateActivity({
       changes: {
-        layoutConfig: structuredClone(config)
+        layoutConfig: structuredClone(this.layoutConfig)
       }
     }));
   }
 
-  getItemsInPosition(position: LayoutPosition): BlockType[] {
-    return this.layoutConfig.blockOrder?.[position] ?? [];
-  }
-
-  getDirectionClass(position: LayoutPosition): string {
-    const dir = this.layoutConfig.blockDirection?.[position] ?? 'vertical';
-    return dir === 'horizontal' ? 'flex-row' : 'flex-col';
-  }
-
-  getAlignClass(position: LayoutPosition): string {
-    const align = this.layoutConfig.blockAlign?.[position] ?? 'start';
-    switch (align) {
-      case 'center': return 'justify-center items-center';
-      case 'end': return 'justify-end items-end';
-      case 'space-between': return 'justify-between items-center';
-      default: return 'justify-start items-start';
+  initBlockStyle(block: LayoutBlock) {
+    if (!block.style) {
+      block.style = {
+        width: 'auto',
+        alignSelf: 'start',
+        padding: 0,
+        border: false,
+        backgroundColor: '#ffffff',
+        borderRadius: 0
+      };
     }
   }
 
-  getBlockWidthClass(block: BlockType): string {
-    const style = this.layoutConfig.blockStyles?.[block];
-    switch (style?.width) {
-      case 'full': return 'w-full';
-      case 'fit': return 'w-fit';
-      default: return 'w-auto';
+  getBlockStyle(block: LayoutBlock): BlockStyle {
+    if (!block.style) {
+      block.style = {
+        width: 'auto',
+        alignSelf: 'start',
+        padding: 0,
+        border: false,
+        backgroundColor: '#ffffff',
+        borderRadius: 0
+      };
     }
-  }
-
-  getBlockAlignSelfClass(block: BlockType): string {
-    const style = this.layoutConfig.blockStyles?.[block];
-    switch (style?.alignSelf) {
-      case 'center': return 'self-center';
-      case 'end': return 'self-end';
-      case 'stretch': return 'self-stretch';
-      default: return 'self-start';
-    }
-  }
-
-  updateBlockOrder(position: LayoutPosition, block: BlockType) {
-    const config = structuredClone(this.layoutConfig);
-    const current = config.blockOrder?.[position] ?? [];
-    const exists = current.includes(block);
-    const updated = exists
-      ? current.filter(item => item !== block)
-      : [...current, block];
-
-    config.blockOrder = {
-      ...config.blockOrder,
-      [position]: updated
-    };
-
-    this.updateLayoutConfig(config);
-  }
-
-  setBlockDirection(position: LayoutPosition, dir: 'horizontal' | 'vertical') {
-    const config = structuredClone(this.layoutConfig);
-    config.blockDirection = {
-      ...config.blockDirection,
-      [position]: dir
-    };
-    this.updateLayoutConfig(config);
-  }
-
-  setBlockAlign(position: LayoutPosition, align: LayoutAlignment) {
-    const config = structuredClone(this.layoutConfig);
-    config.blockAlign = {
-      ...config.blockAlign,
-      [position]: align
-    };
-    this.updateLayoutConfig(config);
-  }
-
-  setBlockStyle(block: BlockType, prop: keyof BlockStyle, value: string) {
-    const config = structuredClone(this.layoutConfig);
-    config.blockStyles = {
-      ...config.blockStyles,
-      [block]: {
-        ...config.blockStyles?.[block],
-        [prop]: value
-      }
-    };
-    this.updateLayoutConfig(config);
+    return block.style;
   }
 }

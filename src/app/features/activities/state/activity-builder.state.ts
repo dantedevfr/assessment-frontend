@@ -5,57 +5,42 @@ import { QuestionModel } from '../models/question.model';
 export interface ActivityBuilderState extends ActivityModel {}
 
 export const defaultLayoutConfig: QuestionLayoutConfig = {
+  gridColumns: 12,
+  gridGap: 16,
+  padding: 24,
   backgroundColor: '#ffffff',
-  direction: 'vertical',
-
-  blockOrder: {
-    top: ['media'],
-    center: ['text', 'description'],
-    bottom: ['options']
-  },
-
-  blockDirection: {
-    top: 'horizontal',
-    center: 'vertical',
-    bottom: 'horizontal'
-  },
-
-  blockAlign: {
-    top: 'center',
-    center: 'start',
-    bottom: 'space-between'
-  },
-
-  blockStyles: {
-    media: {
-      width: 'full',
-      alignSelf: 'center'
-    },
-    text: {
-      width: 'fit',
-      alignSelf: 'start'
-    },
-    description: {
-      width: 'auto',
-      alignSelf: 'stretch'
-    },
-    options: {
-      width: 'fit',
-      alignSelf: 'center'
-    }
-  },
-
-  textAlign: 'center',
-  descriptionAlign: 'left',
-  mediaSize: 'medium',
-  audioBehavior: 'onIconClick',
-  audioStyle: 'duolingo',
-  showMediaBorder: true,
-  showTextBorder: false,
-  padding: 16,
-  borderRadius: 8,
   animateOnLoad: false,
-  ambientEnabled: false
+  ambientEnabled: false,
+  blocks: [
+    {
+      id: 'text-1',
+      type: 'text',
+      position: { colStart: 1, colSpan: 12, rowStart: 1 },
+      align: 'center',
+      style: {
+        width: 'full',
+        border: false,
+        padding: 8
+      }
+    },
+    {
+      id: 'media-1',
+      type: 'media',
+      position: { colStart: 1, colSpan: 12, rowStart: 2 },
+      align: 'center',
+      style: {
+        width: 'full',
+        border: true,
+        padding: 8
+      }
+    },
+    {
+      id: 'options-1',
+      type: 'options',
+      position: { colStart: 1, colSpan: 12, rowStart: 3 },
+      align: 'start'
+    }
+  ]
 };
 
 

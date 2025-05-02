@@ -2,11 +2,7 @@
 
     <!-- 🟢 CASE: question -->
     <ng-container *ngSwitchCase="'question'">  
-      <app-preview-question
-        *ngIf="activity.question && activity.layoutConfig"
-        [question]="activity.question"
-        [layoutConfig]="activity.layoutConfig"
-      />
+      <app-preview-question />
     </ng-container>
   
     <!-- 🔴 DEFAULT -->

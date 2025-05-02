@@ -77,6 +77,7 @@ export class ActivityContentTabComponent {
         question: {
           ...this.activity.question,
           text:"",
+          description:"",
           type,
         }
       }
