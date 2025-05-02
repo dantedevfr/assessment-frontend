@@ -55,6 +55,15 @@
     <p-editor [(ngModel)]="question.text" (ngModelChange)="updateField('text', $event)"
     [style]="editorStyle">
       <ng-template #header>
+        <span class="ql-formats">
+          <select class="ql-header" aria-label="Heading">
+            <option selected></option> <!-- Normal text -->
+            <option value="1">Heading 1</option>
+            <option value="2">Heading 2</option>
+            <option value="3">Heading 3</option>
+
+          </select>
+        </span>
           <span class="ql-formats">
               <button type="button" class="ql-bold" aria-label="Bold"></button>
               <button type="button" class="ql-italic" aria-label="Italic"></button>

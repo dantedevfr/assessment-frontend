@@ -1,13 +1,87 @@
-<div
-  class="question-preview"
-  [ngStyle]="{ 'background-color': layoutConfig.backgroundColor || '#fff' }"
->
-  <ng-container *ngIf="layoutConfig.textPosition === 'top'">
-    <app-question-text
-        [text]="question.text"
-        [align]="layoutConfig.textAlign || 'center'"
-        [withBorder]="layoutConfig.showTextBorder ?? false"
-        />
-  </ng-container>
+<!-- Panel de configuración -->
+<div class="layout-controls mb-6">
+  <div *ngFor="let position of layoutPositions">
+    <h4 class="font-semibold mb-1 capitalize">{{ position }} zone</h4>
 
+    <div class="flex flex-wrap gap-2 mb-2">
+      <label *ngFor="let block of blockTypes">
+        <input
+          type="checkbox"
+          [checked]="getItemsInPosition(position).includes(block)"
+          (change)="updateBlockOrder(position, block)"
+        />
+        {{ block }}
+      </label>
+    </div>
+
+    <label class="block mb-2">
+      Direction:
+      <select
+        class="ml-2 p-1 border rounded"
+        [ngModel]="layoutConfig.blockDirection?.[position] || 'vertical'"
+        (ngModelChange)="setBlockDirection(position, $event)"
+      >
+        <option value="vertical">Vertical</option>
+        <option value="horizontal">Horizontal</option>
+      </select>
+    </label>
+
+    <label class="block mb-4">
+      Alignment:
+      <select
+        class="ml-2 p-1 border rounded"
+        [ngModel]="layoutConfig.blockAlign?.[position] || 'start'"
+        (ngModelChange)="setBlockAlign(position, $event)"
+      >
+        <option *ngFor="let align of alignments" [value]="align">{{ align }}</option>
+      </select>
+    </label>
+  </div>
+
+  <hr class="my-4" />
+
+  <h4 class="font-semibold mb-2">Block Styles</h4>
+  <div *ngFor="let block of blockTypes" class="mb-4">
+    <h5 class="capitalize font-medium">{{ block }}</h5>
+    <label class="block mb-1">
+      Width:
+      <select
+        class="ml-2 p-1 border rounded"
+        [ngModel]="layoutConfig.blockStyles?.[block]?.width || 'auto'"
+        (ngModelChange)="setBlockStyle(block, 'width', $event)"
+      >
+        <option *ngFor="let w of widths" [value]="w">{{ w }}</option>
+      </select>
+    </label>
+
+    <label class="block mb-1">
+      Align Self:
+      <select
+        class="ml-2 p-1 border rounded"
+        [ngModel]="layoutConfig.blockStyles?.[block]?.alignSelf || 'start'"
+        (ngModelChange)="setBlockStyle(block, 'alignSelf', $event)"
+      >
+        <option *ngFor="let a of selfAligns" [value]="a">{{ a }}</option>
+      </select>
+    </label>
+  </div>
+</div>
+
+<!-- Layout visual -->
+<div class="question-grid border p-4 rounded bg-gray-50">
+  <ng-container *ngFor="let position of layoutPositions">
+    <div
+      [ngClass]="['area-' + position, 'flex', getDirectionClass(position), getAlignClass(position)]"
+      class="border p-2 min-h-[60px] gap-2"
+    >
+      <ng-container *ngFor="let item of getItemsInPosition(position)">
+        <div
+          class="preview-box"
+          [ngClass]="[getBlockWidthClass(item), getBlockAlignSelfClass(item)]"
+        >
+          {{ item }}
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
 </div>

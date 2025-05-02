@@ -5,18 +5,60 @@ import { QuestionModel } from '../models/question.model';
 export interface ActivityBuilderState extends ActivityModel {}
 
 export const defaultLayoutConfig: QuestionLayoutConfig = {
+  backgroundColor: '#ffffff',
   direction: 'vertical',
-  textPosition: 'top',
-  descriptionPosition: 'bottom',
-  mediaPosition: 'left',
-  optionsPosition: 'center',
+
+  blockOrder: {
+    top: ['media'],
+    center: ['text', 'description'],
+    bottom: ['options']
+  },
+
+  blockDirection: {
+    top: 'horizontal',
+    center: 'vertical',
+    bottom: 'horizontal'
+  },
+
+  blockAlign: {
+    top: 'center',
+    center: 'start',
+    bottom: 'space-between'
+  },
+
+  blockStyles: {
+    media: {
+      width: 'full',
+      alignSelf: 'center'
+    },
+    text: {
+      width: 'fit',
+      alignSelf: 'start'
+    },
+    description: {
+      width: 'auto',
+      alignSelf: 'stretch'
+    },
+    options: {
+      width: 'fit',
+      alignSelf: 'center'
+    }
+  },
+
+  textAlign: 'center',
+  descriptionAlign: 'left',
   mediaSize: 'medium',
   audioBehavior: 'onIconClick',
   audioStyle: 'duolingo',
-  backgroundColor: '#ffffff',
-  showMediaBorder: false,
+  showMediaBorder: true,
   showTextBorder: false,
+  padding: 16,
+  borderRadius: 8,
+  animateOnLoad: false,
+  ambientEnabled: false
 };
+
+
 
 export const defaultQuestion: QuestionModel = {
   text: '',
