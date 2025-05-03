@@ -1,4 +1,5 @@
-export type BlockType = 'text' | 'description' | 'media' | 'options';
+
+export type BlockType = 'text' | 'description' | 'media' | 'options' | 'group';
 export type LayoutAlignment = 'start' | 'center' | 'end' | 'space-between';
 export type BlockWidth = 'auto' | 'fit' | 'full';
 export type BlockSelfAlign = 'start' | 'center' | 'end' | 'stretch';
@@ -11,22 +12,28 @@ export interface GridPosition {
 }
 
 export interface BlockStyle {
-  width?: BlockWidth;
-  alignSelf?: BlockSelfAlign;
+  width: BlockWidth;
+  alignSelf: BlockSelfAlign;
   padding?: number;
   border?: boolean;
   backgroundColor?: string;
   borderRadius?: number;
 }
 
-export interface LayoutBlock {
+export interface LayoutBlockBase {
   id: string;
   type: BlockType;
-  content?: any;
   position: GridPosition;
+  style: BlockStyle;
   align?: LayoutAlignment;
-  style?: BlockStyle;
 }
+
+export interface GroupBlock extends LayoutBlockBase {
+  type: 'group';
+  content: LayoutBlock[]; // children
+}
+
+export type LayoutBlock = LayoutBlockBase | GroupBlock;
 
 export interface QuestionLayoutConfig {
   gridColumns: number;

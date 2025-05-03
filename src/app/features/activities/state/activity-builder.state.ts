@@ -20,7 +20,20 @@ export const defaultLayoutConfig: QuestionLayoutConfig = {
       style: {
         width: 'full',
         border: false,
-        padding: 8
+        padding: 8,
+        alignSelf:'center'
+      }
+    },
+    {
+      id: 'description-1',
+      type: 'description',
+      position: { colStart: 1, colSpan: 12, rowStart: 5 },
+      align: 'center',
+      style: {
+        width: 'full',
+        border: false,
+        padding: 8,
+        alignSelf:'center'
       }
     },
     {
@@ -31,14 +44,23 @@ export const defaultLayoutConfig: QuestionLayoutConfig = {
       style: {
         width: 'full',
         border: true,
-        padding: 8
+        padding: 8,
+        alignSelf:'center'
+
       }
     },
     {
       id: 'options-1',
       type: 'options',
       position: { colStart: 1, colSpan: 12, rowStart: 3 },
-      align: 'start'
+      align: 'start',
+      style: {
+        width: 'full',
+        border: true,
+        padding: 8,
+        alignSelf:'center'
+
+      }
     }
   ]
 };
