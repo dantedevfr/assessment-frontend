@@ -1,4 +1,4 @@
-<!-- preview-question.component.html -->
+<!-- Configuración general -->
 <div class="config-panel grid grid-cols-2 md:grid-cols-3 gap-4 mb-6 bg-white p-4 rounded shadow">
   <label>
     Columnas del grid:
@@ -43,19 +43,24 @@
   </label>
 </div>
 
+<!-- Vista de previsualización -->
 <div class="grid-editor"
      [ngStyle]="getGridStyles()"
      cdkDropList
      (cdkDropListDropped)="onDrop($event)">
   <ng-container *ngFor="let block of layoutConfig.blocks">
-    <div class="grid-block"
+    <div class="grid-block border p-4 rounded bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
          cdkDrag
          [cdkDragData]="block"
          [ngStyle]="getBlockGridStyle(block)"
          [ngClass]="getBlockClasses(block)"
          (click)="selectBlock(block)">
-      <div class="block-header">{{ block.type.toUpperCase() }}</div>
-      <div class="block-body" [innerHTML]="getBlockContent(block)"></div>
+      <div class="block-header font-bold mb-2 text-sm text-gray-700">{{ block.type.toUpperCase() }}</div>
+      
+      <app-question-block-renderer
+      [block]="block"
+      [question]="question"
+    ></app-question-block-renderer>
     </div>
   </ng-container>
 </div>
@@ -67,22 +72,26 @@
   <div class="grid grid-cols-2 gap-4">
     <label>
       Columna de inicio:
-      <input type="number" [(ngModel)]="selectedBlock.position.colStart" (ngModelChange)="updateConfig()" class="w-full border p-1 rounded" />
+      <input type="number" [(ngModel)]="selectedBlock.position.colStart"
+             (ngModelChange)="updateConfig()" class="w-full border p-1 rounded" />
     </label>
 
     <label>
       Columnas que ocupa:
-      <input type="number" [(ngModel)]="selectedBlock.position.colSpan" (ngModelChange)="updateConfig()" class="w-full border p-1 rounded" />
+      <input type="number" [(ngModel)]="selectedBlock.position.colSpan"
+             (ngModelChange)="updateConfig()" class="w-full border p-1 rounded" />
     </label>
 
     <label>
       Fila:
-      <input type="number" [(ngModel)]="selectedBlock.position.rowStart" (ngModelChange)="updateConfig()" class="w-full border p-1 rounded" />
+      <input type="number" [(ngModel)]="selectedBlock.position.rowStart"
+             (ngModelChange)="updateConfig()" class="w-full border p-1 rounded" />
     </label>
 
     <label>
       Ancho:
-      <select [(ngModel)]="selectedBlock.style.width" (ngModelChange)="updateConfig()" class="w-full border p-1 rounded">
+      <select [(ngModel)]="selectedBlock.style.width"
+              (ngModelChange)="updateConfig()" class="w-full border p-1 rounded">
         <option value="auto">Auto</option>
         <option value="fit">Ajustado</option>
         <option value="full">Completo</option>
@@ -90,8 +99,9 @@
     </label>
 
     <label>
-      Alineación:
-      <select [(ngModel)]="selectedBlock.style.alignSelf" (ngModelChange)="updateConfig()" class="w-full border p-1 rounded">
+      Alineación vertical:
+      <select [(ngModel)]="selectedBlock.style.alignSelf"
+              (ngModelChange)="updateConfig()" class="w-full border p-1 rounded">
         <option value="start">Inicio</option>
         <option value="center">Centro</option>
         <option value="end">Final</option>

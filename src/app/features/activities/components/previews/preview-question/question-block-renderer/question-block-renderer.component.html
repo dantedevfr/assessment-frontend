@@ -1,0 +1,6 @@
+<ng-container *ngIf="component; else unknown">
+    <ng-container *ngComponentOutlet="component; injector: injector"></ng-container>
+  </ng-container>
+  <ng-template #unknown>
+    <div class="text-red-700 text-sm">[Componente no encontrado para tipo: {{ block.type }}]</div>
+  </ng-template>

@@ -1,0 +1,11 @@
+<div
+  class="question-description"
+  [ngStyle]="{
+    'border': withBorder ? '1px solid #ccc' : 'none',
+    'padding': withBorder ? '1rem' : '0'
+  }"
+  [innerHTML]="description"
+>
+<strong>DESCRIPCIÓN RECIBIDA:</strong>
+<pre>{{ description }}</pre>
+</div>

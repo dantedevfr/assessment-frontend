@@ -13,53 +13,51 @@ export const defaultLayoutConfig: QuestionLayoutConfig = {
   ambientEnabled: false,
   blocks: [
     {
-      id: 'text-1',
-      type: 'text',
+      id: 'media-1',
+      type: 'media',
       position: { colStart: 1, colSpan: 12, rowStart: 1 },
       align: 'center',
       style: {
         width: 'full',
         border: false,
         padding: 8,
-        alignSelf:'center'
+        alignSelf: 'center'
       }
     },
     {
-      id: 'description-1',
-      type: 'description',
-      position: { colStart: 1, colSpan: 12, rowStart: 5 },
+      id: 'text-1',
+      type: 'text',
+      position: { colStart: 1, colSpan: 12, rowStart: 2 },
       align: 'center',
       style: {
         width: 'full',
         border: false,
         padding: 8,
-        alignSelf:'center'
+        alignSelf: 'center'
       }
     },
     {
-      id: 'media-1',
-      type: 'media',
-      position: { colStart: 1, colSpan: 12, rowStart: 2 },
+      id: 'description-1',
+      type: 'description',
+      position: { colStart: 1, colSpan: 12, rowStart: 3 },
       align: 'center',
       style: {
         width: 'full',
-        border: true,
+        border: false,
         padding: 8,
-        alignSelf:'center'
-
+        alignSelf: 'center'
       }
     },
     {
       id: 'options-1',
       type: 'options',
-      position: { colStart: 1, colSpan: 12, rowStart: 3 },
+      position: { colStart: 1, colSpan: 12, rowStart: 4 },
       align: 'start',
       style: {
         width: 'full',
-        border: true,
+        border: false,
         padding: 8,
-        alignSelf:'center'
-
+        alignSelf: 'center'
       }
     }
   ]
@@ -68,7 +66,7 @@ export const defaultLayoutConfig: QuestionLayoutConfig = {
 
 
 export const defaultQuestion: QuestionModel = {
-  text: '',
+  text: '<p>¡Hola mundo desde text!</p>',
   description: '',
   type: 'multiple_choice',
   isMandatory: false,
